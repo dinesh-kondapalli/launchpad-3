@@ -142,8 +142,29 @@
   }
 }
 
+@keyframes live-dot-spread {
+  0% {
+    transform: scale(0.75);
+    opacity: 0.55;
+  }
+
+  70% {
+    transform: scale(2.7);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(2.7);
+    opacity: 0;
+  }
+}
+
 .token-ticker-track {
   animation: token-ticker 110s linear infinite;
+}
+
+.live-dot-spread {
+  animation: live-dot-spread 1.9s ease-out infinite;
 }
 
 .no-scrollbar {

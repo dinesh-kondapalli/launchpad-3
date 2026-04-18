@@ -108,7 +108,13 @@ export function TokenFeed() {
 
       <TokenRowSection
         title="Live Now"
-        icon={<Circle size={12} weight="fill" className="text-zinc-300" />}
+        icon={
+          <span className="relative inline-flex h-2.5 w-2.5">
+            <span className="live-dot-spread absolute inset-0 rounded-full bg-[#4caf50]/45" />
+            <Circle size={10} weight="fill" className="relative z-[1] text-[#4caf50]" />
+          </span>
+        }
+        iconPlain
         tokens={liveTokens}
         xyzPriceUsd={xyzPriceUsd}
         maxReserve={maxReserve}
@@ -142,6 +148,7 @@ export function TokenFeed() {
 function TokenRowSection({
   title,
   icon,
+  iconPlain,
   tokens,
   xyzPriceUsd,
   maxReserve,
@@ -150,6 +157,7 @@ function TokenRowSection({
 }: {
   title: string;
   icon: React.ReactNode;
+  iconPlain?: boolean;
   tokens: TokenListItem[];
   xyzPriceUsd: number;
   maxReserve: number;
@@ -165,16 +173,17 @@ function TokenRowSection({
 
   return (
     <section className="overflow-hidden border-b border-[#27272a] bg-[#111111] last:border-b-0">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#27272a] px-4 py-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#27272a] px-4 py-6">
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2.5">
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-sm border border-[#27272a] bg-[#18181b] text-zinc-200">
-              {icon}
-            </span>
-            <div className="leading-tight">
-              <p className="text-[10px] uppercase tracking-[0.14em] text-zinc-500">Section</p>
-              <h3 className="text-xl font-semibold tracking-tight text-zinc-100 md:text-2xl">{title}</h3>
-            </div>
+            {iconPlain ? (
+              <span className="inline-flex h-6 w-6 items-center justify-center text-zinc-200">{icon}</span>
+            ) : (
+              <span className="inline-flex h-6 w-6 items-center justify-center rounded-sm border border-[#27272a] bg-[#18181b] text-zinc-200">
+                {icon}
+              </span>
+            )}
+            <h3 className="text-xl font-semibold tracking-tight text-zinc-100 md:text-2xl">{title}</h3>
           </div>
 
           <div className="inline-flex items-center gap-2 border-l border-[#27272a] pl-4">
@@ -183,7 +192,7 @@ function TokenRowSection({
               <select
                 value={sortMode}
                 onChange={(event) => onSortChange(event.target.value as SortMode)}
-                className="h-8 appearance-none rounded-sm border border-[#27272a] bg-[#111111] pl-3 pr-8 text-sm capitalize text-zinc-200 outline-none focus:border-[#3f3f46] focus-visible:outline-none focus-visible:ring-0"
+                className="h-8 w-[148px] appearance-none rounded-sm border border-[#27272a] bg-[#111111] pl-3 pr-8 text-sm capitalize text-zinc-200 outline-none focus:border-[#3f3f46] focus-visible:outline-none focus-visible:ring-0"
               >
                 <option value="activity">Completion %</option>
                 <option value="newest">Recently launched</option>
@@ -254,6 +263,8 @@ function LaunchTile({
   const change = getMockChange(token.address);
   const positive = change >= 0;
   const fallbackBackground = TILE_BACKGROUNDS[tileIndex % TILE_BACKGROUNDS.length];
+  const previewImage = getDisplayImage(token, tileIndex);
+  const initial = (token.symbol ?? "?").slice(0, 1).toUpperCase();
 
   return (
     <Link
@@ -261,21 +272,18 @@ function LaunchTile({
       className="group block w-[340px] border-r border-[#27272a] bg-[#111111] transition-colors hover:bg-zinc-950 first:border-l"
     >
       <div className="relative aspect-[1.7] w-full border-b border-[#27272a]" style={{ background: fallbackBackground }}>
-        {token.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={token.image}
-            alt={token.symbol ?? "token"}
-            className="h-full w-full object-cover"
-            onError={(event) => {
-              (event.target as HTMLImageElement).style.display = "none";
-            }}
-          />
-        ) : (
-          <div className="grid h-full place-items-center text-4xl font-black tracking-tight text-white/80">
-            {(token.symbol ?? "?").slice(0, 1).toUpperCase()}
-          </div>
-        )}
+        <div className="grid h-full place-items-center text-4xl font-black tracking-tight text-white/80">
+          {initial}
+        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={previewImage}
+          alt={token.symbol ?? "token"}
+          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          onError={(event) => {
+            (event.target as HTMLImageElement).style.display = "none";
+          }}
+        />
       </div>
 
       <div className="space-y-2.5 p-3">
@@ -348,6 +356,12 @@ function buildTickerItems(tokens: TokenListItem[]) {
   );
 
   return expanded;
+}
+
+function getDisplayImage(token: TokenListItem, tileIndex: number): string {
+  if (token.image) return token.image;
+  const seed = encodeURIComponent(`${token.address}-${token.symbol ?? tileIndex}`);
+  return `https://picsum.photos/seed/${seed}/1200/700`;
 }
 
 function sortTokens(tokens: TokenListItem[], mode: SortMode): TokenListItem[] {

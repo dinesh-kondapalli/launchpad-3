@@ -105,7 +105,7 @@ function SidebarContent({
               </svg>
             </div>
             <div className={cn("leading-tight", isCollapsed && "hidden")}>
-              <p className="text-lg font-semibold tracking-[0.12em] text-zinc-100">METAPLEX</p>
+              <p className="text-lg font-semibold tracking-[0.12em] text-zinc-100">EXPLORER</p>
             </div>
           </div>
         </div>
