@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  BookOpenText,
   CaretLeft,
   CaretRight,
   DiscordLogo,
@@ -24,6 +25,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { label: "Home", href: "/", icon: House },
   { label: "Launch Token", href: "/create", icon: PlusCircle },
+  { label: "Docs", href: "/docs", icon: BookOpenText },
 ];
 
 function SidebarContent({
