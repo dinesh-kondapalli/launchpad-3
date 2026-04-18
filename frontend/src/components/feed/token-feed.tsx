@@ -1,0 +1,389 @@
+"use client";
+
+import { useMemo, useRef, useState } from "react";
+import Link from "next/link";
+import { ArrowLeft, ArrowRight, CaretDown, Circle, Flame, GraduationCap } from "@phosphor-icons/react";
+import { useSSEFeed } from "@/hooks/use-sse";
+import { useTokens } from "@/hooks/use-tokens";
+import { useXyzPrice } from "@/hooks/use-xyz-price";
+import { DEFAULT_TOKEN_SUPPLY } from "@/lib/chain-config";
+import { MOCK_TOKENS, USE_MOCK_DATA } from "@/lib/mock-data";
+import { formatUsd } from "@/lib/utils";
+import type { TokenListItem } from "@/lib/api";
+
+type SortMode = "activity" | "newest" | "reserves";
+
+const TILE_BACKGROUNDS = [
+  "#18181b",
+  "#171717",
+  "#1c1c1c",
+  "#202020",
+  "#161616",
+  "#1a1a1a",
+];
+
+const MIN_TICKER_ITEMS = 44;
+
+export function TokenFeed() {
+  const [sortMode, setSortMode] = useState<SortMode>("activity");
+  const { data: tokens, error } = useTokens();
+  const { xyzPriceUsd } = useXyzPrice();
+
+  useSSEFeed();
+
+  const sourceTokens = useMemo(() => {
+    if (USE_MOCK_DATA) return MOCK_TOKENS;
+    if (tokens && tokens.length > 0) return tokens;
+    return MOCK_TOKENS;
+  }, [tokens]);
+
+  const sortedTokens = useMemo(
+    () => sortTokens(sourceTokens, sortMode),
+    [sourceTokens, sortMode],
+  );
+
+  const liveTokens = sortedTokens.filter((token) => !token.graduated);
+  const graduatedTokens = sortedTokens.filter((token) => token.graduated);
+  const trendingTokens = useMemo(
+    () => [...sortedTokens].sort((left, right) => Math.abs(getMockChange(right.address)) - Math.abs(getMockChange(left.address))),
+    [sortedTokens],
+  );
+
+  const maxReserve = useMemo(
+    () => Math.max(1, ...sortedTokens.map((token) => Number(token.xyz_reserves) / 1_000_000)),
+    [sortedTokens],
+  );
+
+  const tickerItems = useMemo(() => buildTickerItems(sortedTokens), [sortedTokens]);
+  const loopingTickerItems = useMemo(
+    () => [...tickerItems, ...tickerItems].map((item, index) => ({
+      ...item,
+      key: `${item.key}-loop-${index}`,
+    })),
+    [tickerItems],
+  );
+
+  return (
+    <div className="overflow-hidden border-x border-b border-[#27272a] bg-[#111111] pb-2">
+      <section className="relative overflow-hidden border-y border-[#27272a]">
+        <div className="overflow-hidden">
+          <div className="token-ticker-track flex w-max">
+            {loopingTickerItems.map((item) => {
+              const change = getMockChange(item.token.address);
+              const positive = change >= 0;
+
+              return (
+                <Link
+                  key={item.key}
+                  href={`/token/${item.token.address}`}
+                  className="inline-flex h-9 items-center gap-2 border-r border-[#27272a] px-3 text-xs text-zinc-300 transition-colors hover:bg-zinc-900 hover:text-zinc-100"
+                >
+                  <span className="flex h-4 w-4 items-center justify-center overflow-hidden rounded-sm border border-[#27272a] bg-[#18181b] text-[9px] font-semibold text-zinc-400">
+                    {(item.token.symbol ?? "?").slice(0, 1).toUpperCase()}
+                  </span>
+                  <span className="font-semibold text-zinc-200">{item.token.symbol ?? "TOKEN"}</span>
+                  <span className={positive ? "text-emerald-300" : "text-rose-300"}>
+                    {positive ? "↑" : "↓"} {Math.abs(change).toFixed(2)}%
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-[#111111] via-[#111111]/95 to-transparent shadow-[20px_0_24px_-20px_rgba(0,0,0,0.9)]"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[#111111] via-[#111111]/95 to-transparent shadow-[-20px_0_24px_-20px_rgba(0,0,0,0.9)]"
+        />
+      </section>
+
+      {!USE_MOCK_DATA && error ? (
+        <div className="border-b border-destructive/40 bg-destructive/15 p-4 text-sm text-destructive">
+          Failed to load live data. Showing mock data preview.
+        </div>
+      ) : null}
+
+      <TokenRowSection
+        title="Live Now"
+        icon={<Circle size={12} weight="fill" className="text-zinc-300" />}
+        tokens={liveTokens}
+        xyzPriceUsd={xyzPriceUsd}
+        maxReserve={maxReserve}
+        sortMode={sortMode}
+        onSortChange={setSortMode}
+      />
+
+      <TokenRowSection
+        title="Graduated"
+        icon={<GraduationCap size={16} weight="regular" className="text-zinc-200" />}
+        tokens={graduatedTokens}
+        xyzPriceUsd={xyzPriceUsd}
+        maxReserve={maxReserve}
+        sortMode={sortMode}
+        onSortChange={setSortMode}
+      />
+
+      <TokenRowSection
+        title="Trending"
+        icon={<Flame size={16} weight="regular" className="text-zinc-200" />}
+        tokens={trendingTokens}
+        xyzPriceUsd={xyzPriceUsd}
+        maxReserve={maxReserve}
+        sortMode={sortMode}
+        onSortChange={setSortMode}
+      />
+    </div>
+  );
+}
+
+function TokenRowSection({
+  title,
+  icon,
+  tokens,
+  xyzPriceUsd,
+  maxReserve,
+  sortMode,
+  onSortChange,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  tokens: TokenListItem[];
+  xyzPriceUsd: number;
+  maxReserve: number;
+  sortMode: SortMode;
+  onSortChange: (mode: SortMode) => void;
+}) {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+
+  const scrollByCards = (direction: 1 | -1) => {
+    if (!scrollerRef.current) return;
+    scrollerRef.current.scrollBy({ left: direction * 420, behavior: "smooth" });
+  };
+
+  return (
+    <section className="overflow-hidden border-b border-[#27272a] bg-[#111111] last:border-b-0">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#27272a] px-4 py-3">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2.5">
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-sm border border-[#27272a] bg-[#18181b] text-zinc-200">
+              {icon}
+            </span>
+            <div className="leading-tight">
+              <p className="text-[10px] uppercase tracking-[0.14em] text-zinc-500">Section</p>
+              <h3 className="text-xl font-semibold tracking-tight text-zinc-100 md:text-2xl">{title}</h3>
+            </div>
+          </div>
+
+          <div className="inline-flex items-center gap-2 border-l border-[#27272a] pl-4">
+            <span className="text-sm text-zinc-500">Sort by</span>
+            <div className="relative">
+              <select
+                value={sortMode}
+                onChange={(event) => onSortChange(event.target.value as SortMode)}
+                className="h-8 appearance-none rounded-sm border border-[#27272a] bg-[#111111] pl-3 pr-8 text-sm capitalize text-zinc-200 outline-none focus:border-[#3f3f46] focus-visible:outline-none focus-visible:ring-0"
+              >
+                <option value="activity">Completion %</option>
+                <option value="newest">Recently launched</option>
+                <option value="reserves">Reserves</option>
+              </select>
+              <CaretDown
+                size={12}
+                className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => scrollByCards(-1)}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-[#27272a] bg-[#1a1a1a] text-zinc-300 transition-colors hover:bg-zinc-900 hover:text-zinc-100"
+            aria-label={`Scroll ${title} left`}
+          >
+            <ArrowLeft size={14} weight="bold" />
+          </button>
+          <button
+            type="button"
+            onClick={() => scrollByCards(1)}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-[#27272a] bg-[#1a1a1a] text-zinc-300 transition-colors hover:bg-zinc-900 hover:text-zinc-100"
+            aria-label={`Scroll ${title} right`}
+          >
+            <ArrowRight size={14} weight="bold" />
+          </button>
+        </div>
+      </div>
+
+      {tokens.length === 0 ? (
+        <p className="p-4 text-sm text-zinc-400">No launches available.</p>
+      ) : (
+        <div ref={scrollerRef} className="no-scrollbar overflow-x-auto">
+          <div className="flex min-w-max">
+            {tokens.map((token, index) => (
+              <LaunchTile
+                key={`${token.address}-${index}`}
+                token={token}
+                xyzPriceUsd={xyzPriceUsd}
+                maxReserve={maxReserve}
+                tileIndex={index}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function LaunchTile({
+  token,
+  xyzPriceUsd,
+  maxReserve,
+  tileIndex,
+}: {
+  token: TokenListItem;
+  xyzPriceUsd: number;
+  maxReserve: number;
+  tileIndex: number;
+}) {
+  const reserve = Number(token.xyz_reserves) / 1_000_000;
+  const progress = token.graduated ? 100 : Math.min(100, (reserve / maxReserve) * 100);
+  const change = getMockChange(token.address);
+  const positive = change >= 0;
+  const fallbackBackground = TILE_BACKGROUNDS[tileIndex % TILE_BACKGROUNDS.length];
+
+  return (
+    <Link
+      href={`/token/${token.address}`}
+      className="group block w-[340px] border-r border-[#27272a] bg-[#111111] transition-colors hover:bg-zinc-950 first:border-l"
+    >
+      <div className="relative aspect-[1.7] w-full border-b border-[#27272a]" style={{ background: fallbackBackground }}>
+        {token.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={token.image}
+            alt={token.symbol ?? "token"}
+            className="h-full w-full object-cover"
+            onError={(event) => {
+              (event.target as HTMLImageElement).style.display = "none";
+            }}
+          />
+        ) : (
+          <div className="grid h-full place-items-center text-4xl font-black tracking-tight text-white/80">
+            {(token.symbol ?? "?").slice(0, 1).toUpperCase()}
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-2.5 p-3">
+        <div className="flex items-start gap-3">
+          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-[#27272a] bg-[#18181b] text-[9px] font-semibold text-zinc-200">
+            {(token.symbol ?? "?").slice(0, 1).toUpperCase()}
+          </span>
+          <div className="min-w-0">
+            <h4 className="truncate text-[18px] font-semibold leading-tight text-zinc-100 md:text-[20px]">
+              {token.name ?? "Unnamed token"}
+            </h4>
+            <p className="truncate text-[11px] uppercase tracking-[0.1em] text-zinc-500">
+              {token.symbol ?? "TOKEN"} - Bonding Curve
+            </p>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-xs text-zinc-400">
+            <span>Bonding Curve Progress:</span>
+            <span className="font-mono text-xs text-zinc-300">{progress.toFixed(2)}%</span>
+          </div>
+          <div className="h-1 overflow-hidden rounded-full bg-zinc-900">
+            <div
+              className="h-full rounded-full bg-[#2f6cff]"
+              style={{ width: `${Math.max(progress, 2)}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3 border-t border-[#27272a] pt-2.5 text-xs">
+          <Metric label="FDV" value={formatMarketCap(token, xyzPriceUsd)} />
+          <Metric label="Mkt Cap" value={formatMarketCap(token, xyzPriceUsd)} />
+          <Metric
+            label="24h"
+            value={`${positive ? "↑" : "↓"} ${Math.abs(change).toFixed(2)}%`}
+            valueClassName={positive ? "text-emerald-300" : "text-rose-300"}
+          />
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function Metric({
+  label,
+  value,
+  valueClassName,
+}: {
+  label: string;
+  value: string;
+  valueClassName?: string;
+}) {
+  return (
+    <div>
+      <p className="text-[11px] text-zinc-500">{label}:</p>
+      <p className={`mt-1 truncate font-mono text-[12px] text-zinc-200 ${valueClassName ?? ""}`}>{value}</p>
+    </div>
+  );
+}
+
+function buildTickerItems(tokens: TokenListItem[]) {
+  const baseTokens = tokens.length > 0 ? tokens : MOCK_TOKENS;
+  const repeats = Math.max(2, Math.ceil(MIN_TICKER_ITEMS / baseTokens.length));
+  const expanded = Array.from({ length: repeats }).flatMap((_, repeatIndex) =>
+    baseTokens.map((token) => ({
+      token,
+      key: `${token.address}-${repeatIndex}`,
+    })),
+  );
+
+  return expanded;
+}
+
+function sortTokens(tokens: TokenListItem[], mode: SortMode): TokenListItem[] {
+  if (mode === "newest") {
+    return [...tokens].sort(
+      (left, right) =>
+        new Date(right.first_seen_at).getTime() - new Date(left.first_seen_at).getTime(),
+    );
+  }
+
+  if (mode === "reserves") {
+    return [...tokens].sort(
+      (left, right) => Number(right.xyz_reserves) - Number(left.xyz_reserves),
+    );
+  }
+
+  return [...tokens].sort(
+    (left, right) => (right.trade_count_24h ?? 0) - (left.trade_count_24h ?? 0),
+  );
+}
+
+function formatMarketCap(token: TokenListItem, xyzPriceUsd: number): string {
+  const cap = Number(token.current_price) * DEFAULT_TOKEN_SUPPLY * xyzPriceUsd;
+  return formatUsd(cap);
+}
+
+function hashString(value: string): number {
+  let hash = 0;
+  for (let index = 0; index < value.length; index++) {
+    hash = (hash << 5) - hash + value.charCodeAt(index);
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
+function getMockChange(seedValue: string): number {
+  const hash = hashString(seedValue);
+  return ((hash % 2_300) - 1_150) / 100;
+}
