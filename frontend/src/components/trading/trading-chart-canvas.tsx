@@ -35,18 +35,18 @@ interface TradingChartCanvasProps {
 
 // Indicator color palette
 const COLORS: Record<string, string> = {
-  sma7: "#75fb6e",
-  sma25: "#57d154",
-  sma99: "#3aa73a",
-  ema7: "#9dff8b",
-  ema25: "#2f8f3e",
-  bollUpper: "rgba(117, 251, 110, 0.4)",
-  bollMiddle: "#75fb6e",
-  bollLower: "rgba(117, 251, 110, 0.4)",
+  sma7: "#283750",
+  sma25: "#496181",
+  sma99: "#6c84a5",
+  ema7: "#90a6c2",
+  ema25: "#b4c8e1",
+  bollUpper: "rgba(40, 55, 80, 0.35)",
+  bollMiddle: "#496181",
+  bollLower: "rgba(40, 55, 80, 0.35)",
 };
 
-const PRICE_UP_COLOR = "#34d399";
-const PRICE_DOWN_COLOR = "#ffffff";
+const PRICE_UP_COLOR = "#283750";
+const PRICE_DOWN_COLOR = "#6c84a5";
 
 function formatChartPrice(v: number): string {
   if (v >= 1e9) return `$${(v / 1e9).toFixed(1)}B`;
@@ -123,8 +123,8 @@ export function TradingChartCanvas({
         value: (Number(candle.volume) / 1e6) * volMul,
         color:
           close >= open
-            ? "rgba(52, 211, 153, 0.55)"
-            : "rgba(255, 255, 255, 0.5)",
+            ? "rgba(40, 55, 80, 0.55)"
+            : "rgba(108, 132, 165, 0.5)",
       });
     }
 
@@ -154,25 +154,25 @@ export function TradingChartCanvas({
     const chart = createChart(containerRef.current, {
       width: containerRef.current.clientWidth,
       height: 400,
-      layout: {
-        background: { color: "transparent" },
-        textColor: "#9ca3af",
-      },
+        layout: {
+         background: { color: "transparent" },
+         textColor: "#5f728c",
+       },
       grid: {
-        vertLines: { color: "rgba(156, 163, 175, 0.1)" },
-        horzLines: { color: "rgba(156, 163, 175, 0.1)" },
+        vertLines: { color: "rgba(95, 114, 140, 0.12)" },
+        horzLines: { color: "rgba(95, 114, 140, 0.12)" },
       },
       timeScale: {
         timeVisible: true,
         secondsVisible: false,
-        borderColor: "rgba(156, 163, 175, 0.2)",
+        borderColor: "rgba(95, 114, 140, 0.2)",
       },
       rightPriceScale: {
-        borderColor: "rgba(156, 163, 175, 0.2)",
+        borderColor: "rgba(95, 114, 140, 0.2)",
       },
       crosshair: {
-        vertLine: { color: "rgba(156, 163, 175, 0.3)" },
-        horzLine: { color: "rgba(156, 163, 175, 0.3)" },
+        vertLine: { color: "rgba(95, 114, 140, 0.3)" },
+        horzLine: { color: "rgba(95, 114, 140, 0.3)" },
       },
       localization: {
         priceFormatter: formatChartPrice,
@@ -384,29 +384,29 @@ export function TradingChartCanvas({
           <>
             <span>
               <span className="text-muted-foreground">O</span>
-              <span className={up ? "text-emerald-400" : "text-white"}>
+              <span className={up ? "text-primary" : "text-muted-foreground"}>
                 {formatChartPrice(displayedLegend.open)}
               </span>
             </span>
             <span>
               <span className="text-muted-foreground">H</span>
-              <span className="text-emerald-400">
+              <span className="text-primary">
                 {formatChartPrice(displayedLegend.high)}
               </span>
             </span>
             <span>
               <span className="text-muted-foreground">L</span>
-              <span className="text-white">
+              <span className="text-foreground">
                 {formatChartPrice(displayedLegend.low)}
               </span>
             </span>
             <span>
               <span className="text-muted-foreground">C</span>
-              <span className={up ? "text-emerald-400" : "text-white"}>
+              <span className={up ? "text-primary" : "text-muted-foreground"}>
                 {formatChartPrice(displayedLegend.close)}
               </span>
             </span>
-            <span className={up ? "text-emerald-400" : "text-white"}>
+            <span className={up ? "text-primary" : "text-muted-foreground"}>
               {up ? "+" : "-"}
               {formatChartPrice(Math.abs(change))} (
               {changePct >= 0 ? "+" : ""}
@@ -420,7 +420,7 @@ export function TradingChartCanvas({
           <span className="text-muted-foreground font-sans text-[11px]">
             Volume
           </span>{" "}
-          <span className="text-emerald-300">
+          <span className="text-primary">
             {formatChartPrice(displayedLegend.volume)}
           </span>
         </div>

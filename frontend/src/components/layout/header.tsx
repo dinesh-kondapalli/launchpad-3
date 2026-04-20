@@ -9,7 +9,7 @@ export function Header() {
   const { isCollapsed, toggleMobile } = useSidebar();
 
   return (
-    <header className="fixed inset-x-0 top-0 z-40 bg-[#111111]/95 backdrop-blur-xl">
+    <header className="fixed inset-x-0 top-0 z-40 bg-background/90 backdrop-blur-xl">
       <div
         className={`transition-[padding-left] duration-300 ease-in-out ${
           isCollapsed ? "lg:pl-20" : "lg:pl-64"
@@ -27,11 +27,11 @@ export function Header() {
             <button
               type="button"
               aria-label="Search tokens"
-              className="flex w-full items-center justify-center gap-2 rounded-sm border border-[#27272a] px-2 py-2 text-sm text-zinc-400 transition-all duration-150 ease-out hover:border-zinc-500 hover:text-zinc-200 active:scale-[0.97] lg:max-w-[240px] lg:justify-start lg:pl-3"
+              className="flex w-full items-center justify-center gap-2 rounded-sm border border-border px-2 py-2 text-sm text-muted-foreground transition-all duration-150 ease-out hover:border-primary/60 hover:text-foreground active:scale-[0.97] lg:max-w-[240px] lg:justify-start lg:pl-3"
             >
               <MagnifyingGlass size={14} className="shrink-0" />
               <span className="hidden lg:block">Search</span>
-              <kbd className="ml-auto hidden h-5 min-w-5 items-center justify-center rounded-sm border border-[#27272a] bg-[#18181b] px-1 text-[10px] text-zinc-500 lg:flex">
+              <kbd className="ml-auto hidden h-5 min-w-5 items-center justify-center rounded-sm border border-border bg-card px-1 text-[10px] text-muted-foreground lg:flex">
                 Ctrl K
               </kbd>
             </button>
@@ -40,7 +40,7 @@ export function Header() {
           <nav className="flex items-center justify-end gap-2 md:gap-4">
             <Link
               href="/create"
-              className="inline-flex h-7 items-center justify-center rounded-sm border border-[#2f2f32] bg-[#24262d] px-2 text-[10px] font-medium text-zinc-100 transition-colors hover:bg-[#2b2d35] md:h-auto md:px-3 md:py-2 md:text-sm"
+              className="inline-flex h-7 items-center justify-center rounded-sm border border-primary bg-primary px-2 text-[10px] font-medium text-primary-foreground transition-colors hover:bg-primary/90 md:h-auto md:px-3 md:py-2 md:text-sm"
             >
               Launch Token
             </Link>
@@ -48,7 +48,7 @@ export function Header() {
               label="Log In"
               variant="outline"
               showIcon={false}
-              className="h-7 rounded-sm border-0 bg-zinc-100 px-3 text-xs text-zinc-900 hover:bg-zinc-200 md:h-9 md:px-4 md:text-sm"
+              className="h-7 rounded-sm border-0 bg-primary px-3 text-xs text-primary-foreground hover:bg-primary/90 md:h-9 md:px-4 md:text-sm"
             />
             <div className="flex items-center gap-2 md:gap-3">
               <button

@@ -23,26 +23,26 @@ export function RsiChart({ timestamps, values }: RsiChartProps) {
     const chart = createChart(containerRef.current, {
       width: containerRef.current.clientWidth,
       height: 120,
-      layout: { background: { color: "transparent" }, textColor: "#9ca3af" },
+      layout: { background: { color: "transparent" }, textColor: "#5f728c" },
       grid: {
-        vertLines: { color: "rgba(156, 163, 175, 0.1)" },
-        horzLines: { color: "rgba(156, 163, 175, 0.1)" },
+        vertLines: { color: "rgba(95, 114, 140, 0.12)" },
+        horzLines: { color: "rgba(95, 114, 140, 0.12)" },
       },
       timeScale: { visible: false },
       rightPriceScale: {
-        borderColor: "rgba(156, 163, 175, 0.2)",
+        borderColor: "rgba(95, 114, 140, 0.2)",
         scaleMargins: { top: 0.05, bottom: 0.05 },
       },
       crosshair: {
-        vertLine: { color: "rgba(156, 163, 175, 0.3)" },
-        horzLine: { color: "rgba(156, 163, 175, 0.3)" },
+        vertLine: { color: "rgba(95, 114, 140, 0.3)" },
+        horzLine: { color: "rgba(95, 114, 140, 0.3)" },
       },
     });
     chartRef.current = chart;
 
     // Overbought / oversold reference lines
     const ob = chart.addSeries(LineSeries, {
-      color: "rgba(117, 251, 110, 0.35)",
+      color: "rgba(40, 55, 80, 0.35)",
       lineWidth: 1,
       lineStyle: 2, // dashed
       priceLineVisible: false,
@@ -50,7 +50,7 @@ export function RsiChart({ timestamps, values }: RsiChartProps) {
       crosshairMarkerVisible: false,
     });
     const os = chart.addSeries(LineSeries, {
-      color: "rgba(113, 113, 122, 0.4)",
+      color: "rgba(108, 132, 165, 0.4)",
       lineWidth: 1,
       lineStyle: 2,
       priceLineVisible: false,
@@ -60,7 +60,7 @@ export function RsiChart({ timestamps, values }: RsiChartProps) {
 
     // RSI line
     const rsiSeries = chart.addSeries(LineSeries, {
-      color: "#75fb6e",
+      color: "#283750",
       lineWidth: 2,
       priceLineVisible: false,
       lastValueVisible: true,
@@ -98,8 +98,8 @@ export function RsiChart({ timestamps, values }: RsiChartProps) {
   }, [timestamps, values]);
 
   return (
-    <div className="border-t border-zinc-900/80">
-      <div className="px-2 py-1 text-xs font-medium text-zinc-500">RSI(14)</div>
+    <div className="border-t border-border/80">
+      <div className="px-2 py-1 text-xs font-medium text-muted-foreground">RSI(14)</div>
       <div ref={containerRef} className="w-full" />
     </div>
   );

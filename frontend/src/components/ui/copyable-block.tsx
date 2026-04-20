@@ -40,7 +40,7 @@ export function CopyableBlock({
         "w-fit max-w-full min-w-0 rounded-lg border px-2 py-1 text-left font-mono text-sm transition-colors",
         copied
           ? "border-primary/60 bg-primary/20 text-primary"
-          : "border-zinc-800 bg-zinc-950/80 text-zinc-200 hover:bg-zinc-900",
+            : "border-border bg-card/80 text-foreground hover:bg-accent",
         className,
       )}
       title={copied ? "Copied" : "Click to copy"}

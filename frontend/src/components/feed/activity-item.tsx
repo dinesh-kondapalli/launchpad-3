@@ -43,7 +43,7 @@ export function ActivityItem({ trade }: ActivityItemProps) {
       case "token_to_xyz":
         return {
           icon: <ArrowBendDownRight size={16} weight="fill" />,
-          color: "text-zinc-400",
+          color: "text-muted-foreground",
           action: "Sold",
         };
       case "swap":
@@ -73,17 +73,17 @@ export function ActivityItem({ trade }: ActivityItemProps) {
   const tokenDisplay = trade.token_symbol ?? trade.token_address.slice(0, 8);
 
   return (
-    <div className="flex min-h-[44px] items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-950 p-3 text-sm">
+    <div className="flex min-h-[44px] items-center gap-3 rounded-xl border border-border bg-card p-3 text-sm">
       <div className={`flex-shrink-0 ${color}`}>{icon}</div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-xs text-zinc-500">
+            <span className="font-mono text-xs text-muted-foreground">
             {traderDisplay}
           </span>
-          <span className="text-zinc-500">{action}</span>
-          <span className="truncate font-medium text-zinc-200">{tokenDisplay}</span>
+            <span className="text-muted-foreground">{action}</span>
+            <span className="truncate font-medium text-foreground">{tokenDisplay}</span>
         </div>
-        <div className="text-xs text-zinc-500">
+        <div className="text-xs text-muted-foreground">
           {volumeNew} NEW · {relativeTime}
         </div>
       </div>

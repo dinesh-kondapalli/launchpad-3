@@ -60,8 +60,8 @@ export function WalletSelector({ open, onOpenChange, trigger }: WalletSelectorPr
       <PopoverTrigger asChild>{trigger}</PopoverTrigger>
       <PopoverContent align="end" className="w-[22rem]">
         <div className="mb-4 space-y-1">
-          <h3 className="text-base font-semibold text-zinc-100">Connect Wallet</h3>
-          <p className="text-sm text-zinc-400">Select a wallet to connect to new network.</p>
+          <h3 className="text-base font-semibold text-foreground">Connect Wallet</h3>
+          <p className="text-sm text-muted-foreground">Select a wallet to connect to new network.</p>
         </div>
 
         <div className="flex flex-col gap-3">
@@ -74,7 +74,7 @@ export function WalletSelector({ open, onOpenChange, trigger }: WalletSelectorPr
           >
             <span>Keplr</span>
             {!keplrAvailable && (
-              <span className="text-xs text-zinc-500">Not installed</span>
+              <span className="text-xs text-muted-foreground">Not installed</span>
             )}
           </Button>
 
@@ -87,7 +87,7 @@ export function WalletSelector({ open, onOpenChange, trigger }: WalletSelectorPr
           >
             <span>Leap</span>
             {!leapAvailable && (
-              <span className="text-xs text-zinc-500">Not installed</span>
+              <span className="text-xs text-muted-foreground">Not installed</span>
             )}
           </Button>
 
@@ -100,7 +100,7 @@ export function WalletSelector({ open, onOpenChange, trigger }: WalletSelectorPr
           >
             <span>new Wallet</span>
             {!xyzAvailable && (
-              <span className="text-xs text-zinc-500">Not installed</span>
+              <span className="text-xs text-muted-foreground">Not installed</span>
             )}
           </Button>
 
@@ -109,7 +109,7 @@ export function WalletSelector({ open, onOpenChange, trigger }: WalletSelectorPr
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-zinc-950 px-2 text-zinc-500">
+              <span className="bg-background px-2 text-muted-foreground">
                 or
               </span>
             </div>
@@ -124,12 +124,12 @@ export function WalletSelector({ open, onOpenChange, trigger }: WalletSelectorPr
               onClick={() => setShowMnemonic(true)}
             >
               <span>Test Wallet</span>
-              <span className="text-xs text-zinc-500">Mnemonic</span>
+              <span className="text-xs text-muted-foreground">Mnemonic</span>
             </Button>
           ) : (
             <div className="flex flex-col gap-2">
               <textarea
-                className="w-full resize-none rounded-lg border border-zinc-800 bg-black px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                className="w-full resize-none rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
                 rows={3}
                 placeholder="Enter mnemonic phrase..."
                 value={mnemonic}
@@ -152,7 +152,7 @@ export function WalletSelector({ open, onOpenChange, trigger }: WalletSelectorPr
         )}
 
         {isConnecting && (
-          <p className="text-center text-sm text-zinc-500">
+          <p className="text-center text-sm text-muted-foreground">
             Connecting...
           </p>
         )}

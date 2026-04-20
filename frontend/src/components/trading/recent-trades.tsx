@@ -16,28 +16,28 @@ export function RecentTrades({ tokenAddress, tokenSymbol }: RecentTradesProps) {
 
   return (
     <div className="h-full">
-      <h2 className="mb-3 text-lg font-semibold text-zinc-100">Recent Transactions</h2>
-      <div className="min-h-[22rem] overflow-hidden rounded-2xl border border-zinc-900 bg-[#050505]">
+      <h2 className="mb-3 text-lg font-semibold text-foreground">Recent Transactions</h2>
+      <div className="min-h-[22rem] overflow-hidden rounded-2xl border border-border bg-card">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[760px] text-sm">
             <thead>
-              <tr className="border-b border-zinc-900 bg-zinc-950/80">
-                <th className="px-4 py-3 text-left font-medium text-zinc-500">
+              <tr className="border-b border-border bg-background/80">
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
                   Time
                 </th>
-                <th className="px-4 py-3 text-left font-medium text-zinc-500">
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
                   Type
                 </th>
-                <th className="px-4 py-3 text-right font-medium text-zinc-500">
+                <th className="px-4 py-3 text-right font-medium text-muted-foreground">
                   USD
                 </th>
-                <th className="px-4 py-3 text-right font-medium text-zinc-500">
+                <th className="px-4 py-3 text-right font-medium text-muted-foreground">
                   {tokenSymbol}
                 </th>
-                <th className="px-4 py-3 text-left font-medium text-zinc-500">
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
                   Trader
                 </th>
-                <th className="px-4 py-3 text-right font-medium text-zinc-500">
+                <th className="px-4 py-3 text-right font-medium text-muted-foreground">
                   Tx
                 </th>
               </tr>
@@ -74,7 +74,7 @@ export function RecentTrades({ tokenAddress, tokenSymbol }: RecentTradesProps) {
                 <tr>
                   <td
                     colSpan={6}
-                    className="px-4 py-8 text-center text-zinc-500"
+                    className="px-4 py-8 text-center text-muted-foreground"
                   >
                     No trades yet
                   </td>
@@ -84,9 +84,9 @@ export function RecentTrades({ tokenAddress, tokenSymbol }: RecentTradesProps) {
               {trades?.map((trade) => (
                 <tr
                   key={trade.tx_hash}
-                  className="border-b border-zinc-900 transition-colors hover:bg-zinc-950"
+                  className="border-b border-border transition-colors hover:bg-accent/40"
                 >
-                  <td className="whitespace-nowrap px-4 py-3 text-zinc-500">
+                  <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
                     {formatTimeAgo(trade.time)}
                   </td>
                   <td className="px-4 py-3">
@@ -94,7 +94,7 @@ export function RecentTrades({ tokenAddress, tokenSymbol }: RecentTradesProps) {
                       className={`inline-flex items-center rounded px-1.5 py-0.5 text-xs font-semibold ${
                         trade.action === "buy"
                           ? "bg-primary/20 text-primary"
-                          : "bg-zinc-900 text-zinc-300"
+                            : "bg-muted text-foreground"
                       }`}
                     >
                       {trade.action === "buy" ? "Buy" : "Sell"}
@@ -106,12 +106,12 @@ export function RecentTrades({ tokenAddress, tokenSymbol }: RecentTradesProps) {
                   <td className="px-4 py-3 text-right font-mono whitespace-nowrap">
                     {formatMicroTokens(trade.token_amount)}
                   </td>
-                  <td className="px-4 py-3 font-mono text-zinc-500">
+                  <td className="px-4 py-3 font-mono text-muted-foreground">
                     {truncateAddress(trade.trader)}
                   </td>
                   <td className="px-4 py-3 text-right">
                     <span
-                      className="cursor-pointer text-xs text-zinc-500 hover:text-zinc-200"
+                      className="cursor-pointer text-xs text-muted-foreground hover:text-foreground"
                       title={trade.tx_hash}
                     >
                       {trade.tx_hash.slice(0, 6)}...

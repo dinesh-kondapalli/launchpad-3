@@ -49,71 +49,71 @@
 
 :root {
   --radius: 0.75rem;
-  --background: #111111;
-  --foreground: #fafafa;
-  --card: #111111;
-  --card-foreground: #f4f4f5;
-  --popover: #111111;
-  --popover-foreground: #f4f4f5;
-  --primary: #3f3f46;
-  --primary-foreground: #fafafa;
-  --secondary: #18181b;
-  --secondary-foreground: #f4f4f5;
-  --muted: #18181b;
-  --muted-foreground: #a1a1aa;
-  --accent: #18181b;
-  --accent-foreground: #f4f4f5;
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: #27272a;
-  --input: #18181b;
-  --ring: #3f3f46;
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: #111111;
-  --sidebar-foreground: #fafafa;
-  --sidebar-primary: #3f3f46;
-  --sidebar-primary-foreground: #fafafa;
-  --sidebar-accent: #18181b;
-  --sidebar-accent-foreground: #f4f4f5;
-  --sidebar-border: #27272a;
-  --sidebar-ring: #3f3f46;
+  --background: #283750;
+  --foreground: #b4c8e1;
+  --card: #31425d;
+  --card-foreground: #b4c8e1;
+  --popover: #31425d;
+  --popover-foreground: #b4c8e1;
+  --primary: #b4c8e1;
+  --primary-foreground: #283750;
+  --secondary: #37496a;
+  --secondary-foreground: #b4c8e1;
+  --muted: #31425d;
+  --muted-foreground: #90a6c2;
+  --accent: #41587d;
+  --accent-foreground: #b4c8e1;
+  --destructive: #c26f81;
+  --border: #445774;
+  --input: #37496a;
+  --ring: #b4c8e1;
+  --chart-1: #b4c8e1;
+  --chart-2: #90a6c2;
+  --chart-3: #6c84a5;
+  --chart-4: #496181;
+  --chart-5: #283750;
+  --sidebar: #283750;
+  --sidebar-foreground: #b4c8e1;
+  --sidebar-primary: #b4c8e1;
+  --sidebar-primary-foreground: #283750;
+  --sidebar-accent: #41587d;
+  --sidebar-accent-foreground: #b4c8e1;
+  --sidebar-border: #445774;
+  --sidebar-ring: #b4c8e1;
 }
 
 .dark {
-  --background: #111111;
-  --foreground: #fafafa;
-  --card: #111111;
-  --card-foreground: #f4f4f5;
-  --popover: #111111;
-  --popover-foreground: #f4f4f5;
-  --primary: #3f3f46;
-  --primary-foreground: #fafafa;
-  --secondary: #18181b;
-  --secondary-foreground: #f4f4f5;
-  --muted: #18181b;
-  --muted-foreground: #a1a1aa;
-  --accent: #18181b;
-  --accent-foreground: #f4f4f5;
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: #27272a;
-  --input: #18181b;
-  --ring: #3f3f46;
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: #111111;
-  --sidebar-foreground: #fafafa;
-  --sidebar-primary: #3f3f46;
-  --sidebar-primary-foreground: #fafafa;
-  --sidebar-accent: #18181b;
-  --sidebar-accent-foreground: #f4f4f5;
-  --sidebar-border: #27272a;
-  --sidebar-ring: #3f3f46;
+  --background: #132033;
+  --foreground: #c8d6e8;
+  --card: #1b2a40;
+  --card-foreground: #c8d6e8;
+  --popover: #1f3048;
+  --popover-foreground: #c8d6e8;
+  --primary: #b4c8e1;
+  --primary-foreground: #132033;
+  --secondary: #1f3048;
+  --secondary-foreground: #c8d6e8;
+  --muted: #1f3048;
+  --muted-foreground: #a8bbd3;
+  --accent: #2a3d59;
+  --accent-foreground: #c8d6e8;
+  --destructive: #c26f81;
+  --border: #334766;
+  --input: #1f3048;
+  --ring: #b4c8e1;
+  --chart-1: #b4c8e1;
+  --chart-2: #a8bbd3;
+  --chart-3: #90a6c2;
+  --chart-4: #6c84a5;
+  --chart-5: #496181;
+  --sidebar: #132033;
+  --sidebar-foreground: #c8d6e8;
+  --sidebar-primary: #b4c8e1;
+  --sidebar-primary-foreground: #132033;
+  --sidebar-accent: #2a3d59;
+  --sidebar-accent-foreground: #c8d6e8;
+  --sidebar-border: #334766;
+  --sidebar-ring: #b4c8e1;
 }
 
 @layer base {
@@ -122,13 +122,13 @@
   }
   body {
     @apply text-foreground font-sans;
-    background-color: #111111;
-    background-image: linear-gradient(180deg, #111111 0%, #101010 100%);
+    background-color: #283750;
+    background-image: linear-gradient(180deg, #2f415f 0%, #283750 52%, #223049 100%);
   }
 
   ::selection {
-    background: #75fb6e;
-    color: #032203;
+    background: #b4c8e1;
+    color: #283750;
   }
 }
 

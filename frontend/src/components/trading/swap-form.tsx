@@ -148,13 +148,13 @@ export function SwapForm({ tokenAddress, tokenSymbol }: SwapFormProps) {
         className="space-y-6"
       >
         {/* Direction toggle */}
-        <div className="inline-flex h-10 w-full items-stretch rounded-xl border border-zinc-800 bg-zinc-950 p-1">
+        <div className="inline-flex h-10 w-full items-stretch rounded-xl border border-border bg-card p-1">
           <button
             type="button"
               className={`flex-1 rounded-md text-sm font-semibold transition-colors touch-manipulation ${
                 buyDirection
                   ? "bg-primary/20 text-primary"
-                  : "text-zinc-500 hover:text-zinc-100"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             onClick={() => {
               setBuyDirection(true);
@@ -168,7 +168,7 @@ export function SwapForm({ tokenAddress, tokenSymbol }: SwapFormProps) {
               className={`flex-1 rounded-md text-sm font-semibold transition-colors touch-manipulation ${
                 !buyDirection
                   ? "bg-primary/20 text-primary"
-                  : "text-zinc-500 hover:text-zinc-100"
+                  : "text-muted-foreground hover:text-foreground"
               }`}
             onClick={() => {
               setBuyDirection(false);

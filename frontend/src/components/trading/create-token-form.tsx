@@ -144,23 +144,23 @@ export function CreateTokenForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit((values) => mutation.mutate(values))}
-        className="min-h-[660px] overflow-hidden rounded-[20px] border border-[#1f1f1f] bg-[#0d0d0d] p-4 shadow-[0_10px_40px_rgba(0,0,0,0.35)] sm:p-5"
+        className="min-h-[660px] overflow-hidden rounded-[20px] border border-border bg-card p-4 shadow-[0_10px_40px_rgba(40,55,80,0.18)] sm:p-5"
       >
-        <div className="mb-4 border-b border-[#27272a] pb-3">
+        <div className="mb-4 border-b border-border pb-3">
           <div className="mb-3 flex items-center gap-2">
-            <span className="rounded-full border border-[#3f3f46] bg-[#101012] px-2.5 py-0.5 text-xs font-medium text-zinc-100">1. Token</span>
-            <span className="rounded-full border border-[#27272a] bg-[#151518] px-2.5 py-0.5 text-xs font-medium text-zinc-400">2. Launch</span>
-            <span className="rounded-full border border-[#27272a] bg-[#151518] px-2.5 py-0.5 text-xs font-medium text-zinc-400">3. Review</span>
+            <span className="rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">1. Token</span>
+            <span className="rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">2. Launch</span>
+            <span className="rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">3. Review</span>
           </div>
-          <div className="h-1 w-full overflow-hidden rounded-full bg-[#27272a]">
-            <div className="h-full w-1/3 bg-[#3b82f6]" />
+          <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
+            <div className="h-full w-1/3 bg-primary" />
           </div>
         </div>
 
         <div className="flex h-full w-full flex-col space-y-3.5">
           <div>
-            <h2 className="text-[24px] font-semibold leading-[1.08] tracking-tight text-zinc-100 md:text-[28px]">Let&apos;s create your token</h2>
-            <p className="mt-1 text-xs text-zinc-400 md:text-sm">
+            <h2 className="text-[24px] font-semibold leading-[1.08] tracking-tight text-foreground md:text-[28px]">Let&apos;s create your token</h2>
+            <p className="mt-1 text-xs text-muted-foreground md:text-sm">
               Choose wisely, these can&apos;t be changed once the token is created.
             </p>
           </div>
@@ -171,16 +171,16 @@ export function CreateTokenForm() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-base font-semibold leading-tight text-zinc-100">Token Name</FormLabel>
+                  <FormLabel className="text-base font-semibold leading-tight text-foreground">Token Name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="e.g., Metaplex"
                       disabled={mutation.isPending}
-                      className="h-9 rounded-md border-[#27272a] bg-[#0a0a0a] text-sm text-zinc-100 placeholder:text-zinc-500"
+                      className="h-9 rounded-md border-border bg-background text-sm text-foreground placeholder:text-muted-foreground"
                     />
                   </FormControl>
-                  <FormDescription className="text-[11px] text-zinc-500">
+                  <FormDescription className="text-[11px] text-muted-foreground">
                     Choose a memorable name that represents your project (max 32 characters)
                   </FormDescription>
                   <FormMessage />
@@ -193,17 +193,17 @@ export function CreateTokenForm() {
               name="symbol"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-base font-semibold leading-tight text-zinc-100">Ticker Symbol</FormLabel>
+                  <FormLabel className="text-base font-semibold leading-tight text-foreground">Ticker Symbol</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="e.g., MPLX"
                       onChange={(e) => field.onChange(e.target.value.toUpperCase())}
                       disabled={mutation.isPending}
-                      className="h-9 rounded-md border-[#27272a] bg-[#0a0a0a] text-sm text-zinc-100 placeholder:text-zinc-500"
+                      className="h-9 rounded-md border-border bg-background text-sm text-foreground placeholder:text-muted-foreground"
                     />
                   </FormControl>
-                  <FormDescription className="text-[11px] text-zinc-500">
+                  <FormDescription className="text-[11px] text-muted-foreground">
                     Keep it short and memorable (1-10 characters)
                   </FormDescription>
                   <FormMessage />
@@ -216,17 +216,17 @@ export function CreateTokenForm() {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-base font-semibold leading-tight text-zinc-100">Description</FormLabel>
+                  <FormLabel className="text-base font-semibold leading-tight text-foreground">Description</FormLabel>
                   <FormControl>
                     <Textarea
                       {...field}
                       placeholder="A short description of your token (max 250 characters)"
                       rows={3}
                       disabled={mutation.isPending}
-                      className="rounded-md border-[#27272a] bg-[#0a0a0a] text-sm text-zinc-100 placeholder:text-zinc-500"
+                      className="rounded-md border-border bg-background text-sm text-foreground placeholder:text-muted-foreground"
                     />
                   </FormControl>
-                  <FormDescription className="text-[11px] text-zinc-500">
+                  <FormDescription className="text-[11px] text-muted-foreground">
                     Keep it concise and clear (optional)
                   </FormDescription>
                   <FormMessage />
@@ -247,19 +247,19 @@ export function CreateTokenForm() {
             render={({ field }) => <input type="hidden" value={field.value} onChange={field.onChange} />}
           />
 
-          <div className="mt-auto flex items-center justify-between gap-3 border-t border-[#27272a] pt-3">
+          <div className="mt-auto flex items-center justify-between gap-3 border-t border-border pt-3">
             <Button
               type="button"
               variant="outline"
               disabled
-              className="h-9 rounded-md border-[#27272a] bg-[#16171b] px-4 text-xs text-zinc-400"
+              className="h-9 rounded-md border-border bg-muted px-4 text-xs text-muted-foreground"
             >
               Back
             </Button>
 
             <Button
               type="submit"
-              className="h-9 rounded-md bg-zinc-100 px-4 text-xs text-zinc-900 hover:bg-zinc-200"
+              className="h-9 rounded-md bg-primary px-4 text-xs text-primary-foreground hover:bg-primary/90"
               disabled={!connection || mutation.isPending || !config}
             >
               {!connection ? <Wallet size={16} weight="fill" /> : null}

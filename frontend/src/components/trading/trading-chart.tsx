@@ -31,14 +31,14 @@ export function TradingChart({ tokenAddress }: TradingChartProps) {
     return (
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-100">Price Chart</h2>
+          <h2 className="text-lg font-semibold text-foreground">Price Chart</h2>
         </div>
-        <div className="flex h-[400px] items-center justify-center rounded-2xl border border-destructive/40 bg-destructive/15">
+        <div className="flex h-[400px] items-center justify-center rounded-2xl border border-destructive/40 bg-destructive/10">
           <div className="text-center space-y-2">
             <p className="font-medium text-destructive">
               Failed to load chart
             </p>
-            <p className="text-sm text-zinc-500">
+            <p className="text-sm text-muted-foreground">
               {error instanceof Error ? error.message : "Unknown error"}
             </p>
             <Button variant="outline" size="sm" onClick={() => refetch()}>
@@ -66,19 +66,19 @@ export function TradingChart({ tokenAddress }: TradingChartProps) {
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#27272a] px-2 pb-2">
-        <div className="inline-flex items-center gap-0.5 rounded bg-[#191a1e] p-0.5 text-[11px] font-semibold uppercase tracking-wider">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-2 pb-2">
+        <div className="inline-flex items-center gap-0.5 rounded bg-muted p-0.5 text-[11px] font-semibold uppercase tracking-wider">
           <button
             type="button"
             onClick={() => setShowMCap(true)}
-            className={`rounded px-1.5 py-0.5 transition-colors ${showMCap ? "bg-zinc-100 text-zinc-900" : "text-zinc-400 hover:text-zinc-100"}`}
+            className={`rounded px-1.5 py-0.5 transition-colors ${showMCap ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
           >
             MCAP
           </button>
           <button
             type="button"
             onClick={() => setShowMCap(false)}
-            className={`rounded px-1.5 py-0.5 transition-colors ${!showMCap ? "bg-zinc-100 text-zinc-900" : "text-zinc-400 hover:text-zinc-100"}`}
+            className={`rounded px-1.5 py-0.5 transition-colors ${!showMCap ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
           >
             PRICE
           </button>
@@ -94,7 +94,7 @@ export function TradingChart({ tokenAddress }: TradingChartProps) {
                 onClick={() => {
                   if (button.value) setTimeframe(button.value);
                 }}
-                className={`rounded px-1.5 py-0.5 text-[11px] font-medium transition-colors ${active ? "bg-zinc-100 text-zinc-900" : "text-zinc-400 hover:text-zinc-100"}`}
+                className={`rounded px-1.5 py-0.5 text-[11px] font-medium transition-colors ${active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
               >
                 {button.label}
               </button>
@@ -104,7 +104,7 @@ export function TradingChart({ tokenAddress }: TradingChartProps) {
       </div>
 
       {hasData ? (
-        <div className="overflow-hidden rounded-sm border border-[#27272a] bg-[#111111]">
+        <div className="overflow-hidden rounded-sm border border-border bg-background">
           <TradingChartCanvas
             data={data}
             indicators={indicators}
@@ -112,12 +112,12 @@ export function TradingChart({ tokenAddress }: TradingChartProps) {
           />
         </div>
       ) : (
-        <div className="flex h-[400px] items-center justify-center rounded-sm border border-[#27272a] bg-[#111111]">
+        <div className="flex h-[400px] items-center justify-center rounded-sm border border-border bg-background">
           <div className="text-center space-y-2">
-            <p className="text-zinc-500">
+            <p className="text-muted-foreground">
               No trading data available yet
             </p>
-            <p className="text-sm text-zinc-600">
+            <p className="text-sm text-muted-foreground/80">
               Chart will appear after first trade
             </p>
           </div>

@@ -30,15 +30,15 @@ interface IndicatorToolbarProps {
 }
 
 const INDICATOR_BUTTONS: { key: keyof ActiveIndicators; label: string; color: string }[] = [
-  { key: "sma7", label: "MA7", color: "#75fb6e" },
-  { key: "sma25", label: "MA25", color: "#57d154" },
-  { key: "sma99", label: "MA99", color: "#3aa73a" },
-  { key: "ema7", label: "EMA7", color: "#9dff8b" },
-  { key: "ema25", label: "EMA25", color: "#2f8f3e" },
-  { key: "bollinger", label: "BOLL", color: "#75fb6e" },
-  { key: "rsi", label: "RSI", color: "#67e85f" },
-  { key: "macd", label: "MACD", color: "#4cc74b" },
-  { key: "volume", label: "VOL", color: "#6b7280" },
+  { key: "sma7", label: "MA7", color: "#283750" },
+  { key: "sma25", label: "MA25", color: "#496181" },
+  { key: "sma99", label: "MA99", color: "#6c84a5" },
+  { key: "ema7", label: "EMA7", color: "#90a6c2" },
+  { key: "ema25", label: "EMA25", color: "#b4c8e1" },
+  { key: "bollinger", label: "BOLL", color: "#496181" },
+  { key: "rsi", label: "RSI", color: "#6c84a5" },
+  { key: "macd", label: "MACD", color: "#90a6c2" },
+  { key: "volume", label: "VOL", color: "#5f728c" },
 ];
 
 export function IndicatorToolbar({ indicators, onChange }: IndicatorToolbarProps) {
@@ -55,8 +55,8 @@ export function IndicatorToolbar({ indicators, onChange }: IndicatorToolbarProps
           onClick={() => toggle(key)}
           className={`rounded-lg border px-2 py-1 text-xs font-medium transition-colors ${
             indicators[key]
-              ? "border-transparent text-[#052205]"
-              : "border-zinc-800 bg-zinc-950 text-zinc-500 hover:bg-zinc-900"
+              ? "border-transparent text-primary-foreground"
+              : "border-border bg-card text-muted-foreground hover:bg-accent hover:text-accent-foreground"
           }`}
           style={indicators[key] ? { backgroundColor: color } : undefined}
         >

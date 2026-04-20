@@ -25,18 +25,18 @@ export function MacdChart({ timestamps, macd }: MacdChartProps) {
     const chart = createChart(containerRef.current, {
       width: containerRef.current.clientWidth,
       height: 120,
-      layout: { background: { color: "transparent" }, textColor: "#9ca3af" },
+      layout: { background: { color: "transparent" }, textColor: "#5f728c" },
       grid: {
-        vertLines: { color: "rgba(156, 163, 175, 0.1)" },
-        horzLines: { color: "rgba(156, 163, 175, 0.1)" },
+        vertLines: { color: "rgba(95, 114, 140, 0.12)" },
+        horzLines: { color: "rgba(95, 114, 140, 0.12)" },
       },
       timeScale: { visible: false },
       rightPriceScale: {
-        borderColor: "rgba(156, 163, 175, 0.2)",
+        borderColor: "rgba(95, 114, 140, 0.2)",
       },
       crosshair: {
-        vertLine: { color: "rgba(156, 163, 175, 0.3)" },
-        horzLine: { color: "rgba(156, 163, 175, 0.3)" },
+        vertLine: { color: "rgba(95, 114, 140, 0.3)" },
+        horzLine: { color: "rgba(95, 114, 140, 0.3)" },
       },
     });
     chartRef.current = chart;
@@ -52,7 +52,7 @@ export function MacdChart({ timestamps, macd }: MacdChartProps) {
 
     // MACD line
     const macdSeries = chart.addSeries(LineSeries, {
-      color: "#75fb6e",
+      color: "#283750",
       lineWidth: 2,
       priceLineVisible: false,
       lastValueVisible: false,
@@ -61,7 +61,7 @@ export function MacdChart({ timestamps, macd }: MacdChartProps) {
 
     // Signal line
     const signalSeries = chart.addSeries(LineSeries, {
-      color: "#3aa73a",
+      color: "#6c84a5",
       lineWidth: 2,
       priceLineVisible: false,
       lastValueVisible: false,
@@ -84,10 +84,10 @@ export function MacdChart({ timestamps, macd }: MacdChartProps) {
         histData.push({
           time: timestamps[i],
           value: macd.histogram[i]!,
-          color:
-            macd.histogram[i]! >= 0
-              ? "rgba(117, 251, 110, 0.7)"
-              : "rgba(113, 113, 122, 0.8)",
+            color:
+              macd.histogram[i]! >= 0
+                ? "rgba(40, 55, 80, 0.7)"
+                : "rgba(108, 132, 165, 0.8)",
         });
       }
     }
@@ -112,8 +112,8 @@ export function MacdChart({ timestamps, macd }: MacdChartProps) {
   }, [timestamps, macd]);
 
   return (
-    <div className="border-t border-zinc-900/80">
-      <div className="px-2 py-1 text-xs font-medium text-zinc-500">
+    <div className="border-t border-border/80">
+      <div className="px-2 py-1 text-xs font-medium text-muted-foreground">
         MACD(12, 26, 9)
       </div>
       <div ref={containerRef} className="w-full" />

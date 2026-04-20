@@ -20,8 +20,8 @@ export function TokenCard({ token }: TokenCardProps) {
 
   return (
     <Link href={`/token/${token.address}`} className="block w-full touch-manipulation">
-      <article className="overflow-hidden rounded-2xl border border-zinc-800 bg-[#080808]">
-        <div className="relative aspect-square w-full overflow-hidden border-b border-zinc-900 bg-zinc-950">
+      <article className="overflow-hidden rounded-2xl border border-border bg-card">
+        <div className="relative aspect-square w-full overflow-hidden border-b border-border bg-muted">
           {token.image ? (
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
@@ -33,12 +33,12 @@ export function TokenCard({ token }: TokenCardProps) {
               }}
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-5xl font-bold text-zinc-600">
+            <div className="flex h-full w-full items-center justify-center text-5xl font-bold text-primary/45">
               {(token.symbol ?? "?").slice(0, 1).toUpperCase()}
             </div>
           )}
           {token.graduated && (
-            <span className="absolute right-2 top-2 rounded-sm border border-zinc-700 bg-black/90 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-zinc-100">
+            <span className="absolute right-2 top-2 rounded-sm border border-primary/20 bg-primary/90 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-primary-foreground">
               Live
             </span>
           )}
@@ -46,34 +46,34 @@ export function TokenCard({ token }: TokenCardProps) {
 
         <div className="space-y-3 p-3">
           <div>
-            <p className="truncate text-[10px] uppercase tracking-[0.12em] text-zinc-500">
+            <p className="truncate text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
               Created: {truncate(token.creator ?? token.address, 6)}
             </p>
-            <p className="truncate pt-1 text-xl font-bold leading-tight text-zinc-50">
+            <p className="truncate pt-1 text-xl font-bold leading-tight text-foreground">
               {token.name ?? "Unknown Token"}
             </p>
-            <p className="truncate text-xs text-zinc-400">{token.description ?? "No description"}</p>
+            <p className="truncate text-xs text-muted-foreground">{token.description ?? "No description"}</p>
           </div>
 
           <div className="space-y-1">
-            <p className="text-[10px] uppercase tracking-[0.1em] text-zinc-500">Market Cap</p>
+            <p className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground">Market Cap</p>
             <p className="font-mono text-sm font-semibold text-primary">{formatMarketCap(token, xyzPriceUsd)}</p>
           </div>
 
           <div className="space-y-1">
-            <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.1em] text-zinc-500">
+            <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
               <span>{token.graduated ? "Listed" : "Seeding"}</span>
               <span>{progressValue.toFixed(0)}%</span>
             </div>
             <Progress
               value={progressValue}
-              className="h-1 rounded-sm bg-zinc-900 [&>[data-slot=progress-indicator]]:bg-primary"
+            className="h-1 rounded-sm bg-muted [&>[data-slot=progress-indicator]]:bg-primary"
             />
           </div>
 
-          <div className="flex items-center justify-between border-t border-zinc-900 pt-2 text-[11px] text-zinc-500">
+          <div className="flex items-center justify-between border-t border-border pt-2 text-[11px] text-muted-foreground">
             <span>{formatAge(token.first_seen_at)}</span>
-            <span className="font-mono text-zinc-300">{formatPrice(token.current_price, xyzPriceUsd)}</span>
+            <span className="font-mono text-foreground">{formatPrice(token.current_price, xyzPriceUsd)}</span>
           </div>
         </div>
       </article>

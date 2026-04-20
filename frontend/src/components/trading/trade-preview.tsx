@@ -44,35 +44,35 @@ export function TradePreview({
     : null;
 
   return (
-    <div className="space-y-2 rounded-xl border border-zinc-900 bg-zinc-950 p-4 text-sm">
+    <div className="space-y-2 rounded-xl border border-border bg-card p-4 text-sm">
       <div className="flex justify-between">
-        <span className="text-zinc-500">You receive (est.)</span>
-        <span className="font-mono text-zinc-100">
+        <span className="text-muted-foreground">You receive (est.)</span>
+        <span className="font-mono text-foreground">
           {formatOutput(estimatedOutput)} {!outputIsXyz && outputDenom}
         </span>
       </div>
       <div className="flex justify-between">
-        <span className="text-zinc-500">
+        <span className="text-muted-foreground">
           Min after slippage ({slippagePercent}%)
         </span>
-        <span className="font-mono text-zinc-100">
+        <span className="font-mono text-foreground">
           {formatOutput(minOutput)} {!outputIsXyz && outputDenom}
         </span>
       </div>
       <div className="flex justify-between">
-        <span className="text-zinc-500">Fee</span>
-        <span className="font-mono text-zinc-100">{feeUsd}</span>
+        <span className="text-muted-foreground">Fee</span>
+        <span className="font-mono text-foreground">{feeUsd}</span>
       </div>
       {priceImpact && (
         <div className="flex justify-between">
-          <span className="text-zinc-500">Price impact</span>
-          <span className="font-mono text-zinc-100">{priceImpact}%</span>
+          <span className="text-muted-foreground">Price impact</span>
+          <span className="font-mono text-foreground">{priceImpact}%</span>
         </div>
       )}
       {newPriceUsd && (
         <div className="flex justify-between">
-          <span className="text-zinc-500">New price</span>
-          <span className="font-mono text-zinc-100">{newPriceUsd}</span>
+          <span className="text-muted-foreground">New price</span>
+          <span className="font-mono text-foreground">{newPriceUsd}</span>
         </div>
       )}
     </div>

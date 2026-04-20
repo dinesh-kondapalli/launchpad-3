@@ -31,14 +31,14 @@ export function AmountInput({
 }: AmountInputProps) {
   return (
     <div className="space-y-2">
-      <Label className="text-zinc-300">{label}</Label>
+      <Label className="text-foreground">{label}</Label>
       <Input
         type="text"
         inputMode="decimal"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={`0.00 ${denom}`}
-        className={error ? "min-h-[44px] border-zinc-700" : "min-h-[44px]"}
+        className={error ? "min-h-[44px] border-border" : "min-h-[44px]"}
         disabled={disabled}
       />
       <div className="grid grid-cols-2 gap-2">

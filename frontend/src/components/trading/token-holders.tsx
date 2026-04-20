@@ -16,29 +16,29 @@ export function TokenHolders({ tokenAddress, tokenSymbol }: TokenHoldersProps) {
 
   return (
     <div className="h-full">
-      <h2 className="mb-3 text-lg font-semibold text-zinc-100">
+      <h2 className="mb-3 text-lg font-semibold text-foreground">
         Holders
         {holders && holders.length > 0 && (
-          <span className="ml-2 text-sm font-normal text-zinc-500">
+          <span className="ml-2 text-sm font-normal text-muted-foreground">
             ({holders.length})
           </span>
         )}
       </h2>
-      <div className="min-h-[22rem] overflow-hidden rounded-2xl border border-zinc-900 bg-[#050505]">
+      <div className="min-h-[22rem] overflow-hidden rounded-2xl border border-border bg-card">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[520px] text-sm">
             <thead>
-              <tr className="border-b border-zinc-900 bg-zinc-950/80">
-                <th className="w-10 px-4 py-3 text-left font-medium text-zinc-500">
+              <tr className="border-b border-border bg-background/80">
+                <th className="w-10 px-4 py-3 text-left font-medium text-muted-foreground">
                   #
                 </th>
-                <th className="px-4 py-3 text-left font-medium text-zinc-500">
+                <th className="px-4 py-3 text-left font-medium text-muted-foreground">
                   Address
                 </th>
-                <th className="px-4 py-3 text-right font-medium text-zinc-500">
+                <th className="px-4 py-3 text-right font-medium text-muted-foreground">
                   Balance
                 </th>
-                <th className="w-20 px-4 py-3 text-right font-medium text-zinc-500">
+                <th className="w-20 px-4 py-3 text-right font-medium text-muted-foreground">
                   %
                 </th>
               </tr>
@@ -69,7 +69,7 @@ export function TokenHolders({ tokenAddress, tokenSymbol }: TokenHoldersProps) {
                 <tr>
                   <td
                     colSpan={4}
-                    className="px-4 py-8 text-center text-zinc-500"
+                    className="px-4 py-8 text-center text-muted-foreground"
                   >
                     No holders yet
                   </td>
@@ -82,10 +82,10 @@ export function TokenHolders({ tokenAddress, tokenSymbol }: TokenHoldersProps) {
                 return (
                   <tr
                     key={holder.address}
-                    className="border-b border-zinc-900 transition-colors hover:bg-zinc-950"
+                    className="border-b border-border transition-colors hover:bg-accent/40"
                   >
-                    <td className="px-4 py-3 text-zinc-500">{i + 1}</td>
-                    <td className="px-4 py-3 font-mono text-zinc-500">
+                    <td className="px-4 py-3 text-muted-foreground">{i + 1}</td>
+                    <td className="px-4 py-3 font-mono text-muted-foreground">
                       {truncateAddress(holder.address)}
                     </td>
                     <td className="px-4 py-3 text-right font-mono whitespace-nowrap">

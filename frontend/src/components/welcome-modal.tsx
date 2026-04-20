@@ -32,19 +32,19 @@ export function WelcomeModal() {
         {/* Header band */}
         <div className="bg-primary/10 border-b border-primary/20 px-6 pt-6 pb-4">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-zinc-50">
+            <DialogTitle className="text-xl font-bold text-foreground">
               Welcome to new Launchpad
             </DialogTitle>
-            <p className="text-sm text-zinc-400 mt-1">
+            <p className="mt-1 text-sm text-muted-foreground">
               A fair-launch platform designed to reward builders and long-term holders.
             </p>
           </DialogHeader>
         </div>
 
         {/* Body */}
-        <div className="px-6 py-5 space-y-4 text-sm text-zinc-300">
+        <div className="space-y-4 px-6 py-5 text-sm text-foreground/80">
           <div>
-            <h3 className="font-semibold text-zinc-100 mb-1">How it works</h3>
+            <h3 className="mb-1 font-semibold text-foreground">How it works</h3>
             <p>
               Every token launches on a bonding curve — price starts low and rises as people buy.
               Once the reserve hits the graduation threshold, liquidity auto-migrates to the AMM
@@ -53,27 +53,27 @@ export function WelcomeModal() {
           </div>
 
           <div>
-            <h3 className="font-semibold text-zinc-100 mb-1">Non-extractive by design</h3>
+            <h3 className="mb-1 font-semibold text-foreground">Non-extractive by design</h3>
             <p className="mb-2">
               The fee structure is intentionally asymmetric to discourage quick dumps and reward conviction:
             </p>
             <div className="grid grid-cols-2 gap-2">
-              <div className="rounded-lg bg-zinc-900 border border-zinc-800 p-3">
-                <span className="block text-xs text-zinc-500 uppercase tracking-wide">Buy fee</span>
-                <span className="text-lg font-semibold text-emerald-400">0.5%</span>
+              <div className="rounded-lg border border-border bg-card p-3">
+                <span className="block text-xs uppercase tracking-wide text-muted-foreground">Buy fee</span>
+                <span className="text-lg font-semibold text-primary">0.5%</span>
               </div>
-              <div className="rounded-lg bg-zinc-900 border border-zinc-800 p-3">
-                <span className="block text-xs text-zinc-500 uppercase tracking-wide">Sell fee</span>
-                <span className="text-lg font-semibold text-red-400">3.5%</span>
+              <div className="rounded-lg border border-border bg-card p-3">
+                <span className="block text-xs uppercase tracking-wide text-muted-foreground">Sell fee</span>
+                <span className="text-lg font-semibold text-destructive">3.5%</span>
               </div>
             </div>
-            <p className="text-xs text-zinc-500 mt-2">
+            <p className="mt-2 text-xs text-muted-foreground">
               Low entry cost, higher exit cost — aligned with builders who stay, not extractors who flip.
             </p>
           </div>
 
           <div>
-            <h3 className="font-semibold text-zinc-100 mb-1">Limited tickers, limited supply</h3>
+            <h3 className="mb-1 font-semibold text-foreground">Limited tickers, limited supply</h3>
             <p>
               Every token has a fixed supply on its bonding curve — no unlimited minting, no hidden inflation.
               Wallets are capped at 3% of total supply, so no single buyer can hog the curve.
