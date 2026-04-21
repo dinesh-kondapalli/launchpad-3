@@ -18,7 +18,7 @@ describe("signing client", () => {
         { rpcEndpoint: "http://localhost:26657" },
         TEST_MNEMONIC
       );
-      expect(client.address).toMatch(/^xyz1/);
+      expect(client.address).toMatch(/^bwick1/);
     } catch {
       console.log("Skipping: local node not running or connection failed");
     }
@@ -29,8 +29,8 @@ describe("signing client", () => {
       console.log("Skipping: client not created");
       return;
     }
-    // Address should use xyz prefix
-    expect(client.address.startsWith("xyz1")).toBe(true);
+    // Address should use bwick prefix
+    expect(client.address.startsWith("bwick1")).toBe(true);
   });
 });
 
@@ -39,8 +39,8 @@ describe("calculateTxFee", () => {
     const fee = calculateTxFee(100000);
     // Default adjustment is 1.3, so 100000 * 1.3 = 130000
     expect(parseInt(fee.gas, 10)).toBe(130000);
-    // Default gas price is 0.025uxyz, so 130000 * 0.025 = 3250
-    expect(fee.amount).toEqual([{ denom: "uxyz", amount: "3250" }]);
+    // Default gas price is 0.025ubwick, so 130000 * 0.025 = 3250
+    expect(fee.amount).toEqual([{ denom: "ubwick", amount: "3250" }]);
   });
 
   it("should calculate fee with custom gas adjustment", () => {
@@ -50,8 +50,8 @@ describe("calculateTxFee", () => {
   });
 
   it("should calculate fee with custom gas price", () => {
-    const fee = calculateTxFee(100000, { gasPrice: "0.05uxyz" });
+    const fee = calculateTxFee(100000, { gasPrice: "0.05ubwick" });
     // 100000 * 1.3 = 130000, 130000 * 0.05 = 6500
-    expect(fee.amount).toEqual([{ denom: "uxyz", amount: "6500" }]);
+    expect(fee.amount).toEqual([{ denom: "ubwick", amount: "6500" }]);
   });
 });

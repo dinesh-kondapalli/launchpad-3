@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { USE_MOCK_DATA } from "@/lib/mock-data";
 
 export const XYZ_PRICE_QUERY_KEY = ["xyz-price"] as const;
 
@@ -12,7 +11,7 @@ interface PriceResponse {
 
 async function fetchXyzPrice(): Promise<PriceResponse> {
   const res = await fetch("/api/xyz-price");
-  if (!res.ok) throw new Error("Failed to fetch NEW price");
+  if (!res.ok) throw new Error("Failed to fetch BWICK price");
   return res.json();
 }
 
@@ -22,13 +21,12 @@ export function useXyzPrice() {
     queryFn: fetchXyzPrice,
     staleTime: 30_000,
     refetchInterval: 60_000,
-    enabled: !USE_MOCK_DATA,
   });
 
   return {
     ...query,
-    /** XYZ price in USD (e.g., 0.00001). Defaults to 1 while loading. */
-    xyzPriceUsd: query.data?.price ?? 1,
+    /** BWICK price in USD. Defaults to 0 while loading or when oracle is unset. */
+    xyzPriceUsd: query.data?.price ?? 0,
     /** Where the price came from */
     priceSource: query.data?.source ?? "oracle",
   };

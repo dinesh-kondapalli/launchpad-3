@@ -17,7 +17,7 @@ export async function connectDirect(
 ): Promise<WalletConnection> {
   const wallet = await DirectSecp256k1HdWallet.fromMnemonic(
     options.mnemonic,
-    { prefix: options.prefix ?? "xyz" }
+    { prefix: options.prefix ?? "bwick" }
   );
 
   const [account] = await wallet.getAccounts();

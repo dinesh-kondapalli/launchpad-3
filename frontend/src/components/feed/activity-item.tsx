@@ -8,6 +8,7 @@ import {
 } from "@phosphor-icons/react";
 import { formatDistanceToNow } from "date-fns";
 import type { RecentTrade } from "@/lib/api";
+import { NATIVE_SYMBOL } from "@/lib/chain-config";
 
 interface ActivityItemProps {
   trade: RecentTrade;
@@ -67,7 +68,7 @@ export function ActivityItem({ trade }: ActivityItemProps) {
   const traderDisplay = `${trade.trader.slice(0, 8)}...${trade.trader.slice(-4)}`;
 
   // Format volume as XYZ amount
-  const volumeNew = (Number(trade.volume_uxyz) / 1_000_000).toFixed(2);
+  const volumeNative = (Number(trade.volume_uxyz) / 1_000_000).toFixed(2);
 
   // Display token symbol or truncated address as fallback
   const tokenDisplay = trade.token_symbol ?? trade.token_address.slice(0, 8);
@@ -84,7 +85,7 @@ export function ActivityItem({ trade }: ActivityItemProps) {
             <span className="truncate font-medium text-foreground">{tokenDisplay}</span>
         </div>
         <div className="text-xs text-muted-foreground">
-          {volumeNew} NEW · {relativeTime}
+          {volumeNative} {NATIVE_SYMBOL} · {relativeTime}
         </div>
       </div>
     </div>

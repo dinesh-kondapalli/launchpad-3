@@ -185,7 +185,7 @@ export const useWalletStore = create<WalletState>()(
       },
     }),
     {
-      name: "xyz-wallet",
+      name: "bwick-wallet",
       partialize: (state) => ({ lastWalletType: state.lastWalletType }),
     }
   )

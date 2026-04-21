@@ -3,6 +3,7 @@ import type { SendOptions, TxResult } from "../types/transaction.js";
 import { toTxResult } from "../types/transaction.js";
 import type { XYZSigningClient } from "./signing.js";
 import { calculateTxFee } from "./signing.js";
+import { XYZ_DENOM } from "../types/coin.js";
 
 /**
  * Send native tokens to an address
@@ -60,7 +61,7 @@ export async function sendXYZ(
   return sendTokens(
     client,
     recipient,
-    { denom: "uxyz", amount },
+    { denom: XYZ_DENOM, amount },
     options
   );
 }

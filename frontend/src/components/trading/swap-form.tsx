@@ -21,7 +21,7 @@ import {
   swapTokenForXyz,
 } from "@/lib/contract-clients/amm";
 import { createContractClient } from "@xyz-chain/sdk";
-import { RPC_ENDPOINT, REST_ENDPOINT, CHAIN_ID } from "@/lib/chain-config";
+import { RPC_ENDPOINT, REST_ENDPOINT, CHAIN_ID, NATIVE_SYMBOL } from "@/lib/chain-config";
 import { toUxyz, computeMinOutput } from "@/lib/utils";
 import { swapFormSchema, type SwapFormValues } from "@/lib/validation/trading-schemas";
 import { AmountInput } from "./amount-input";
@@ -38,7 +38,7 @@ export function SwapForm({ tokenAddress, tokenSymbol }: SwapFormProps) {
   const queryClient = useQueryClient();
   const { connection, address, client, refreshBalance } = useWalletStore();
 
-  // Direction: true = XYZ -> Token (buy), false = Token -> XYZ (sell)
+  // Direction: true = BWICK -> Token (buy), false = Token -> BWICK (sell)
   const [buyDirection, setBuyDirection] = useState(true);
 
   const form = useForm<SwapFormValues>({
@@ -86,7 +86,7 @@ export function SwapForm({ tokenAddress, tokenSymbol }: SwapFormProps) {
       );
 
       if (buyDirection) {
-        // XYZ -> Token: send native XYZ funds
+        // BWICK -> Token: send native funds
         return swapXyzForToken(
           contractClient,
           address,
@@ -95,7 +95,7 @@ export function SwapForm({ tokenAddress, tokenSymbol }: SwapFormProps) {
           minOutput
         );
       } else {
-        // Token -> XYZ: use CW20 Send pattern
+        // Token -> BWICK: use CW20 Send pattern
         return swapTokenForXyz(
           contractClient,
           address,
@@ -137,8 +137,8 @@ export function SwapForm({ tokenAddress, tokenSymbol }: SwapFormProps) {
   const canSubmit =
     !!connection && !!simulation && !isSimulating && !mutation.isPending;
 
-  const inputDenom = buyDirection ? "NEW" : tokenSymbol;
-  const outputDenom = buyDirection ? tokenSymbol : "NEW";
+  const inputDenom = buyDirection ? NATIVE_SYMBOL : tokenSymbol;
+  const outputDenom = buyDirection ? tokenSymbol : NATIVE_SYMBOL;
   const outputIsXyz = !buyDirection;
 
   return (

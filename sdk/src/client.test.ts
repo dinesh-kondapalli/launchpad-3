@@ -26,7 +26,7 @@ describe("createClient", () => {
       return;
     }
     const chainId = await client.getChainId();
-    expect(chainId).toBe("xyz-testnet-1");
+    expect(chainId).toBe("bwick-1");
   });
 
   it("should get current block height", async () => {
@@ -43,7 +43,7 @@ describe("createClient", () => {
       console.log("Skipping: local node not running");
       return;
     }
-    expect(client.config.chainId).toBe("xyz-testnet-1");
-    expect(client.config.prefix).toBe("xyz");
+    expect(client.config.chainId).toBe("bwick-1");
+    expect(client.config.prefix).toBe("bwick");
   });
 });

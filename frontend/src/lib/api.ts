@@ -1,7 +1,5 @@
-import { REST_ENDPOINT } from "./chain-config";
+import { LAUNCHPAD_CONTRACT, REST_ENDPOINT } from "./chain-config";
 import type { OracleResponse } from "./contract-clients/types";
-
-const LAUNCHPAD_CONTRACT = process.env.NEXT_PUBLIC_LAUNCHPAD_CONTRACT!;
 
 export interface TokenListItem {
   address: string;
@@ -13,7 +11,8 @@ export interface TokenListItem {
   source: string;
   graduated: boolean;
   created_at: string | null;
-  first_seen_at: string;
+  first_seen_at: string | null;
+  created_height?: number | null;
   current_price: string;
   xyz_reserves: string;
   volume_24h: string;
@@ -58,8 +57,10 @@ function curveToTokenListItem(curve: CurveData): TokenListItem {
     creator: curve.creator,
     source: "launchpad",
     graduated: curve.graduated,
-    created_at: curve.created_at ? new Date(curve.created_at * 1000).toISOString() : null,
-    first_seen_at: curve.created_at ? new Date(curve.created_at * 1000).toISOString() : new Date().toISOString(),
+    // The contract returns block height here, not a unix timestamp.
+    created_at: null,
+    first_seen_at: null,
+    created_height: curve.created_at || null,
     current_price: curve.current_price,
     xyz_reserves: curve.xyz_reserves,
     volume_24h: "0",
@@ -318,9 +319,62 @@ export interface RecentTrade {
 export const RECENT_TRADES_QUERY_KEY = ["trades", "recent"] as const;
 
 export async function fetchRecentTrades(limit: number = 50): Promise<RecentTrade[]> {
-  void limit;
-  // No backend — return empty trades for now
-  return [];
+  const perActionLimit = Math.max(limit, 25);
+  const [buyTxs, sellTxs] = await Promise.all([
+    searchTxByEvents([`wasm.action='buy'`], perActionLimit),
+    searchTxByEvents([`wasm.action='sell'`], perActionLimit),
+  ]);
+
+  const trades: RecentTrade[] = [];
+
+  for (const tx of buyTxs) {
+    const attrs = extractWasmAttrs(tx, "buy");
+    if (!attrs?.token_address) continue;
+
+    const xyzAmount = attrs.xyz_input || "0";
+    const tokenAmount = attrs.tokens_out || "0";
+    trades.push({
+      time: tx.timestamp || new Date().toISOString(),
+      tx_hash: tx.txhash,
+      source: "launchpad",
+      action: "buy",
+      direction: "buy",
+      token_address: attrs.token_address,
+      price_uxyz: computePriceUxyz(xyzAmount, tokenAmount),
+      volume_uxyz: xyzAmount,
+      volume_token: tokenAmount,
+      fee_uxyz: attrs.fee || "0",
+      trader: attrs.buyer || "",
+      token_name: attrs.token_name || null,
+      token_symbol: attrs.token_symbol || null,
+    });
+  }
+
+  for (const tx of sellTxs) {
+    const attrs = extractWasmAttrs(tx, "sell");
+    if (!attrs?.token_address) continue;
+
+    const xyzAmount = attrs.xyz_out || "0";
+    const tokenAmount = attrs.tokens_input || "0";
+    trades.push({
+      time: tx.timestamp || new Date().toISOString(),
+      tx_hash: tx.txhash,
+      source: "launchpad",
+      action: "sell",
+      direction: "sell",
+      token_address: attrs.token_address,
+      price_uxyz: computePriceUxyz(xyzAmount, tokenAmount),
+      volume_uxyz: xyzAmount,
+      volume_token: tokenAmount,
+      fee_uxyz: attrs.fee_burned || attrs.fee || "0",
+      trader: attrs.seller || "",
+      token_name: attrs.token_name || null,
+      token_symbol: attrs.token_symbol || null,
+    });
+  }
+
+  trades.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
+  return trades.slice(0, limit);
 }
 
 // --- Token-specific trades from chain tx search ---
@@ -452,6 +506,13 @@ function extractWasmAttrs(
     }
   }
   return null;
+}
+
+function computePriceUxyz(xyzAmount: string, tokenAmount: string): string {
+  const xyz = Number(xyzAmount);
+  const token = Number(tokenAmount);
+  if (!Number.isFinite(xyz) || !Number.isFinite(token) || token <= 0) return "0";
+  return String(Math.round((xyz / token) * 1_000_000));
 }
 
 // --- Token holders (CW20 queries) ---

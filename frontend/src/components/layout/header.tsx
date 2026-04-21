@@ -45,9 +45,9 @@ export function Header() {
               Launch Token
             </Link>
             <ConnectButton
-              label="Log In"
+              label="Connect Wallet"
               variant="outline"
-              showIcon={false}
+              showIcon={true}
               className="h-7 rounded-sm border-0 bg-primary px-3 text-xs text-primary-foreground hover:bg-primary/90 md:h-9 md:px-4 md:text-sm"
             />
             <div className="flex items-center gap-2 md:gap-3">

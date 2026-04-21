@@ -19,7 +19,7 @@ export async function connectLeap(options: ConnectLeapOptions): Promise<WalletCo
   }
 
   const leap = window.leap!;
-  const chainId = options.chainId ?? "xyz-1";
+  const chainId = options.chainId ?? "bwick-1";
   const restEndpoint = options.restEndpoint ?? options.rpcEndpoint.replace(/:\d+$/, ":1317");
 
   // Try to suggest chain if not already configured

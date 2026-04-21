@@ -16,7 +16,7 @@ import { Slider } from "@/components/ui/slider";
 import { useWalletStore } from "@/stores/wallet-store";
 import { simulateBuy, buyTokens } from "@/lib/contract-clients/launchpad";
 import { createContractClient } from "@xyz-chain/sdk";
-import { RPC_ENDPOINT, REST_ENDPOINT, CHAIN_ID } from "@/lib/chain-config";
+import { RPC_ENDPOINT, REST_ENDPOINT, CHAIN_ID, NATIVE_SYMBOL } from "@/lib/chain-config";
 import { toUxyz, computeMinOutput } from "@/lib/utils";
 import { buyFormSchema, type BuyFormValues } from "@/lib/validation/trading-schemas";
 import { AmountInput } from "./amount-input";
@@ -101,7 +101,7 @@ export function BuyForm({ tokenAddress, tokenSymbol }: BuyFormProps) {
       toast.error("Purchase failed", {
         id: "buy-tx",
         description: message.includes("insufficient funds")
-          ? "Insufficient NEW balance"
+          ? `Insufficient ${NATIVE_SYMBOL} balance`
           : message.includes("min output")
           ? "Price moved -- try increasing slippage"
           : message,
@@ -126,8 +126,8 @@ export function BuyForm({ tokenAddress, tokenSymbol }: BuyFormProps) {
               <AmountInput
                 value={field.value}
                 onChange={field.onChange}
-                label="Amount (NEW)"
-                denom="NEW"
+                label={`Amount (${NATIVE_SYMBOL})`}
+                denom={NATIVE_SYMBOL}
                 presets={[100000, 500000, 1000000, 5000000]}
                 error={fieldState.error?.message}
                 disabled={mutation.isPending}

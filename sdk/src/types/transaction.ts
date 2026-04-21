@@ -16,7 +16,7 @@ export interface TxResult {
 // Fee configuration
 export interface FeeConfig {
   gas?: string; // default: "auto"
-  gasPrice?: string; // default: "0.025uxyz"
+  gasPrice?: string; // default: "0.025ubwick"
   gasAdjustment?: number; // default: 1.3
 }
 

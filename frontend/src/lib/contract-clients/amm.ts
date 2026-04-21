@@ -2,8 +2,8 @@ import { executeContract, queryContract, sendCW20 } from "@xyz-chain/sdk";
 import type { XYZClient } from "@xyz-chain/sdk";
 import type { ExecuteResult } from "@xyz-chain/sdk";
 import type { SimulateSwapResponse, PoolResponse } from "./types";
+import { AMM_CONTRACT, NATIVE_DENOM } from "@/lib/chain-config";
 
-const AMM_CONTRACT = process.env.NEXT_PUBLIC_AMM_CONTRACT!;
 type ContractClient = Parameters<typeof executeContract>[0];
 
 /**
@@ -59,7 +59,7 @@ export async function swapXyzForToken(
       },
     },
     {
-      funds: [{ denom: "uxyz", amount: xyzAmount }],
+      funds: [{ denom: NATIVE_DENOM, amount: xyzAmount }],
     }
   );
 }

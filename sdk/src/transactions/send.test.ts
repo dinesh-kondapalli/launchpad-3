@@ -6,7 +6,7 @@ import { sendTokens, sendXYZ } from "./send.js";
 const TEST_MNEMONIC = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
 
 // Use a different address derived from the same mnemonic standard for recipient
-const RECIPIENT_ADDRESS = "xyz1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq7sxrjk";
+const RECIPIENT_ADDRESS = "bwick1595rh758em5ghte603txwykqnneyh0wptdqqut";
 
 describe("send transactions", () => {
   let client: XYZSigningClient | null = null;
@@ -26,7 +26,7 @@ describe("send transactions", () => {
     client?.disconnect();
   });
 
-  it("should send XYZ tokens", async () => {
+  it("should send BWICK tokens", async () => {
     if (!client) {
       console.log("Skipping: local node not running");
       return;
@@ -36,7 +36,7 @@ describe("send transactions", () => {
       const result = await sendXYZ(
         client,
         RECIPIENT_ADDRESS,
-        "1000000", // 1 XYZ in uxyz
+        "1000000", // 1 BWICK in ubwick
         { memo: "SDK test transfer" }
       );
 
@@ -60,7 +60,7 @@ describe("send transactions", () => {
         client,
         RECIPIENT_ADDRESS,
         [
-          { denom: "uxyz", amount: "500000" },
+          { denom: "ubwick", amount: "500000" },
         ],
         { memo: "Multi-coin test" }
       );
@@ -77,14 +77,14 @@ describe("sendTokens input validation", () => {
   it("should accept single coin", async () => {
     // This just tests the input processing, not actual sending
     // We can't fully test without a running node
-    const singleCoin = { denom: "uxyz", amount: "1000" };
+    const singleCoin = { denom: "ubwick", amount: "1000" };
     const coins = Array.isArray(singleCoin) ? singleCoin : [singleCoin];
-    expect(coins).toEqual([{ denom: "uxyz", amount: "1000" }]);
+    expect(coins).toEqual([{ denom: "ubwick", amount: "1000" }]);
   });
 
   it("should accept array of coins", async () => {
     const multiCoins = [
-      { denom: "uxyz", amount: "1000" },
+      { denom: "ubwick", amount: "1000" },
       { denom: "uatom", amount: "500" },
     ];
     const coins = Array.isArray(multiCoins) ? multiCoins : [multiCoins];

@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import type { TokenListItem } from "@/lib/api";
 import { useCurveProgress } from "@/hooks/use-curve-progress";
 import { useXyzPrice } from "@/hooks/use-xyz-price";
+import { DEFAULT_TOKEN_SUPPLY } from "@/lib/chain-config";
 import { formatUsd } from "@/lib/utils";
 
 interface TokenCardProps {
@@ -72,7 +73,7 @@ export function TokenCard({ token }: TokenCardProps) {
           </div>
 
           <div className="flex items-center justify-between border-t border-border pt-2 text-[11px] text-muted-foreground">
-            <span>{formatAge(token.first_seen_at)}</span>
+            <span>{formatAge(token)}</span>
             <span className="font-mono text-foreground">{formatPrice(token.current_price, xyzPriceUsd)}</span>
           </div>
         </div>
@@ -87,17 +88,17 @@ function formatPrice(priceXyz: string, xyzPriceUsd: number): string {
 }
 
 function formatMarketCap(token: TokenListItem, xyzPriceUsd: number): string {
-  // Market cap = current_price (XYZ per token) * total token supply (1B micro / 1e6)
-  // current_price is in XYZ (e.g. "0.000001"), total supply is 1B micro-tokens = 1000 tokens
   const priceXyz = Number(token.current_price || "0");
-  const totalSupplyTokens = 1_000_000_000 / 1_000_000; // 1B micro-tokens / 6 decimals = 1000 tokens
+  const totalSupplyTokens = DEFAULT_TOKEN_SUPPLY;
   const mcapUsd = priceXyz * totalSupplyTokens * xyzPriceUsd;
   return formatUsd(mcapUsd);
 }
 
-function formatAge(dateStr: string): string {
+function formatAge(token: TokenListItem): string {
+  if (token.created_height) return `Block ${token.created_height}`;
+  const dateStr = token.first_seen_at;
+  if (!dateStr) return "Awaiting block time";
   const date = new Date(dateStr);
-  // Guard against epoch 0 or invalid dates
   if (isNaN(date.getTime()) || date.getTime() < 86400000) return "just now";
   return formatDistanceToNow(date, { addSuffix: true });
 }

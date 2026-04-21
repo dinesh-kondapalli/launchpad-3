@@ -7,8 +7,8 @@ import type {
   CurveResponse,
   LaunchpadConfigResponse,
 } from "./types";
+import { LAUNCHPAD_CONTRACT, NATIVE_DENOM } from "@/lib/chain-config";
 
-const LAUNCHPAD_CONTRACT = process.env.NEXT_PUBLIC_LAUNCHPAD_CONTRACT!;
 type ContractClient = Parameters<typeof executeContract>[0];
 
 /**
@@ -88,7 +88,7 @@ export async function buyTokens(
       },
     },
     {
-      funds: [{ denom: "uxyz", amount: xyzAmount }],
+      funds: [{ denom: NATIVE_DENOM, amount: xyzAmount }],
     }
   );
 }
@@ -146,7 +146,7 @@ export async function createToken(
       },
     },
     {
-      funds: [{ denom: "uxyz", amount: creationFee }],
+      funds: [{ denom: NATIVE_DENOM, amount: creationFee }],
     }
   );
 }

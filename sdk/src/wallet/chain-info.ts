@@ -1,37 +1,37 @@
 import type { ChainInfo } from "./types.js";
 
 /**
- * XYZ Chain info for wallet registration
+ * BWICK chain info for wallet registration
  * Used when chain is not yet in wallet's chain registry
  */
 export function getXYZChainInfo(rpcEndpoint: string, restEndpoint: string, chainId?: string): ChainInfo {
-  const id = chainId ?? "xyz-1";
+  const id = chainId ?? "bwick-1";
   const isTestnet = id.includes("testnet");
   return {
     chainId: id,
-    chainName: isTestnet ? "XYZ Chain Testnet" : "XYZ Chain",
+    chainName: isTestnet ? "BWICK Testnet" : "BWICK Chain",
     rpc: rpcEndpoint,
     rest: restEndpoint,
     bip44: { coinType: 118 }, // Cosmos coin type
     bech32Config: {
-      bech32PrefixAccAddr: "xyz",
-      bech32PrefixAccPub: "xyzpub",
-      bech32PrefixValAddr: "xyzvaloper",
-      bech32PrefixValPub: "xyzvaloperpub",
-      bech32PrefixConsAddr: "xyzvalcons",
-      bech32PrefixConsPub: "xyzvalconspub",
+      bech32PrefixAccAddr: "bwick",
+      bech32PrefixAccPub: "bwickpub",
+      bech32PrefixValAddr: "bwickvaloper",
+      bech32PrefixValPub: "bwickvaloperpub",
+      bech32PrefixConsAddr: "bwickvalcons",
+      bech32PrefixConsPub: "bwickvalconspub",
     },
     currencies: [
       {
-        coinDenom: "XYZ",
-        coinMinimalDenom: "uxyz",
+        coinDenom: "BWICK",
+        coinMinimalDenom: "ubwick",
         coinDecimals: 6,
       },
     ],
     feeCurrencies: [
       {
-        coinDenom: "XYZ",
-        coinMinimalDenom: "uxyz",
+        coinDenom: "BWICK",
+        coinMinimalDenom: "ubwick",
         coinDecimals: 6,
         gasPriceStep: {
           low: 0.01,
@@ -41,8 +41,8 @@ export function getXYZChainInfo(rpcEndpoint: string, restEndpoint: string, chain
       },
     ],
     stakeCurrency: {
-      coinDenom: "XYZ",
-      coinMinimalDenom: "uxyz",
+      coinDenom: "BWICK",
+      coinMinimalDenom: "ubwick",
       coinDecimals: 6,
     },
   };

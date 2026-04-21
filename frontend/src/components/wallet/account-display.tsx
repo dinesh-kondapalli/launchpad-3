@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { NATIVE_SYMBOL } from "@/lib/chain-config";
 
 function truncateAddress(address: string): string {
   if (address.length <= 14) return address;
@@ -31,7 +32,14 @@ export function AccountDisplay() {
 
   if (!address) return null;
 
-  const walletName = walletType === "keplr" ? "Keplr" : "Leap";
+  const walletName =
+    walletType === "keplr"
+      ? "Keplr"
+      : walletType === "leap"
+        ? "Leap"
+        : walletType === "xyz"
+          ? "XYZ Wallet"
+          : "Direct";
 
   return (
     <DropdownMenu>
@@ -41,7 +49,7 @@ export function AccountDisplay() {
           {balance && (
             <>
               <span className="mx-1.5 text-border">|</span>
-              <span>{balance} NEW</span>
+              <span>{balance} {NATIVE_SYMBOL}</span>
             </>
           )}
         </Button>

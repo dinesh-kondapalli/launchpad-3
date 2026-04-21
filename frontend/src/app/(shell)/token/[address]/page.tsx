@@ -11,13 +11,7 @@ import { useCurveProgress } from "@/hooks/use-curve-progress";
 import { useTokenDetail } from "@/hooks/use-token-detail";
 import { useTokenTrades } from "@/hooks/use-token-trades";
 import { useXyzPrice } from "@/hooks/use-xyz-price";
-import { DEFAULT_TOKEN_SUPPLY } from "@/lib/chain-config";
-import {
-  getMockCurveProgress,
-  getMockTokenByAddress,
-  getMockTokenTrades,
-  USE_MOCK_DATA,
-} from "@/lib/mock-data";
+import { DEFAULT_TOKEN_SUPPLY, NATIVE_SYMBOL } from "@/lib/chain-config";
 import { formatUsd } from "@/lib/utils";
 
 const TradingChart = dynamic(
@@ -40,47 +34,80 @@ export default function TokenDetailPage() {
   const tradesQuery = useTokenTrades(tokenAddress, 20);
   const { xyzPriceUsd } = useXyzPrice();
 
-  const token = USE_MOCK_DATA
-    ? getMockTokenByAddress(tokenAddress)
-    : tokenQuery.data ?? getMockTokenByAddress(tokenAddress);
-  const progress = USE_MOCK_DATA
-    ? getMockCurveProgress(tokenAddress)
-    : progressQuery.data ?? getMockCurveProgress(tokenAddress);
+  const token = tokenQuery.data;
+  const progress = useMemo(
+    () =>
+      progressQuery.data
+        ? progressQuery.data
+        : token
+          ? {
+              tokens_sold: "0",
+              tokens_remaining: "0",
+              xyz_reserves: token.xyz_reserves,
+              graduation_threshold: "0",
+              progress_percent: token.graduated ? 100 : 0,
+              current_price: token.current_price,
+              graduated: token.graduated,
+            }
+          : null,
+    [progressQuery.data, token],
+  );
 
   const tokenStats = useMemo(() => {
+    if (!token || !progress) {
+      return {
+        price: formatUsd(0),
+        marketCap: formatUsd(0),
+        liquidity: formatUsd(0),
+        oneHour: 0,
+        sixHour: 0,
+        twentyFourHour: 0,
+      };
+    }
+
     const marketCapUsd = Number(token.current_price) * DEFAULT_TOKEN_SUPPLY * xyzPriceUsd;
     const liquidityUsd = (Number(progress.xyz_reserves) / 1_000_000) * xyzPriceUsd;
-    const profileSeed = hashString(tokenAddress);
 
     return {
       price: formatUsd(Number(token.current_price) * xyzPriceUsd),
       marketCap: formatUsd(marketCapUsd),
       liquidity: formatUsd(liquidityUsd),
-      oneHour: profilePercent(profileSeed, 1),
-      sixHour: profilePercent(profileSeed, 2),
-      twentyFourHour: profilePercent(profileSeed, 3),
+      oneHour: 0,
+      sixHour: 0,
+      twentyFourHour: 0,
     };
-  }, [progress.xyz_reserves, token.current_price, tokenAddress, xyzPriceUsd]);
+  }, [progress, token, xyzPriceUsd]);
 
   const feedEntries = useMemo(() => {
-    if (!USE_MOCK_DATA && tradesQuery.data && tradesQuery.data.length > 0) {
+    if (tradesQuery.data && tradesQuery.data.length > 0) {
       return tradesQuery.data.map((trade) => ({
         id: trade.tx_hash,
         side: trade.action === "buy" ? "Buy" : "Sell",
-        amountNew: Number(trade.xyz_amount) / 1_000_000,
+        amountNative: Number(trade.xyz_amount) / 1_000_000,
         trader: trade.trader,
         time: trade.time,
       }));
     }
 
-    return getMockTokenTrades(tokenAddress).map((trade) => ({
-      id: trade.tx_hash,
-      side: trade.action === "buy" ? "Buy" : "Sell",
-      amountNew: Number(trade.xyz_amount) / 1_000_000,
-      trader: trade.trader,
-      time: trade.time,
-    }));
-  }, [tokenAddress, tradesQuery.data]);
+    return [];
+  }, [tradesQuery.data]);
+
+  if (tokenQuery.isLoading) {
+    return <TradingChartSkeleton />;
+  }
+
+  if (!token || !progress) {
+    return (
+      <div className="container mx-auto flex min-h-[50vh] items-center justify-center px-6 py-16">
+        <div className="max-w-md space-y-3 text-center">
+          <h1 className="text-2xl font-semibold text-foreground">Token not found</h1>
+          <p className="text-sm text-muted-foreground">
+            This token is not available on the BWICK launchpad yet, or the chain query failed.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const reserve = Number(progress.xyz_reserves) / 1_000_000;
   const threshold = Number(progress.graduation_threshold) / 1_000_000;
@@ -127,7 +154,7 @@ export default function TokenDetailPage() {
                     <span className="text-border">·</span>
                     <span>{truncate(token.creator ?? "creator", 5)}</span>
                     <span className="text-border">·</span>
-                    <span>{formatRelative(token.first_seen_at)}</span>
+                    <span>{formatRelative(token.first_seen_at, token.created_height)}</span>
                   </div>
                 </div>
               </div>
@@ -162,10 +189,10 @@ export default function TokenDetailPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-x-6 sm:grid-cols-2">
-              <AuditRow label="Mint authority disabled" value="Yes" good />
-              <AuditRow label="Freeze authority disabled" value="Yes" good />
-              <AuditRow label="Top 10 holders" value="99.49%" />
-              <AuditRow label="Dev balance" value="0.19%" good />
+              <AuditRow label="Mint authority disabled" value="Unavailable" />
+              <AuditRow label="Freeze authority disabled" value="Unavailable" />
+              <AuditRow label="Top 10 holders" value="Unavailable" />
+              <AuditRow label="Dev balance" value="Unavailable" />
             </div>
           </div>
 
@@ -200,8 +227,8 @@ export default function TokenDetailPage() {
               </div>
 
               <div className="flex items-center justify-between gap-1 text-xs font-medium tabular-nums md:text-sm">
-                <span>{reserve.toFixed(2)} NEW</span>
-                <span className="text-muted-foreground">{toGraduate.toFixed(0)} NEW to graduate</span>
+                <span>{reserve.toFixed(2)} {NATIVE_SYMBOL}</span>
+                <span className="text-muted-foreground">{toGraduate.toFixed(0)} {NATIVE_SYMBOL} to graduate</span>
               </div>
             </section>
 
@@ -233,7 +260,7 @@ export default function TokenDetailPage() {
 
               <div className="flex items-center justify-between text-xs text-muted-foreground">
                 <p className="font-medium">Total rewards</p>
-                <p className="font-semibold tabular-nums text-foreground">{creatorRewards.toFixed(4)} NEW</p>
+                <p className="font-semibold tabular-nums text-foreground">{creatorRewards.toFixed(4)} {NATIVE_SYMBOL}</p>
               </div>
             </div>
 
@@ -241,7 +268,9 @@ export default function TokenDetailPage() {
               <h3 className="-mb-1 text-xs font-semibold text-muted-foreground md:text-sm">Recent Activity</h3>
 
               <div className="divide-y divide-dashed divide-border">
-                {feedEntries.map((entry) => {
+                {feedEntries.length === 0 ? (
+                  <div className="py-6 text-sm text-muted-foreground">No trades yet on BWICK.</div>
+                ) : feedEntries.map((entry) => {
                   const isBuy = entry.side === "Buy";
                   return (
                     <div key={entry.id} className="flex flex-row items-start justify-between gap-1 py-3">
@@ -262,7 +291,7 @@ export default function TokenDetailPage() {
                           }
                         >
                           {isBuy ? "+" : "-"}
-                          {entry.amountNew.toFixed(6)} NEW
+                          {entry.amountNative.toFixed(6)} {NATIVE_SYMBOL}
                         </span>
                         <p className="text-xs font-medium text-muted-foreground">{isBuy ? "Bought" : "Sold"}</p>
                       </div>
@@ -320,29 +349,16 @@ function AuditRow({ label, value, good }: { label: string; value: string; good?:
   );
 }
 
-function profilePercent(seed: number, offset: number): number {
-  const value = ((seed >> (offset * 4)) % 1_200) / 100;
-  return value - 4.5;
-}
-
-function hashString(value: string): number {
-  let hash = 0;
-  for (let index = 0; index < value.length; index++) {
-    hash = (hash << 5) - hash + value.charCodeAt(index);
-    hash |= 0;
-  }
-  return Math.abs(hash);
-}
-
 function truncate(value: string, size: number): string {
   if (value.length <= size * 2) return value;
   return `${value.slice(0, size)}...${value.slice(-size)}`;
 }
 
-function formatRelative(value?: string): string {
-  if (!value) return "now";
+function formatRelative(value?: string | null, createdHeight?: number | null): string {
+  if (createdHeight) return `Block ${createdHeight}`;
+  if (!value) return "Awaiting block time";
   const target = new Date(value).getTime();
-  if (!Number.isFinite(target)) return "now";
+  if (!Number.isFinite(target)) return "Awaiting block time";
   const hours = Math.max(1, Math.floor((Date.now() - target) / (1000 * 60 * 60)));
   if (hours < 24) return `${hours}h ago`;
   return `${Math.floor(hours / 24)}d ago`;

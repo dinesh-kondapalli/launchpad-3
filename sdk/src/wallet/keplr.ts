@@ -6,7 +6,7 @@ export interface ConnectKeplrOptions {
   chainId?: string;
   rpcEndpoint: string;
   restEndpoint?: string;
-  suggestChain?: boolean; // Auto-suggest XYZ Chain if not configured (default: true)
+  suggestChain?: boolean; // Auto-suggest BWICK chain if not configured (default: true)
 }
 
 /**
@@ -19,7 +19,7 @@ export async function connectKeplr(options: ConnectKeplrOptions): Promise<Wallet
   }
 
   const keplr = window.keplr!;
-  const chainId = options.chainId ?? "xyz-1";
+  const chainId = options.chainId ?? "bwick-1";
   const restEndpoint = options.restEndpoint ?? options.rpcEndpoint.replace(/:\d+$/, ":1317");
 
   // Try to suggest chain if not already configured

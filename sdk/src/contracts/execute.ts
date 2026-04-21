@@ -4,6 +4,7 @@ import type { XYZChainConfig } from "../types/chain.js";
 import type { ContractMsg, ExecuteOptions, ExecuteResult } from "../types/contract.js";
 import type { WalletConnection } from "../wallet/types.js";
 import { calculateTxFee } from "../transactions/signing.js";
+import { XYZ_DENOM } from "../types/coin.js";
 
 /**
  * Create a signing CosmWasm client from wallet connection
@@ -16,7 +17,7 @@ export async function createContractClient(
     config.rpcEndpoint,
     wallet.signer,
     {
-      gasPrice: GasPrice.fromString("0.025uxyz"),
+      gasPrice: GasPrice.fromString(`0.025${XYZ_DENOM}`),
     }
   );
 }

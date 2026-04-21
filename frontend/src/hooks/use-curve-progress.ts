@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { fetchCurveProgress } from "@/lib/api";
-import { USE_MOCK_DATA } from "@/lib/mock-data";
 
 export function useCurveProgress(tokenAddress: string) {
   return useQuery({
@@ -10,6 +9,6 @@ export function useCurveProgress(tokenAddress: string) {
     queryFn: () => fetchCurveProgress(tokenAddress),
     staleTime: 30_000,
     refetchInterval: 60_000,
-    enabled: !!tokenAddress && !USE_MOCK_DATA,
+    enabled: !!tokenAddress,
   });
 }

@@ -16,7 +16,7 @@ import { Slider } from "@/components/ui/slider";
 import { useWalletStore } from "@/stores/wallet-store";
 import { simulateSell, sellTokens } from "@/lib/contract-clients/launchpad";
 import { createContractClient } from "@xyz-chain/sdk";
-import { RPC_ENDPOINT, REST_ENDPOINT, CHAIN_ID } from "@/lib/chain-config";
+import { RPC_ENDPOINT, REST_ENDPOINT, CHAIN_ID, NATIVE_SYMBOL } from "@/lib/chain-config";
 import { toUxyz, computeMinOutput } from "@/lib/utils";
 import { sellFormSchema, type SellFormValues } from "@/lib/validation/trading-schemas";
 import { AmountInput } from "./amount-input";
@@ -45,7 +45,7 @@ export function SellForm({ tokenAddress, tokenSymbol }: SellFormProps) {
   const { data: simulation, isLoading: isSimulating } = useQuery({
     queryKey: ["simulate-sell", tokenAddress, tokenAmount],
     queryFn: () => {
-      // Token amounts also use 6 decimals (CW20 standard on XYZ Chain)
+      // Token amounts also use 6 decimals (CW20 standard on the launchpad)
       const amountMicro = toUxyz(tokenAmount);
       return simulateSell(client!, tokenAddress, amountMicro);
     },
@@ -164,7 +164,7 @@ export function SellForm({ tokenAddress, tokenSymbol }: SellFormProps) {
             minOutput={computeMinOutput(simulation.xyz_out, slippage)}
             feeAmount={simulation.fee_amount}
             slippagePercent={slippage}
-            outputDenom="NEW"
+            outputDenom={NATIVE_SYMBOL}
             outputIsXyz={true}
             newPrice={simulation.new_price}
           />

@@ -1,16 +1,17 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { NATIVE_SYMBOL } from "./chain-config"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-// XYZ has 6 decimals: 1 XYZ = 1,000,000 uxyz
+// BWICK has 6 decimals: 1 BWICK = 1,000,000 ubwick
 const UXYZ_DECIMALS = 6;
 const UXYZ_MULTIPLIER = 10 ** UXYZ_DECIMALS;
 
 /**
- * Convert display XYZ amount to micro-unit uxyz string for contract calls.
+ * Convert display BWICK amount to micro-unit string for contract calls.
  * Example: "1.5" -> "1500000"
  */
 export function toUxyz(xyzAmount: string): string {
@@ -20,7 +21,7 @@ export function toUxyz(xyzAmount: string): string {
 }
 
 /**
- * Convert micro-unit uxyz string to display XYZ number.
+ * Convert micro-unit string to display BWICK number.
  * Example: "1500000" -> 1.5
  */
 export function fromUxyz(uxyzAmount: string): number {
@@ -30,17 +31,17 @@ export function fromUxyz(uxyzAmount: string): number {
 }
 
 /**
- * Format a uxyz amount as a human-readable XYZ string.
- * Example: "1500000" -> "1.50 XYZ"
+ * Format a native micro-unit amount as a human-readable BWICK string.
+ * Example: "1500000" -> "1.50 BWICK"
  */
 export function formatXyzAmount(uxyzAmount: string): string {
   const num = fromUxyz(uxyzAmount);
-  if (num === 0) return "0 NEW";
-  if (num < 0.001) return `${num.toExponential(2)} NEW`;
-  if (num < 1) return `${num.toFixed(6)} NEW`;
-  if (num < 1000) return `${num.toFixed(2)} NEW`;
-  if (num < 1_000_000) return `${(num / 1000).toFixed(1)}K NEW`;
-  return `${(num / 1_000_000).toFixed(2)}M NEW`;
+  if (num === 0) return `0 ${NATIVE_SYMBOL}`;
+  if (num < 0.001) return `${num.toExponential(2)} ${NATIVE_SYMBOL}`;
+  if (num < 1) return `${num.toFixed(6)} ${NATIVE_SYMBOL}`;
+  if (num < 1000) return `${num.toFixed(2)} ${NATIVE_SYMBOL}`;
+  if (num < 1_000_000) return `${(num / 1000).toFixed(1)}K ${NATIVE_SYMBOL}`;
+  return `${(num / 1_000_000).toFixed(2)}M ${NATIVE_SYMBOL}`;
 }
 
 /**

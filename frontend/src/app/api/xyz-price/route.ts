@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
-
-const REST_ENDPOINT =
-  process.env.NEXT_PUBLIC_REST_ENDPOINT ?? "http://67.205.164.156:1317";
-const LAUNCHPAD_CONTRACT = process.env.NEXT_PUBLIC_LAUNCHPAD_CONTRACT!;
+import { LAUNCHPAD_CONTRACT, REST_ENDPOINT } from "@/lib/chain-config";
 
 async function tryOracle(): Promise<number | null> {
   try {
@@ -14,7 +11,7 @@ async function tryOracle(): Promise<number | null> {
     if (!res.ok) return null;
     const json = await res.json();
     const price = Number(json.data?.xyz_usd_price) / 1_000_000;
-    if (price > 0) return price;
+    if (Number.isFinite(price) && price >= 0) return price;
   } catch {}
   return null;
 }
@@ -24,7 +21,7 @@ export async function GET() {
 
   if (price === null) {
     return NextResponse.json(
-      { error: "Failed to fetch price from oracle" },
+      { error: "Failed to fetch BWICK price from oracle" },
       { status: 500 },
     );
   }

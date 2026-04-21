@@ -2,8 +2,9 @@ import { SigningStargateClient, GasPrice, calculateFee, type StdFee } from "@cos
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import type { XYZChainConfig } from "../types/chain.js";
 import type { FeeConfig } from "../types/transaction.js";
+import { XYZ_DENOM } from "../types/coin.js";
 
-const DEFAULT_GAS_PRICE = "0.025uxyz";
+const DEFAULT_GAS_PRICE = `0.025${XYZ_DENOM}`;
 const DEFAULT_GAS_ADJUSTMENT = 1.3;
 
 export interface XYZSigningClient {
@@ -23,7 +24,7 @@ export async function createSigningClient(
   // Create wallet from mnemonic
   const wallet = await DirectSecp256k1HdWallet.fromMnemonic(
     mnemonic,
-    { prefix: config.prefix ?? "xyz" }
+    { prefix: config.prefix ?? "bwick" }
   );
 
   const [account] = await wallet.getAccounts();

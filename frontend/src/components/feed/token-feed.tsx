@@ -1,15 +1,16 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
 import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, CaretDown, Circle, Flame, GraduationCap } from "@phosphor-icons/react";
 import { useSSEFeed } from "@/hooks/use-sse";
 import { useTokens } from "@/hooks/use-tokens";
 import { useXyzPrice } from "@/hooks/use-xyz-price";
-import { DEFAULT_TOKEN_SUPPLY } from "@/lib/chain-config";
-import { MOCK_TOKENS, USE_MOCK_DATA } from "@/lib/mock-data";
+import { DEFAULT_TOKEN_SUPPLY, RPC_ENDPOINT, REST_ENDPOINT, CHAIN_ID } from "@/lib/chain-config";
 import { formatUsd } from "@/lib/utils";
 import type { TokenListItem } from "@/lib/api";
+import { getConfig } from "@/lib/contract-clients/launchpad";
 
 type SortMode = "activity" | "newest" | "reserves";
 
@@ -26,33 +27,36 @@ const MIN_TICKER_ITEMS = 44;
 
 export function TokenFeed() {
   const [sortMode, setSortMode] = useState<SortMode>("activity");
-  const { data: tokens, error } = useTokens();
+  const { data: tokens = [], error } = useTokens();
   const { xyzPriceUsd } = useXyzPrice();
+  const { data: launchpadConfig } = useQuery({
+    queryKey: ["launchpad-config"],
+    queryFn: async () => {
+      const { createClient } = await import("@xyz-chain/sdk");
+      const readClient = await createClient({
+        rpcEndpoint: RPC_ENDPOINT,
+        restEndpoint: REST_ENDPOINT,
+        chainId: CHAIN_ID,
+      });
+      try {
+        return await getConfig(readClient);
+      } finally {
+        readClient.disconnect();
+      }
+    },
+    staleTime: 60_000,
+  });
 
   useSSEFeed();
 
-  const sourceTokens = useMemo(() => {
-    if (USE_MOCK_DATA) return MOCK_TOKENS;
-    if (tokens && tokens.length > 0) return tokens;
-    return MOCK_TOKENS;
-  }, [tokens]);
-
   const sortedTokens = useMemo(
-    () => sortTokens(sourceTokens, sortMode),
-    [sourceTokens, sortMode],
+    () => sortTokens(tokens, sortMode),
+    [tokens, sortMode],
   );
 
   const liveTokens = sortedTokens.filter((token) => !token.graduated);
   const graduatedTokens = sortedTokens.filter((token) => token.graduated);
-  const trendingTokens = useMemo(
-    () => [...sortedTokens].sort((left, right) => Math.abs(getMockChange(right.address)) - Math.abs(getMockChange(left.address))),
-    [sortedTokens],
-  );
-
-  const maxReserve = useMemo(
-    () => Math.max(1, ...sortedTokens.map((token) => Number(token.xyz_reserves) / 1_000_000)),
-    [sortedTokens],
-  );
+  const trendingTokens = sortedTokens;
 
   const tickerItems = useMemo(() => buildTickerItems(sortedTokens), [sortedTokens]);
   const loopingTickerItems = useMemo(
@@ -66,30 +70,28 @@ export function TokenFeed() {
   return (
     <div className="overflow-hidden border-x border-b border-border bg-background pb-2">
       <section className="relative overflow-hidden border-y border-border">
-        <div className="overflow-hidden">
-          <div className="token-ticker-track flex w-max">
-            {loopingTickerItems.map((item) => {
-              const change = getMockChange(item.token.address);
-              const positive = change >= 0;
-
-              return (
+        {loopingTickerItems.length > 0 ? (
+          <div className="overflow-hidden">
+            <div className="token-ticker-track flex w-max">
+              {loopingTickerItems.map((item) => (
                 <Link
                   key={item.key}
                   href={`/token/${item.token.address}`}
-                   className="inline-flex h-9 items-center gap-2 border-r border-border px-3 text-xs text-foreground/80 transition-colors hover:bg-accent hover:text-accent-foreground"
+                  className="inline-flex h-9 items-center gap-2 border-r border-border px-3 text-xs text-foreground/80 transition-colors hover:bg-accent hover:text-accent-foreground"
                 >
                   <span className="flex h-4 w-4 items-center justify-center overflow-hidden rounded-sm border border-border bg-card text-[9px] font-semibold text-muted-foreground">
                     {(item.token.symbol ?? "?").slice(0, 1).toUpperCase()}
                   </span>
                   <span className="font-semibold text-foreground">{item.token.symbol ?? "TOKEN"}</span>
-                  <span className={positive ? "text-primary" : "text-destructive"}>
-                    {positive ? "↑" : "↓"} {Math.abs(change).toFixed(2)}%
-                  </span>
                 </Link>
-              );
-            })}
+              ))}
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="px-4 py-3 text-xs text-muted-foreground">
+            No BWICK launches yet.
+          </div>
+        )}
         <div
           aria-hidden
           className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-background via-background/95 to-transparent shadow-[20px_0_24px_-20px_rgba(40,55,80,0.55)]"
@@ -100,9 +102,9 @@ export function TokenFeed() {
         />
       </section>
 
-      {!USE_MOCK_DATA && error ? (
+      {error ? (
         <div className="border-b border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
-          Failed to load live data. Showing mock data preview.
+          Failed to load BWICK launch data.
         </div>
       ) : null}
 
@@ -117,7 +119,7 @@ export function TokenFeed() {
         iconPlain
         tokens={liveTokens}
         xyzPriceUsd={xyzPriceUsd}
-        maxReserve={maxReserve}
+        graduationThreshold={launchpadConfig?.graduation_threshold}
         sortMode={sortMode}
         onSortChange={setSortMode}
       />
@@ -127,7 +129,7 @@ export function TokenFeed() {
         icon={<GraduationCap size={16} weight="regular" className="text-foreground" />}
         tokens={graduatedTokens}
         xyzPriceUsd={xyzPriceUsd}
-        maxReserve={maxReserve}
+        graduationThreshold={launchpadConfig?.graduation_threshold}
         sortMode={sortMode}
         onSortChange={setSortMode}
       />
@@ -137,7 +139,7 @@ export function TokenFeed() {
         icon={<Flame size={16} weight="regular" className="text-foreground" />}
         tokens={trendingTokens}
         xyzPriceUsd={xyzPriceUsd}
-        maxReserve={maxReserve}
+        graduationThreshold={launchpadConfig?.graduation_threshold}
         sortMode={sortMode}
         onSortChange={setSortMode}
       />
@@ -151,7 +153,7 @@ function TokenRowSection({
   iconPlain,
   tokens,
   xyzPriceUsd,
-  maxReserve,
+  graduationThreshold,
   sortMode,
   onSortChange,
 }: {
@@ -160,7 +162,7 @@ function TokenRowSection({
   iconPlain?: boolean;
   tokens: TokenListItem[];
   xyzPriceUsd: number;
-  maxReserve: number;
+  graduationThreshold?: string;
   sortMode: SortMode;
   onSortChange: (mode: SortMode) => void;
 }) {
@@ -194,7 +196,7 @@ function TokenRowSection({
                 onChange={(event) => onSortChange(event.target.value as SortMode)}
                 className="h-8 w-[148px] appearance-none rounded-sm border border-border bg-background pl-3 pr-8 text-sm capitalize text-foreground outline-none focus:border-primary focus-visible:outline-none focus-visible:ring-0"
               >
-                <option value="activity">Completion %</option>
+                <option value="activity">24h trades</option>
                 <option value="newest">Recently launched</option>
                 <option value="reserves">Reserves</option>
               </select>
@@ -236,7 +238,7 @@ function TokenRowSection({
                 key={`${token.address}-${index}`}
                 token={token}
                 xyzPriceUsd={xyzPriceUsd}
-                maxReserve={maxReserve}
+                graduationThreshold={graduationThreshold}
                 tileIndex={index}
               />
             ))}
@@ -250,18 +252,21 @@ function TokenRowSection({
 function LaunchTile({
   token,
   xyzPriceUsd,
-  maxReserve,
+  graduationThreshold,
   tileIndex,
 }: {
   token: TokenListItem;
   xyzPriceUsd: number;
-  maxReserve: number;
+  graduationThreshold?: string;
   tileIndex: number;
 }) {
   const reserve = Number(token.xyz_reserves) / 1_000_000;
-  const progress = token.graduated ? 100 : Math.min(100, (reserve / maxReserve) * 100);
-  const change = getMockChange(token.address);
-  const positive = change >= 0;
+  const threshold = Number(graduationThreshold || "0") / 1_000_000;
+  const progress = token.graduated
+    ? 100
+    : threshold > 0
+      ? Math.min(100, (reserve / threshold) * 100)
+      : 0;
   const fallbackBackground = TILE_BACKGROUNDS[tileIndex % TILE_BACKGROUNDS.length];
   const previewImage = getDisplayImage(token, tileIndex);
   const initial = (token.symbol ?? "?").slice(0, 1).toUpperCase();
@@ -318,9 +323,8 @@ function LaunchTile({
           <Metric label="FDV" value={formatMarketCap(token, xyzPriceUsd)} />
           <Metric label="Mkt Cap" value={formatMarketCap(token, xyzPriceUsd)} />
           <Metric
-            label="24h"
-            value={`${positive ? "↑" : "↓"} ${Math.abs(change).toFixed(2)}%`}
-            valueClassName={positive ? "text-emerald-300" : "text-rose-300"}
+            label="Trades"
+            value={String(token.trade_count_24h ?? 0)}
           />
         </div>
       </div>
@@ -346,7 +350,8 @@ function Metric({
 }
 
 function buildTickerItems(tokens: TokenListItem[]) {
-  const baseTokens = tokens.length > 0 ? tokens : MOCK_TOKENS;
+  if (tokens.length === 0) return [];
+  const baseTokens = tokens;
   const repeats = Math.max(2, Math.ceil(MIN_TICKER_ITEMS / baseTokens.length));
   const expanded = Array.from({ length: repeats }).flatMap((_, repeatIndex) =>
     baseTokens.map((token) => ({
@@ -367,8 +372,7 @@ function getDisplayImage(token: TokenListItem, tileIndex: number): string {
 function sortTokens(tokens: TokenListItem[], mode: SortMode): TokenListItem[] {
   if (mode === "newest") {
     return [...tokens].sort(
-      (left, right) =>
-        new Date(right.first_seen_at).getTime() - new Date(left.first_seen_at).getTime(),
+      (left, right) => (right.created_height ?? 0) - (left.created_height ?? 0),
     );
   }
 
@@ -386,18 +390,4 @@ function sortTokens(tokens: TokenListItem[], mode: SortMode): TokenListItem[] {
 function formatMarketCap(token: TokenListItem, xyzPriceUsd: number): string {
   const cap = Number(token.current_price) * DEFAULT_TOKEN_SUPPLY * xyzPriceUsd;
   return formatUsd(cap);
-}
-
-function hashString(value: string): number {
-  let hash = 0;
-  for (let index = 0; index < value.length; index++) {
-    hash = (hash << 5) - hash + value.charCodeAt(index);
-    hash |= 0;
-  }
-  return Math.abs(hash);
-}
-
-function getMockChange(seedValue: string): number {
-  const hash = hashString(seedValue);
-  return ((hash % 2_300) - 1_150) / 100;
 }

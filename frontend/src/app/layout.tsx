@@ -16,8 +16,8 @@ const spaceMono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "new Launchpad",
-  description: "Token discovery and launch experience for new network",
+  title: "BWIK Laucnhpad",
+  description: "BWIK Laucnhpad",
 };
 
 export default function RootLayout({
@@ -27,9 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${manrope.variable} ${spaceMono.variable} antialiased`}
-      >
+      <body className={`${manrope.variable} ${spaceMono.variable} antialiased`}>
         <div className="relative z-10">
           <Providers>{children}</Providers>
         </div>

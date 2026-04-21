@@ -3,9 +3,9 @@ export interface Coin {
   amount: string;
 }
 
-// XYZ uses 6 decimals like Solana
+// BWICK uses 6 decimals like Solana
 export const XYZ_DECIMALS = 6;
-export const XYZ_DENOM = "uxyz";
+export const XYZ_DENOM = "ubwick";
 
 export function formatXYZ(amount: string): string {
   const value = BigInt(amount);
