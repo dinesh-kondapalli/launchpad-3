@@ -4,20 +4,20 @@ export interface Coin {
 }
 
 // BWICK uses 6 decimals like Solana
-export const XYZ_DECIMALS = 6;
-export const XYZ_DENOM = "ubwick";
+export const BWICK_DECIMALS = 6;
+export const BWICK_DENOM = "ubwick";
 
-export function formatXYZ(amount: string): string {
+export function formatBwick(amount: string): string {
   const value = BigInt(amount);
-  const whole = value / BigInt(10 ** XYZ_DECIMALS);
-  const frac = value % BigInt(10 ** XYZ_DECIMALS);
-  return `${whole}.${frac.toString().padStart(XYZ_DECIMALS, "0")}`;
+  const whole = value / BigInt(10 ** BWICK_DECIMALS);
+  const frac = value % BigInt(10 ** BWICK_DECIMALS);
+  return `${whole}.${frac.toString().padStart(BWICK_DECIMALS, "0")}`;
 }
 
-export function parseXYZ(amount: string): string {
+export function parseBwick(amount: string): string {
   const [whole, frac = ""] = amount.split(".");
-  const fracPadded = frac.padEnd(XYZ_DECIMALS, "0").slice(0, XYZ_DECIMALS);
+  const fracPadded = frac.padEnd(BWICK_DECIMALS, "0").slice(0, BWICK_DECIMALS);
   return (
-    BigInt(whole) * BigInt(10 ** XYZ_DECIMALS) + BigInt(fracPadded)
+    BigInt(whole) * BigInt(10 ** BWICK_DECIMALS) + BigInt(fracPadded)
   ).toString();
 }

@@ -34,14 +34,14 @@ export function ActivityItem({ trade }: ActivityItemProps) {
   const getDirectionDisplay = () => {
     switch (trade.direction) {
       case "buy":
-      case "xyz_to_token":
+      case "bwick_to_token":
         return {
           icon: <ArrowBendUpRight size={16} weight="fill" />,
           color: "text-primary",
           action: "Bought",
         };
       case "sell":
-      case "token_to_xyz":
+      case "token_to_bwick":
         return {
           icon: <ArrowBendDownRight size={16} weight="fill" />,
           color: "text-muted-foreground",
@@ -67,8 +67,8 @@ export function ActivityItem({ trade }: ActivityItemProps) {
   // Format trader address (truncated)
   const traderDisplay = `${trade.trader.slice(0, 8)}...${trade.trader.slice(-4)}`;
 
-  // Format volume as XYZ amount
-  const volumeNative = (Number(trade.volume_uxyz) / 1_000_000).toFixed(2);
+  // Format volume as BWICK amount
+  const volumeNative = (Number(trade.volume_ubwick) / 1_000_000).toFixed(2);
 
   // Display token symbol or truncated address as fallback
   const tokenDisplay = trade.token_symbol ?? trade.token_address.slice(0, 8);

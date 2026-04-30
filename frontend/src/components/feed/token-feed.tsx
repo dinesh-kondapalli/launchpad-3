@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, CaretDown, Circle, Flame, GraduationCap } from "@phosphor-icons/react";
 import { useSSEFeed } from "@/hooks/use-sse";
 import { useTokens } from "@/hooks/use-tokens";
-import { useXyzPrice } from "@/hooks/use-xyz-price";
+import { useBwickPrice } from "@/hooks/use-bwick-price";
 import { DEFAULT_TOKEN_SUPPLY, RPC_ENDPOINT, REST_ENDPOINT, CHAIN_ID } from "@/lib/chain-config";
 import { formatUsd } from "@/lib/utils";
 import type { TokenListItem } from "@/lib/api";
@@ -28,11 +28,11 @@ const MIN_TICKER_ITEMS = 44;
 export function TokenFeed() {
   const [sortMode, setSortMode] = useState<SortMode>("activity");
   const { data: tokens = [], error } = useTokens();
-  const { xyzPriceUsd } = useXyzPrice();
+  const { bwickPriceUsd } = useBwickPrice();
   const { data: launchpadConfig } = useQuery({
     queryKey: ["launchpad-config"],
     queryFn: async () => {
-      const { createClient } = await import("@xyz-chain/sdk");
+      const { createClient } = await import("@bwick-chain/sdk");
       const readClient = await createClient({
         rpcEndpoint: RPC_ENDPOINT,
         restEndpoint: REST_ENDPOINT,
@@ -118,7 +118,7 @@ export function TokenFeed() {
         }
         iconPlain
         tokens={liveTokens}
-        xyzPriceUsd={xyzPriceUsd}
+        bwickPriceUsd={bwickPriceUsd}
         graduationThreshold={launchpadConfig?.graduation_threshold}
         sortMode={sortMode}
         onSortChange={setSortMode}
@@ -128,7 +128,7 @@ export function TokenFeed() {
         title="Graduated"
         icon={<GraduationCap size={16} weight="regular" className="text-foreground" />}
         tokens={graduatedTokens}
-        xyzPriceUsd={xyzPriceUsd}
+        bwickPriceUsd={bwickPriceUsd}
         graduationThreshold={launchpadConfig?.graduation_threshold}
         sortMode={sortMode}
         onSortChange={setSortMode}
@@ -138,7 +138,7 @@ export function TokenFeed() {
         title="Trending"
         icon={<Flame size={16} weight="regular" className="text-foreground" />}
         tokens={trendingTokens}
-        xyzPriceUsd={xyzPriceUsd}
+        bwickPriceUsd={bwickPriceUsd}
         graduationThreshold={launchpadConfig?.graduation_threshold}
         sortMode={sortMode}
         onSortChange={setSortMode}
@@ -152,7 +152,7 @@ function TokenRowSection({
   icon,
   iconPlain,
   tokens,
-  xyzPriceUsd,
+  bwickPriceUsd,
   graduationThreshold,
   sortMode,
   onSortChange,
@@ -161,7 +161,7 @@ function TokenRowSection({
   icon: React.ReactNode;
   iconPlain?: boolean;
   tokens: TokenListItem[];
-  xyzPriceUsd: number;
+  bwickPriceUsd: number;
   graduationThreshold?: string;
   sortMode: SortMode;
   onSortChange: (mode: SortMode) => void;
@@ -237,7 +237,7 @@ function TokenRowSection({
               <LaunchTile
                 key={`${token.address}-${index}`}
                 token={token}
-                xyzPriceUsd={xyzPriceUsd}
+                bwickPriceUsd={bwickPriceUsd}
                 graduationThreshold={graduationThreshold}
                 tileIndex={index}
               />
@@ -251,16 +251,16 @@ function TokenRowSection({
 
 function LaunchTile({
   token,
-  xyzPriceUsd,
+  bwickPriceUsd,
   graduationThreshold,
   tileIndex,
 }: {
   token: TokenListItem;
-  xyzPriceUsd: number;
+  bwickPriceUsd: number;
   graduationThreshold?: string;
   tileIndex: number;
 }) {
-  const reserve = Number(token.xyz_reserves) / 1_000_000;
+  const reserve = Number(token.bwick_reserves) / 1_000_000;
   const threshold = Number(graduationThreshold || "0") / 1_000_000;
   const progress = token.graduated
     ? 100
@@ -320,8 +320,8 @@ function LaunchTile({
         </div>
 
         <div className="grid grid-cols-3 gap-3 border-t border-border pt-2.5 text-xs">
-          <Metric label="FDV" value={formatMarketCap(token, xyzPriceUsd)} />
-          <Metric label="Mkt Cap" value={formatMarketCap(token, xyzPriceUsd)} />
+          <Metric label="FDV" value={formatMarketCap(token, bwickPriceUsd)} />
+          <Metric label="Mkt Cap" value={formatMarketCap(token, bwickPriceUsd)} />
           <Metric
             label="Trades"
             value={String(token.trade_count_24h ?? 0)}
@@ -378,7 +378,7 @@ function sortTokens(tokens: TokenListItem[], mode: SortMode): TokenListItem[] {
 
   if (mode === "reserves") {
     return [...tokens].sort(
-      (left, right) => Number(right.xyz_reserves) - Number(left.xyz_reserves),
+      (left, right) => Number(right.bwick_reserves) - Number(left.bwick_reserves),
     );
   }
 
@@ -387,7 +387,7 @@ function sortTokens(tokens: TokenListItem[], mode: SortMode): TokenListItem[] {
   );
 }
 
-function formatMarketCap(token: TokenListItem, xyzPriceUsd: number): string {
-  const cap = Number(token.current_price) * DEFAULT_TOKEN_SUPPLY * xyzPriceUsd;
+function formatMarketCap(token: TokenListItem, bwickPriceUsd: number): string {
+  const cap = Number(token.current_price) * DEFAULT_TOKEN_SUPPLY * bwickPriceUsd;
   return formatUsd(cap);
 }

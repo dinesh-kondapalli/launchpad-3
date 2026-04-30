@@ -1,13 +1,13 @@
 /**
- * XYZ Chain SDK - Node.js Example
+ * BWICK Chain SDK - Node.js Example
  *
  * This script demonstrates:
- * 1. Connecting to XYZ Chain
+ * 1. Connecting to BWICK Chain
  * 2. Querying balances
  * 3. Signing and sending transactions (with mnemonic)
  *
  * Prerequisites:
- * - XYZ Chain running locally (xyz localnet start)
+ * - BWICK Chain running locally (bwick localnet start)
  * - Test accounts with funds
  */
 
@@ -16,11 +16,11 @@ import {
   createSigningClient,
   getBalance,
   getAllBalances,
-  sendXYZ,
-  formatXYZ,
+  sendBwick,
+  formatBwick,
   getTokenInfo,
-  XYZ_DENOM,
-} from "@xyz-chain/sdk";
+  BWICK_DENOM,
+} from "@bwick-chain/sdk";
 
 const RPC_ENDPOINT = "http://localhost:26657";
 
@@ -30,11 +30,11 @@ const TEST_MNEMONIC =
   "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
 
 async function main() {
-  console.log("XYZ Chain SDK - Node.js Example\n");
+  console.log("BWICK Chain SDK - Node.js Example\n");
   console.log("================================\n");
 
   // 1. Create read-only client
-  console.log("1. Connecting to XYZ Chain...");
+  console.log("1. Connecting to BWICK Chain...");
   const client = await createClient({ rpcEndpoint: RPC_ENDPOINT });
   const chainId = await client.getChainId();
   const height = await client.getHeight();
@@ -44,12 +44,12 @@ async function main() {
   // 2. Query balance
   console.log("2. Querying balance...");
   // Replace with actual test address
-  const testAddress = "xyz1..."; // Get from: xyzd keys show alice --address
+  const testAddress = "bwick1..."; // Get from: bwickd keys show alice --address
   try {
     const balance = await getBalance(client, testAddress);
     console.log(`   Address: ${testAddress}`);
     console.log(
-      `   Balance: ${formatXYZ(balance.amount)} XYZ (${balance.amount} ${XYZ_DENOM})\n`
+      `   Balance: ${formatBwick(balance.amount)} BWICK (${balance.amount} ${BWICK_DENOM})\n`
     );
   } catch (error) {
     console.log(`   Could not query balance: ${error}\n`);
@@ -66,11 +66,11 @@ async function main() {
 
     // Get sender balance
     const senderBalance = await getBalance(client, signingClient.address);
-    console.log(`   Sender balance: ${formatXYZ(senderBalance.amount)} XYZ\n`);
+    console.log(`   Sender balance: ${formatBwick(senderBalance.amount)} BWICK\n`);
 
     // Uncomment to send a transaction:
-    // const recipient = "xyz1...recipient...";
-    // const result = await sendXYZ(signingClient, recipient, "1000000", {
+    // const recipient = "bwick1...recipient...";
+    // const result = await sendBwick(signingClient, recipient, "1000000", {
     //   memo: "SDK test transfer",
     // });
     // console.log(`   Transaction hash: ${result.transactionHash}`);

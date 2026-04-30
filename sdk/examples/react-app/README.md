@@ -1,13 +1,13 @@
 # React Example
 
-Demonstrates using the XYZ Chain SDK in a React application with wallet
+Demonstrates using the BWICK Chain SDK in a React application with wallet
 connection and balance display.
 
 ## Setup
 
-1. Start local XYZ Chain:
+1. Start local BWICK Chain:
    ```bash
-   xyz localnet start
+   bwick localnet start
    ```
 
 2. Install dependencies:
@@ -27,11 +27,11 @@ connection and balance display.
 - Creating a read-only client (`createClient`)
 - Displaying chain info (chain ID, block height)
 - Connecting a wallet with the modal (`showWalletModal`)
-- Querying and displaying account balance (`getBalance`, `formatXYZ`)
+- Querying and displaying account balance (`getBalance`, `formatBWICK`)
 - Disconnecting wallet
 
 ## Requirements
 
 For wallet connection to work:
 - Install Keplr or Leap browser extension
-- XYZ Chain must be added to the wallet (the SDK will prompt to add it)
+- BWICK Chain must be added to the wallet (the SDK will prompt to add it)

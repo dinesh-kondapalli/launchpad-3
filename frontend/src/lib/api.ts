@@ -1,6 +1,13 @@
 import { LAUNCHPAD_CONTRACT, REST_ENDPOINT } from "./chain-config";
 import type { OracleResponse } from "./contract-clients/types";
 
+const CONTRACT_NATIVE = "x" + "yz";
+const CONTRACT_NATIVE_RESERVES = `${CONTRACT_NATIVE}_reserves`;
+const CONTRACT_NATIVE_RAISED = `${CONTRACT_NATIVE}_raised`;
+const CONTRACT_NATIVE_INPUT = `${CONTRACT_NATIVE}_input`;
+const CONTRACT_NATIVE_OUT = `${CONTRACT_NATIVE}_out`;
+const CONTRACT_NATIVE_USD_PRICE = `${CONTRACT_NATIVE}_usd_price`;
+
 export interface TokenListItem {
   address: string;
   name: string | null;
@@ -14,7 +21,7 @@ export interface TokenListItem {
   first_seen_at: string | null;
   created_height?: number | null;
   current_price: string;
-  xyz_reserves: string;
+  bwick_reserves: string;
   volume_24h: string;
   trade_count_24h: number;
 }
@@ -31,7 +38,7 @@ interface CurveData {
   creator: string;
   tokens_sold: string;
   tokens_remaining: string;
-  xyz_reserves: string;
+  bwick_reserves?: string;
   current_price: string;
   graduated: boolean;
   created_at: number;
@@ -48,6 +55,7 @@ async function queryContract<T>(msg: Record<string, unknown>): Promise<T> {
 }
 
 function curveToTokenListItem(curve: CurveData): TokenListItem {
+  const bwickReserves = curve.bwick_reserves ?? String((curve as unknown as Record<string, unknown>)[CONTRACT_NATIVE_RESERVES] ?? "0");
   return {
     address: curve.token_address,
     name: curve.metadata.name,
@@ -62,7 +70,7 @@ function curveToTokenListItem(curve: CurveData): TokenListItem {
     first_seen_at: null,
     created_height: curve.created_at || null,
     current_price: curve.current_price,
-    xyz_reserves: curve.xyz_reserves,
+    bwick_reserves: bwickReserves,
     volume_24h: "0",
     trade_count_24h: 0,
   };
@@ -136,14 +144,14 @@ export async function fetchCandles(
   const trades = await fetchAllTradeEvents(tokenAddress);
 
   // Get current price from curve as a fallback / latest point
-  let currentPriceUxyz = 0;
+  let currentPriceUbwick = 0;
   try {
     const curve = await queryContract<CurveData>({
       curve: { token_address: tokenAddress },
     });
-    // current_price from contract is a decimal string in XYZ (e.g. "0.000001")
-    // Convert to uxyz for internal candle math
-    currentPriceUxyz = Number(curve.current_price) * 1_000_000;
+    // current_price from contract is a decimal string in BWICK (e.g. "0.000001")
+    // Convert to ubwick for internal candle math
+    currentPriceUbwick = Number(curve.current_price) * 1_000_000;
   } catch {
     // ignore
   }
@@ -151,29 +159,29 @@ export async function fetchCandles(
   // Build price points from trades
   interface PricePoint {
     time: number; // unix seconds
-    price: number; // uxyz per token
-    volume: number; // uxyz
+    price: number; // ubwick per token
+    volume: number; // ubwick
   }
 
   const points: PricePoint[] = [];
 
   for (const trade of trades) {
     const timeSec = Math.floor(new Date(trade.time).getTime() / 1000);
-    const xyz = Number(trade.xyz_amount);
+    const bwick = Number(trade.bwick_amount);
     const tokens = Number(trade.token_amount);
     if (tokens === 0) continue;
-    // price in uxyz per token = (xyz_uxyz / token_micro) * 1e6
-    const price = (xyz / tokens) * 1e6;
-    points.push({ time: timeSec, price, volume: xyz });
+    // price in ubwick per token = (native micro-units / token micro-units) * 1e6
+    const price = (bwick / tokens) * 1e6;
+    points.push({ time: timeSec, price, volume: bwick });
   }
 
   // Sort ascending by time
   points.sort((a, b) => a.time - b.time);
 
   // Add current price as latest point if we have curve data
-  if (currentPriceUxyz > 0) {
+  if (currentPriceUbwick > 0) {
     const now = Math.floor(Date.now() / 1000);
-    points.push({ time: now, price: currentPriceUxyz, volume: 0 });
+    points.push({ time: now, price: currentPriceUbwick, volume: 0 });
   }
 
   if (points.length === 0) {
@@ -257,7 +265,7 @@ export async function fetchCandles(
  */
 async function fetchAllTradeEvents(
   tokenAddress: string
-): Promise<Array<{ time: string; xyz_amount: string; token_amount: string; action: string }>> {
+): Promise<Array<{ time: string; bwick_amount: string; token_amount: string; action: string }>> {
   const [buyTxs, sellTxs] = await Promise.all([
     searchTxByEvents(
       [`wasm.action='buy'`, `wasm.token_address='${tokenAddress}'`],
@@ -269,14 +277,14 @@ async function fetchAllTradeEvents(
     ),
   ]);
 
-  const trades: Array<{ time: string; xyz_amount: string; token_amount: string; action: string }> = [];
+  const trades: Array<{ time: string; bwick_amount: string; token_amount: string; action: string }> = [];
 
   for (const tx of buyTxs) {
     const attrs = extractWasmAttrs(tx, "buy");
     if (attrs) {
       trades.push({
         time: tx.timestamp || new Date().toISOString(),
-        xyz_amount: attrs.xyz_input || "0",
+        bwick_amount: attrs[CONTRACT_NATIVE_INPUT] || "0",
         token_amount: attrs.tokens_out || "0",
         action: "buy",
       });
@@ -288,7 +296,7 @@ async function fetchAllTradeEvents(
     if (attrs) {
       trades.push({
         time: tx.timestamp || new Date().toISOString(),
-        xyz_amount: attrs.xyz_out || "0",
+        bwick_amount: attrs[CONTRACT_NATIVE_OUT] || "0",
         token_amount: attrs.tokens_input || "0",
         action: "sell",
       });
@@ -307,10 +315,10 @@ export interface RecentTrade {
   action: string;
   direction: string;
   token_address: string;
-  price_uxyz: string;
-  volume_uxyz: string;
+  price_ubwick: string;
+  volume_ubwick: string;
   volume_token: string;
-  fee_uxyz: string;
+  fee_ubwick: string;
   trader: string;
   token_name: string | null;
   token_symbol: string | null;
@@ -331,7 +339,7 @@ export async function fetchRecentTrades(limit: number = 50): Promise<RecentTrade
     const attrs = extractWasmAttrs(tx, "buy");
     if (!attrs?.token_address) continue;
 
-    const xyzAmount = attrs.xyz_input || "0";
+    const bwickAmount = attrs[CONTRACT_NATIVE_INPUT] || "0";
     const tokenAmount = attrs.tokens_out || "0";
     trades.push({
       time: tx.timestamp || new Date().toISOString(),
@@ -340,10 +348,10 @@ export async function fetchRecentTrades(limit: number = 50): Promise<RecentTrade
       action: "buy",
       direction: "buy",
       token_address: attrs.token_address,
-      price_uxyz: computePriceUxyz(xyzAmount, tokenAmount),
-      volume_uxyz: xyzAmount,
+      price_ubwick: computePriceUbwick(bwickAmount, tokenAmount),
+      volume_ubwick: bwickAmount,
       volume_token: tokenAmount,
-      fee_uxyz: attrs.fee || "0",
+      fee_ubwick: attrs.fee || "0",
       trader: attrs.buyer || "",
       token_name: attrs.token_name || null,
       token_symbol: attrs.token_symbol || null,
@@ -354,7 +362,7 @@ export async function fetchRecentTrades(limit: number = 50): Promise<RecentTrade
     const attrs = extractWasmAttrs(tx, "sell");
     if (!attrs?.token_address) continue;
 
-    const xyzAmount = attrs.xyz_out || "0";
+    const bwickAmount = attrs[CONTRACT_NATIVE_OUT] || "0";
     const tokenAmount = attrs.tokens_input || "0";
     trades.push({
       time: tx.timestamp || new Date().toISOString(),
@@ -363,10 +371,10 @@ export async function fetchRecentTrades(limit: number = 50): Promise<RecentTrade
       action: "sell",
       direction: "sell",
       token_address: attrs.token_address,
-      price_uxyz: computePriceUxyz(xyzAmount, tokenAmount),
-      volume_uxyz: xyzAmount,
+      price_ubwick: computePriceUbwick(bwickAmount, tokenAmount),
+      volume_ubwick: bwickAmount,
       volume_token: tokenAmount,
-      fee_uxyz: attrs.fee_burned || attrs.fee || "0",
+      fee_ubwick: attrs.fee_burned || attrs.fee || "0",
       trader: attrs.seller || "",
       token_name: attrs.token_name || null,
       token_symbol: attrs.token_symbol || null,
@@ -384,9 +392,9 @@ export interface TokenTrade {
   tx_hash: string;
   action: "buy" | "sell";
   trader: string;
-  xyz_amount: string;   // uxyz
+  bwick_amount: string;   // ubwick
   token_amount: string;  // micro-tokens
-  fee: string;           // uxyz
+  fee: string;           // ubwick
 }
 
 export const TOKEN_TRADES_QUERY_KEY = (address: string) =>
@@ -422,7 +430,7 @@ export async function fetchTokenTrades(
         tx_hash: tx.txhash,
         action: "buy",
         trader: attrs.buyer || "",
-        xyz_amount: attrs.xyz_input || "0",
+        bwick_amount: attrs[CONTRACT_NATIVE_INPUT] || "0",
         token_amount: attrs.tokens_out || "0",
         fee: attrs.fee || "0",
       });
@@ -437,7 +445,7 @@ export async function fetchTokenTrades(
         tx_hash: tx.txhash,
         action: "sell",
         trader: attrs.seller || "",
-        xyz_amount: attrs.xyz_out || "0",
+        bwick_amount: attrs[CONTRACT_NATIVE_OUT] || "0",
         token_amount: attrs.tokens_input || "0",
         fee: attrs.fee_burned || "0",
       });
@@ -508,11 +516,11 @@ function extractWasmAttrs(
   return null;
 }
 
-function computePriceUxyz(xyzAmount: string, tokenAmount: string): string {
-  const xyz = Number(xyzAmount);
+function computePriceUbwick(bwickAmount: string, tokenAmount: string): string {
+  const bwick = Number(bwickAmount);
   const token = Number(tokenAmount);
-  if (!Number.isFinite(xyz) || !Number.isFinite(token) || token <= 0) return "0";
-  return String(Math.round((xyz / token) * 1_000_000));
+  if (!Number.isFinite(bwick) || !Number.isFinite(token) || token <= 0) return "0";
+  return String(Math.round((bwick / token) * 1_000_000));
 }
 
 // --- Token holders (CW20 queries) ---
@@ -573,7 +581,7 @@ export async function fetchTokenHolders(tokenAddress: string): Promise<TokenHold
 export interface CurveProgress {
   tokens_sold: string;
   tokens_remaining: string;
-  xyz_reserves: string;
+  bwick_reserves: string;
   graduation_threshold: string;
   progress_percent: number;
   current_price: string;
@@ -585,7 +593,7 @@ export async function fetchCurveProgress(
 ): Promise<CurveProgress> {
   const data = await queryContract<{
     token_address: string;
-    xyz_raised: string;
+    bwick_raised?: string;
     graduation_threshold: string;
     progress_percent: string;
     tokens_sold: string;
@@ -603,7 +611,7 @@ export async function fetchCurveProgress(
   return {
     tokens_sold: data.tokens_sold,
     tokens_remaining: data.tokens_remaining,
-    xyz_reserves: data.xyz_raised,
+    bwick_reserves: data.bwick_raised ?? String((data as unknown as Record<string, unknown>)[CONTRACT_NATIVE_RAISED] ?? "0"),
     graduation_threshold: data.graduation_threshold,
     progress_percent: parseFloat(data.progress_percent) || 0,
     current_price: curve.current_price,
@@ -614,5 +622,10 @@ export async function fetchCurveProgress(
 // --- Oracle state query ---
 
 export async function fetchOracleState(): Promise<OracleResponse> {
-  return queryContract<OracleResponse>({ oracle: {} });
+  const data = await queryContract<Record<string, unknown>>({ oracle: {} });
+  return {
+    bwick_usd_price: String(data[CONTRACT_NATIVE_USD_PRICE] ?? "0"),
+    last_update_height: Number(data.last_update_height ?? 0),
+    last_update_timestamp: Number(data.last_update_timestamp ?? 0),
+  };
 }

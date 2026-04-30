@@ -1,13 +1,13 @@
 import { SigningStargateClient, GasPrice, calculateFee, type StdFee } from "@cosmjs/stargate";
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
-import type { XYZChainConfig } from "../types/chain.js";
+import type { BwickChainConfig } from "../types/chain.js";
 import type { FeeConfig } from "../types/transaction.js";
-import { XYZ_DENOM } from "../types/coin.js";
+import { BWICK_DENOM } from "../types/coin.js";
 
-const DEFAULT_GAS_PRICE = `0.025${XYZ_DENOM}`;
+const DEFAULT_GAS_PRICE = `0.025${BWICK_DENOM}`;
 const DEFAULT_GAS_ADJUSTMENT = 1.3;
 
-export interface XYZSigningClient {
+export interface BwickSigningClient {
   readonly address: string;
   readonly signingClient: SigningStargateClient;
   disconnect(): void;
@@ -18,9 +18,9 @@ export interface XYZSigningClient {
  * Use for server-side or CLI operations
  */
 export async function createSigningClient(
-  config: XYZChainConfig,
+  config: BwickChainConfig,
   mnemonic: string
-): Promise<XYZSigningClient> {
+): Promise<BwickSigningClient> {
   // Create wallet from mnemonic
   const wallet = await DirectSecp256k1HdWallet.fromMnemonic(
     mnemonic,

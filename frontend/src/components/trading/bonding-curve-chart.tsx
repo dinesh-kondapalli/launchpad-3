@@ -1,7 +1,7 @@
 "use client";
 
 import { useCurveProgress } from "@/hooks/use-curve-progress";
-import { useXyzPrice } from "@/hooks/use-xyz-price";
+import { useBwickPrice } from "@/hooks/use-bwick-price";
 import { formatUsd } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +12,7 @@ interface BondingCurveChartProps {
 
 export function BondingCurveChart({ tokenAddress }: BondingCurveChartProps) {
   const { data: progress, isLoading } = useCurveProgress(tokenAddress);
-  const { xyzPriceUsd } = useXyzPrice();
+  const { bwickPriceUsd } = useBwickPrice();
 
   if (isLoading) {
     return (
@@ -40,12 +40,12 @@ export function BondingCurveChart({ tokenAddress }: BondingCurveChartProps) {
     );
   }
 
-  const xyzReserves = Number(progress.xyz_reserves);
+  const bwickReserves = Number(progress.bwick_reserves);
   const gradThreshold = Number(progress.graduation_threshold);
   const progressPct = Math.min(progress.progress_percent, 100);
 
-  const raisedUsd = (xyzReserves / 1e6) * xyzPriceUsd;
-  const thresholdUsd = (gradThreshold / 1e6) * xyzPriceUsd;
+  const raisedUsd = (bwickReserves / 1e6) * bwickPriceUsd;
+  const thresholdUsd = (gradThreshold / 1e6) * bwickPriceUsd;
 
   return (
     <div className="space-y-2 rounded-2xl border border-border bg-card p-4">

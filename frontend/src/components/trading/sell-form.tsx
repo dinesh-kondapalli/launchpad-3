@@ -15,9 +15,9 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { useWalletStore } from "@/stores/wallet-store";
 import { simulateSell, sellTokens } from "@/lib/contract-clients/launchpad";
-import { createContractClient } from "@xyz-chain/sdk";
+import { createContractClient } from "@bwick-chain/sdk";
 import { RPC_ENDPOINT, REST_ENDPOINT, CHAIN_ID, NATIVE_SYMBOL } from "@/lib/chain-config";
-import { toUxyz, computeMinOutput } from "@/lib/utils";
+import { toUbwick, computeMinOutput } from "@/lib/utils";
 import { sellFormSchema, type SellFormValues } from "@/lib/validation/trading-schemas";
 import { AmountInput } from "./amount-input";
 import { TradePreview } from "./trade-preview";
@@ -46,7 +46,7 @@ export function SellForm({ tokenAddress, tokenSymbol }: SellFormProps) {
     queryKey: ["simulate-sell", tokenAddress, tokenAmount],
     queryFn: () => {
       // Token amounts also use 6 decimals (CW20 standard on the launchpad)
-      const amountMicro = toUxyz(tokenAmount);
+      const amountMicro = toUbwick(tokenAmount);
       return simulateSell(client!, tokenAddress, amountMicro);
     },
     enabled:
@@ -67,9 +67,9 @@ export function SellForm({ tokenAddress, tokenSymbol }: SellFormProps) {
         connection
       );
 
-      const amountMicro = toUxyz(values.tokenAmount);
-      const minXyzOut = computeMinOutput(
-        simulation.xyz_out,
+      const amountMicro = toUbwick(values.tokenAmount);
+      const minBwickOut = computeMinOutput(
+        simulation.bwick_out,
         values.slippage
       );
 
@@ -79,7 +79,7 @@ export function SellForm({ tokenAddress, tokenSymbol }: SellFormProps) {
         address,
         tokenAddress,
         amountMicro,
-        minXyzOut
+        minBwickOut
       );
     },
     onMutate: () => {
@@ -160,12 +160,12 @@ export function SellForm({ tokenAddress, tokenSymbol }: SellFormProps) {
 
         {simulation && (
           <TradePreview
-            estimatedOutput={simulation.xyz_out}
-            minOutput={computeMinOutput(simulation.xyz_out, slippage)}
+            estimatedOutput={simulation.bwick_out}
+            minOutput={computeMinOutput(simulation.bwick_out, slippage)}
             feeAmount={simulation.fee_amount}
             slippagePercent={slippage}
             outputDenom={NATIVE_SYMBOL}
-            outputIsXyz={true}
+            outputIsBwick={true}
             newPrice={simulation.new_price}
           />
         )}

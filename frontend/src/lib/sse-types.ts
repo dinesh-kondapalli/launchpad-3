@@ -3,14 +3,14 @@
 export interface TradeSSEEvent {
   token_address: string;
   action: string;        // 'buy' | 'sell' | 'swap' | 'buy_and_graduate'
-  direction: string;     // 'buy' | 'sell' | 'xyz_to_token' | 'token_to_xyz'
+  direction: string;     // 'buy' | 'sell' | 'bwick_to_token' | 'token_to_bwick'
   input_amount: string;
   output_amount: string;
-  price_uxyz: string;
+  price_ubwick: string;
   trader: string;
   tx_hash: string;
   time: string;
-  xyz_reserves: string;  // Added in Plan 36-01
+  bwick_reserves: string;  // Added in Plan 36-01
 }
 
 export interface TokenLaunchSSEEvent {
@@ -22,7 +22,7 @@ export interface TokenLaunchSSEEvent {
 
 export interface GraduationSSEEvent {
   token_address: string;
-  xyz_for_pool: string;
+  bwick_for_pool: string;
   tokens_for_pool: string;
   creator: string;
   time: string;

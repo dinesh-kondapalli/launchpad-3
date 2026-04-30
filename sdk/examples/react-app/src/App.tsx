@@ -3,15 +3,15 @@ import {
   createClient,
   showWalletModal,
   getBalance,
-  formatXYZ,
-  type XYZClient,
+  formatBwick,
+  type BwickClient,
   type WalletConnection,
-} from "@xyz-chain/sdk";
+} from "@bwick-chain/sdk";
 
 const RPC_ENDPOINT = "http://localhost:26657";
 
 function App() {
-  const [client, setClient] = useState<XYZClient | null>(null);
+  const [client, setClient] = useState<BwickClient | null>(null);
   const [wallet, setWallet] = useState<WalletConnection | null>(null);
   const [balance, setBalance] = useState<string>("");
   const [chainInfo, setChainInfo] = useState<{
@@ -23,7 +23,7 @@ function App() {
   // Initialize client on mount
   useEffect(() => {
     let mounted = true;
-    let clientRef: XYZClient | null = null;
+    let clientRef: BwickClient | null = null;
 
     async function init() {
       try {
@@ -59,7 +59,7 @@ function App() {
       if (client && wallet) {
         try {
           const bal = await getBalance(client, wallet.address);
-          setBalance(formatXYZ(bal.amount));
+          setBalance(formatBwick(bal.amount));
         } catch (e) {
           setError(`Failed to fetch balance: ${e}`);
         }
@@ -91,7 +91,7 @@ function App() {
   return (
     <div className="app">
       <header>
-        <h1>XYZ Chain SDK Demo</h1>
+        <h1>BWICK Chain SDK Demo</h1>
         {chainInfo && (
           <p className="chain-info">
             Connected to {chainInfo.chainId} | Block #{chainInfo.height}
@@ -112,7 +112,7 @@ function App() {
               <strong>Address:</strong> {wallet.address}
             </div>
             <div className="balance">
-              <strong>Balance:</strong> {balance} XYZ
+              <strong>Balance:</strong> {balance} BWICK
             </div>
             <button onClick={handleDisconnect} className="disconnect-btn">
               Disconnect
@@ -125,7 +125,7 @@ function App() {
         <p>
           Built with{" "}
           <a href="https://github.com/xyz-chain/sdk" target="_blank">
-            @xyz-chain/sdk
+            @bwick-chain/sdk
           </a>
         </p>
       </footer>

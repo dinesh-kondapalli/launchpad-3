@@ -1,13 +1,20 @@
-// Use local proxy paths in the browser to avoid CORS issues
+export const PUBLIC_RPC_ENDPOINT =
+  process.env.NEXT_PUBLIC_RPC_ENDPOINT ?? "http://174.138.87.223:26657";
+
+export const PUBLIC_REST_ENDPOINT =
+  process.env.NEXT_PUBLIC_REST_ENDPOINT ?? "http://174.138.87.223:1317";
+
+// App-side CosmJS calls use local proxy paths in the browser to avoid CORS issues.
+// Wallet chain suggestions must use the public BWICK endpoints, not localhost proxy URLs.
 export const RPC_ENDPOINT =
   typeof window !== "undefined"
     ? `${window.location.origin}/rpc`
-    : (process.env.NEXT_PUBLIC_RPC_ENDPOINT ?? "http://174.138.87.223:26657");
+    : PUBLIC_RPC_ENDPOINT;
 
 export const REST_ENDPOINT =
   typeof window !== "undefined"
     ? `${window.location.origin}/rest`
-    : (process.env.NEXT_PUBLIC_REST_ENDPOINT ?? "http://174.138.87.223:1317");
+    : PUBLIC_REST_ENDPOINT;
 
 export const CHAIN_ID =
   process.env.NEXT_PUBLIC_CHAIN_ID ?? "bwick-1";

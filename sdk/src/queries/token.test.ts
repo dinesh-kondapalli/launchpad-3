@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { createClient, type XYZClient } from "../client.js";
+import { createClient, type BwickClient } from "../client.js";
 import {
   getTokenInfo,
   getTokenBalance,
@@ -8,10 +8,10 @@ import {
 } from "./token.js";
 
 describe("token queries", () => {
-  let client: XYZClient | null = null;
+  let client: BwickClient | null = null;
   // CW20 contract address - set when CW20 is deployed on localnet
   const testTokenContract = "";
-  const testAddress = "xyz1cyyzpxplxdzkeea7kwsydadg87357qnalx9dqz";
+  const testAddress = "bwick1cyyzpxplxdzkeea7kwsydadg87357qnalx9dqz";
 
   beforeAll(async () => {
     try {

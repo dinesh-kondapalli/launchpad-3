@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { createClient, type XYZClient } from "./client.js";
+import { createClient, type BwickClient } from "./client.js";
 
 describe("createClient", () => {
-  let client: XYZClient | undefined;
+  let client: BwickClient | undefined;
 
   // This test requires a running local node
   // Skip in CI if no node available

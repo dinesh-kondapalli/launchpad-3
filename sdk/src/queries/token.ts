@@ -1,5 +1,5 @@
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import type { XYZClient } from "../client.js";
+import type { BwickClient } from "../client.js";
 import type {
   TokenInfo,
   TokenBalance,
@@ -10,7 +10,7 @@ import type {
 // Cache CosmWasm client per RPC endpoint
 const cwClientCache = new Map<string, CosmWasmClient>();
 
-async function getCwClient(client: XYZClient): Promise<CosmWasmClient> {
+async function getCwClient(client: BwickClient): Promise<CosmWasmClient> {
   const endpoint = client.config.rpcEndpoint;
   let cwClient = cwClientCache.get(endpoint);
   if (!cwClient) {
@@ -24,7 +24,7 @@ async function getCwClient(client: XYZClient): Promise<CosmWasmClient> {
  * Get CW20 token balance for an address
  */
 export async function getTokenBalance(
-  client: XYZClient,
+  client: BwickClient,
   contractAddress: string,
   address: string
 ): Promise<string> {
@@ -39,7 +39,7 @@ export async function getTokenBalance(
  * Get CW20 token info
  */
 export async function getTokenInfo(
-  client: XYZClient,
+  client: BwickClient,
   contractAddress: string
 ): Promise<TokenInfo> {
   const cwClient = await getCwClient(client);
@@ -52,7 +52,7 @@ export async function getTokenInfo(
  * Get CW20 token marketing info (if available)
  */
 export async function getTokenMarketingInfo(
-  client: XYZClient,
+  client: BwickClient,
   contractAddress: string
 ): Promise<TokenMarketingInfo | null> {
   try {
@@ -69,7 +69,7 @@ export async function getTokenMarketingInfo(
  * Get formatted token info with human-readable values
  */
 export async function getFormattedTokenInfo(
-  client: XYZClient,
+  client: BwickClient,
   contractAddress: string
 ): Promise<FormattedToken> {
   const info = await getTokenInfo(client, contractAddress);

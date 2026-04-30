@@ -1,15 +1,15 @@
 import type { Coin } from "../types/coin.js";
 import type { SendOptions, TxResult } from "../types/transaction.js";
 import { toTxResult } from "../types/transaction.js";
-import type { XYZSigningClient } from "./signing.js";
+import type { BwickSigningClient } from "./signing.js";
 import { calculateTxFee } from "./signing.js";
-import { XYZ_DENOM } from "../types/coin.js";
+import { BWICK_DENOM } from "../types/coin.js";
 
 /**
  * Send native tokens to an address
  */
 export async function sendTokens(
-  client: XYZSigningClient,
+  client: BwickSigningClient,
   recipient: string,
   amount: Coin | Coin[],
   options?: SendOptions
@@ -50,10 +50,10 @@ export async function sendTokens(
 }
 
 /**
- * Send native XYZ tokens (convenience function)
+ * Send native BWICK tokens (convenience function)
  */
-export async function sendXYZ(
-  client: XYZSigningClient,
+export async function sendBwick(
+  client: BwickSigningClient,
   recipient: string,
   amount: string,
   options?: SendOptions
@@ -61,7 +61,7 @@ export async function sendXYZ(
   return sendTokens(
     client,
     recipient,
-    { denom: XYZ_DENOM, amount },
+    { denom: BWICK_DENOM, amount },
     options
   );
 }

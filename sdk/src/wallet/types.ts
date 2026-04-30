@@ -1,6 +1,6 @@
 import type { OfflineSigner, OfflineDirectSigner } from "@cosmjs/proto-signing";
 
-export type WalletType = "keplr" | "leap" | "direct" | "xyz";
+export type WalletType = "keplr" | "leap" | "direct" | "bwick";
 
 export interface WalletConnection {
   type: WalletType;
@@ -32,12 +32,10 @@ declare global {
       getOfflineSignerAuto: (chainId: string) => Promise<OfflineSigner | OfflineDirectSigner>;
       experimentalSuggestChain: (chainInfo: ChainInfo) => Promise<void>;
     };
-    xyz?: {
+    bwick?: {
       enable: (chainId: string) => Promise<void>;
-      getOfflineSigner: (chainId: string) => OfflineSigner;
       getOfflineSignerAuto: (chainId: string) => Promise<OfflineSigner | OfflineDirectSigner>;
       experimentalSuggestChain: (chainInfo: ChainInfo) => Promise<void>;
-      isXYZ: true;
     };
   }
 }

@@ -1,11 +1,12 @@
 "use client";
 
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { Wallet } from "@phosphor-icons/react";
+import { UploadSimple, Wallet } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -18,12 +19,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import { useWalletStore } from "@/stores/wallet-store";
 import { createToken, getConfig } from "@/lib/contract-clients/launchpad";
-import { createContractClient } from "@xyz-chain/sdk";
+import { createContractClient } from "@bwick-chain/sdk";
 import { RPC_ENDPOINT, REST_ENDPOINT, CHAIN_ID } from "@/lib/chain-config";
-import { fromUxyz, formatUsd } from "@/lib/utils";
-import { useXyzPrice } from "@/hooks/use-xyz-price";
+import { fromUbwick, formatUsd } from "@/lib/utils";
+import { useBwickPrice } from "@/hooks/use-bwick-price";
 import {
   createTokenSchema,
   type CreateTokenFormValues,
@@ -34,13 +36,15 @@ export function CreateTokenForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { connection, address, refreshBalance } = useWalletStore();
-  const { xyzPriceUsd } = useXyzPrice();
+  const { bwickPriceUsd } = useBwickPrice();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   // Query launchpad config to get current creation fee (no wallet needed)
   const { data: config } = useQuery({
     queryKey: ["launchpad-config"],
     queryFn: async () => {
-      const { createClient } = await import("@xyz-chain/sdk");
+      const { createClient } = await import("@bwick-chain/sdk");
       const readClient = await createClient({
         rpcEndpoint: RPC_ENDPOINT,
         restEndpoint: REST_ENDPOINT,
@@ -54,19 +58,60 @@ export function CreateTokenForm() {
   });
 
   const creationFee = config?.creation_fee ?? "0";
-  const creationFeeDisplay = fromUxyz(creationFee);
-  const creationFeeUsd = formatUsd(creationFeeDisplay * xyzPriceUsd);
+  const creationFeeDisplay = fromUbwick(creationFee);
+  const creationFeeUsd = formatUsd(creationFeeDisplay * bwickPriceUsd);
 
   const form = useForm<CreateTokenFormValues>({
     resolver: zodResolver(createTokenSchema),
     defaultValues: {
       name: "",
       symbol: "",
-      image: "/image.png",
+      image: "",
       description: "",
       socialLinks: "",
     },
   });
+
+  const imageValue = form.watch("image");
+  const descriptionValue = form.watch("description");
+  const descriptionLength = (descriptionValue ?? "").length;
+
+  async function handleImageUpload(file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    setIsUploadingImage(true);
+    toast.loading("Uploading image...", { id: "token-image-upload" });
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = (await response.json()) as { url?: string; error?: string };
+
+      if (!response.ok || !result.url) {
+        throw new Error(result.error ?? "Upload failed");
+      }
+
+      form.setValue("image", result.url, {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      });
+
+      toast.success("Image uploaded", { id: "token-image-upload" });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Upload failed";
+      toast.error("Image upload failed", {
+        id: "token-image-upload",
+        description: message,
+      });
+    } finally {
+      setIsUploadingImage(false);
+    }
+  }
 
   const mutation = useMutation({
     mutationFn: async (values: CreateTokenFormValues) => {
@@ -144,44 +189,31 @@ export function CreateTokenForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit((values) => mutation.mutate(values))}
-        className="min-h-[660px] overflow-hidden rounded-[20px] border border-border bg-card p-4 shadow-[0_10px_40px_rgba(40,55,80,0.18)] sm:p-5"
+        className="overflow-hidden rounded-[20px] border border-border bg-card px-4 py-3 shadow-[0_10px_40px_rgba(40,55,80,0.18)] sm:px-5 sm:py-4"
       >
-        <div className="mb-4 border-b border-border pb-3">
-          <div className="mb-3 flex items-center gap-2">
-            <span className="rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">1. Token</span>
-            <span className="rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">2. Launch</span>
-            <span className="rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">3. Review</span>
-          </div>
-          <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
-            <div className="h-full w-1/3 bg-primary" />
-          </div>
-        </div>
-
-        <div className="flex h-full w-full flex-col space-y-3.5">
-          <div>
-            <h2 className="text-[24px] font-semibold leading-[1.08] tracking-tight text-foreground md:text-[28px]">Let&apos;s create your token</h2>
-            <p className="mt-1 text-xs text-muted-foreground md:text-sm">
-              Choose wisely, these can&apos;t be changed once the token is created.
-            </p>
+        <div className="space-y-2.5">
+          <div className="space-y-1">
+            <h2 className="text-[1.5rem] font-semibold tracking-tight text-foreground">Create Token</h2>
+            <p className="text-xs text-muted-foreground sm:text-sm">Launch a new token on BWICK&apos;s bonding curve</p>
           </div>
 
-          <div className="space-y-3.5">
+          <div className="grid gap-2 md:grid-cols-2">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-base font-semibold leading-tight text-foreground">Token Name</FormLabel>
+                  <FormLabel className="text-sm font-semibold text-foreground">Token Name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="e.g., Metaplex"
+                      placeholder="My Awesome Token"
                       disabled={mutation.isPending}
-                      className="h-9 rounded-md border-border bg-background text-sm text-foreground placeholder:text-muted-foreground"
+                      className="h-10 rounded-md border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground"
                     />
                   </FormControl>
-                  <FormDescription className="text-[11px] text-muted-foreground">
-                    Choose a memorable name that represents your project (max 32 characters)
+                  <FormDescription className="text-xs text-muted-foreground">
+                    The full name of your token (max 32 characters)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -193,41 +225,18 @@ export function CreateTokenForm() {
               name="symbol"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-base font-semibold leading-tight text-foreground">Ticker Symbol</FormLabel>
+                  <FormLabel className="text-sm font-semibold text-foreground">Symbol</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
-                      placeholder="e.g., MPLX"
+                      placeholder="MAT"
                       onChange={(e) => field.onChange(e.target.value.toUpperCase())}
                       disabled={mutation.isPending}
-                      className="h-9 rounded-md border-border bg-background text-sm text-foreground placeholder:text-muted-foreground"
+                      className="h-10 rounded-md border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground"
                     />
                   </FormControl>
-                  <FormDescription className="text-[11px] text-muted-foreground">
-                    Keep it short and memorable (1-10 characters)
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-base font-semibold leading-tight text-foreground">Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder="A short description of your token (max 250 characters)"
-                      rows={3}
-                      disabled={mutation.isPending}
-                      className="rounded-md border-border bg-background text-sm text-foreground placeholder:text-muted-foreground"
-                    />
-                  </FormControl>
-                  <FormDescription className="text-[11px] text-muted-foreground">
-                    Keep it concise and clear (optional)
+                  <FormDescription className="text-xs text-muted-foreground">
+                    Ticker symbol, uppercase letters and numbers only (max 10)
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -238,32 +247,130 @@ export function CreateTokenForm() {
           <FormField
             control={form.control}
             name="image"
-            render={({ field }) => <input type="hidden" value={field.value} onChange={field.onChange} />}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-semibold text-foreground">Token Image</FormLabel>
+                <FormControl>
+                  <div className="space-y-0">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/png,image/jpeg,image/gif,image/webp,image/svg+xml"
+                      className="hidden"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        if (file) {
+                          void handleImageUpload(file);
+                        }
+
+                        event.target.value = "";
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={mutation.isPending || isUploadingImage}
+                      className={cn(
+                        "flex min-h-[112px] w-full flex-col items-center justify-center rounded-lg border border-dashed border-border bg-background px-4 py-3.5 text-center transition-colors",
+                        "hover:border-primary/40 hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-60",
+                        imageValue && "border-solid"
+                      )}
+                    >
+                      {imageValue ? (
+                        <div className="space-y-2">
+                          <div className="mx-auto flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+                            <img src={imageValue} alt="Token preview" className="h-full w-full object-cover" />
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-sm font-semibold text-foreground">
+                              {isUploadingImage ? "Uploading image..." : "Image uploaded. Click to replace"}
+                            </p>
+                            <p className="text-xs text-muted-foreground">PNG, JPG, GIF, WebP, SVG (max 2MB)</p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground">
+                            <UploadSimple size={18} />
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-sm font-semibold text-foreground">
+                              {isUploadingImage ? "Uploading image..." : "Drop Image here or click to browse"}
+                            </p>
+                            <p className="text-xs text-muted-foreground">PNG, JPG, GIF, WebP, SVG (max 2MB)</p>
+                          </div>
+                        </div>
+                      )}
+                    </button>
+                    <input type="hidden" value={field.value} onChange={field.onChange} />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-semibold text-foreground">Description (optional)</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    placeholder="Describe what makes your token unique..."
+                    rows={4}
+                    disabled={mutation.isPending}
+                    className="min-h-[64px] rounded-md border-border bg-background px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground"
+                  />
+                </FormControl>
+                <FormDescription className="text-xs text-muted-foreground">
+                  Up to 500 characters describing your token
+                </FormDescription>
+                <div className="flex items-center justify-between gap-3">
+                  <FormMessage />
+                  <span className="text-xs text-muted-foreground">{descriptionLength}/500</span>
+                </div>
+              </FormItem>
+            )}
           />
 
           <FormField
             control={form.control}
             name="socialLinks"
-            render={({ field }) => <input type="hidden" value={field.value} onChange={field.onChange} />}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-sm font-semibold text-foreground">Social Links (optional)</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="https://twitter.com/..., https://discord.gg/..."
+                    disabled={mutation.isPending}
+                    className="h-9 rounded-md border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground"
+                  />
+                </FormControl>
+                <FormDescription className="text-xs text-muted-foreground">
+                  Comma-separated URLs for your community channels
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
           />
 
-          <div className="mt-auto flex items-center justify-between gap-3 border-t border-border pt-3">
-            <Button
-              type="button"
-              variant="outline"
-              disabled
-              className="h-9 rounded-md border-border bg-muted px-4 text-xs text-muted-foreground"
-            >
-              Back
-            </Button>
+          <div className="grid gap-0 overflow-hidden rounded-lg border border-border md:grid-cols-[1fr_1.15fr]">
+            <div className="bg-card px-4 py-2.5">
+              <p className="text-sm font-semibold text-foreground">Creation Fee: {creationFeeDisplay} BWICK</p>
+              <p className="mt-1 text-xs text-muted-foreground">This fee is paid to create the bonding curve for your token.</p>
+            </div>
 
             <Button
               type="submit"
-              className="h-9 rounded-md bg-primary px-4 text-xs text-primary-foreground hover:bg-primary/90"
-              disabled={!connection || mutation.isPending || !config}
+              className="h-full min-h-12 rounded-none bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+              disabled={!connection || mutation.isPending || !config || isUploadingImage}
             >
               {!connection ? <Wallet size={16} weight="fill" /> : null}
-              {!connection ? "Connect Wallet" : mutation.isPending ? "Creating..." : "Continue"}
+              {!connection ? "Connect Wallet" : mutation.isPending ? "Creating..." : "Create Token"}
             </Button>
           </div>
         </div>

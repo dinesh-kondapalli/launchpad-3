@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { createSigningClient, type XYZSigningClient } from "./signing.js";
-import { sendTokens, sendXYZ } from "./send.js";
+import { createSigningClient, type BwickSigningClient } from "./signing.js";
+import { sendTokens, sendBwick } from "./send.js";
 
 // Test mnemonic - use standard test words (DO NOT use in production)
 const TEST_MNEMONIC = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
@@ -9,7 +9,7 @@ const TEST_MNEMONIC = "abandon abandon abandon abandon abandon abandon abandon a
 const RECIPIENT_ADDRESS = "bwick1595rh758em5ghte603txwykqnneyh0wptdqqut";
 
 describe("send transactions", () => {
-  let client: XYZSigningClient | null = null;
+  let client: BwickSigningClient | null = null;
 
   beforeAll(async () => {
     try {
@@ -33,7 +33,7 @@ describe("send transactions", () => {
     }
 
     try {
-      const result = await sendXYZ(
+      const result = await sendBwick(
         client,
         RECIPIENT_ADDRESS,
         "1000000", // 1 BWICK in ubwick

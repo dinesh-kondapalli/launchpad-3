@@ -1,19 +1,19 @@
-# @xyz-chain/sdk
+# @bwick-chain/sdk
 
-TypeScript SDK for building dApps on XYZ Chain. Works in browser and Node.js.
+TypeScript SDK for building dApps on BWICK Chain. Works in browser and Node.js.
 
 ## Installation
 
 ```bash
-npm install @xyz-chain/sdk
+npm install @bwick-chain/sdk
 ```
 
 ## Quick Start
 
-### Connect to XYZ Chain
+### Connect to BWICK Chain
 
 ```typescript
-import { createClient, getBalance, formatXYZ } from "@xyz-chain/sdk";
+import { createClient, getBalance, formatBWICK } from "@bwick-chain/sdk";
 
 const client = await createClient({
   rpcEndpoint: "http://localhost:26657",
@@ -24,14 +24,14 @@ const chainId = await client.getChainId();
 const height = await client.getHeight();
 
 // Query balance
-const balance = await getBalance(client, "xyz1...");
-console.log(formatXYZ(balance.amount), "XYZ");
+const balance = await getBalance(client, "bwick1...");
+console.log(formatBWICK(balance.amount), "BWICK");
 ```
 
 ### Connect Wallet (Browser)
 
 ```typescript
-import { showWalletModal, getBalance } from "@xyz-chain/sdk";
+import { showWalletModal, getBalance } from "@bwick-chain/sdk";
 
 // Show wallet selection modal (Keplr, Leap)
 const wallet = await showWalletModal({
@@ -46,7 +46,7 @@ if (wallet) {
 ### Send Tokens
 
 ```typescript
-import { createSigningClient, sendXYZ } from "@xyz-chain/sdk";
+import { createSigningClient, sendBWICK } from "@bwick-chain/sdk";
 
 // From mnemonic (Node.js / CLI)
 const client = await createSigningClient(
@@ -54,7 +54,7 @@ const client = await createSigningClient(
   "your mnemonic here"
 );
 
-const result = await sendXYZ(client, "xyz1...recipient", "1000000");
+const result = await sendBWICK(client, "bwick1...recipient", "1000000");
 console.log("TX:", result.transactionHash);
 ```
 
@@ -65,7 +65,7 @@ import {
   queryContract,
   executeContract,
   createContractClient,
-} from "@xyz-chain/sdk";
+} from "@bwick-chain/sdk";
 
 // Query contract
 const info = await queryContract(client, contractAddress, {
@@ -78,7 +78,7 @@ const result = await executeContract(
   contractClient,
   wallet.address,
   contractAddress,
-  { transfer: { recipient: "xyz1...", amount: "1000000" } }
+  { transfer: { recipient: "bwick1...", amount: "1000000" } }
 );
 ```
 
@@ -99,7 +99,7 @@ const result = await executeContract(
 ### Transactions
 
 - `sendTokens(client, recipient, coins)` - Send native tokens
-- `sendXYZ(client, recipient, amount)` - Send XYZ tokens
+- `sendBWICK(client, recipient, amount)` - Send BWICK tokens
 
 ### Contracts
 
@@ -126,7 +126,7 @@ See the `examples/` directory:
 
 - Node.js 18+
 - Browser with Keplr or Leap extension (for wallet features)
-- XYZ Chain node (local or testnet)
+- BWICK Chain node (local or testnet)
 
 ## License
 

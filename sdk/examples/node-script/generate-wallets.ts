@@ -1,5 +1,5 @@
 /**
- * Bulk Wallet Generator for XYZ Chain
+ * Bulk Wallet Generator for BWICK Chain
  *
  * Generates multiple wallets with unique BIP39 mnemonics and saves them
  * to an AES-256-GCM encrypted JSON file protected by a user password.
@@ -20,7 +20,7 @@ import { writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const WALLET_COUNT = 20;
-const ADDRESS_PREFIX = "xyz";
+const ADDRESS_PREFIX = "bwick";
 
 interface WalletEntry {
   index: number;
@@ -73,7 +73,7 @@ async function generateWallet(index: number): Promise<WalletEntry> {
 }
 
 async function main() {
-  console.log(`\nGenerating ${WALLET_COUNT} XYZ wallets...\n`);
+  console.log(`\nGenerating ${WALLET_COUNT} BWICK wallets...\n`);
 
   // Generate all wallets concurrently
   const wallets = await Promise.all(

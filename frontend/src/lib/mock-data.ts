@@ -26,7 +26,7 @@ export const MOCK_TOKENS: TokenListItem[] = [
     created_at: isoHoursAgo(1),
     first_seen_at: isoHoursAgo(1),
     current_price: "0.00194",
-    xyz_reserves: "18600000",
+    bwick_reserves: "18600000",
     volume_24h: "49500000",
     trade_count_24h: 154,
   },
@@ -42,7 +42,7 @@ export const MOCK_TOKENS: TokenListItem[] = [
     created_at: isoHoursAgo(3),
     first_seen_at: isoHoursAgo(3),
     current_price: "0.00133",
-    xyz_reserves: "16200000",
+    bwick_reserves: "16200000",
     volume_24h: "42000000",
     trade_count_24h: 98,
   },
@@ -58,7 +58,7 @@ export const MOCK_TOKENS: TokenListItem[] = [
     created_at: isoHoursAgo(5),
     first_seen_at: isoHoursAgo(5),
     current_price: "0.00112",
-    xyz_reserves: "10900000",
+    bwick_reserves: "10900000",
     volume_24h: "36600000",
     trade_count_24h: 83,
   },
@@ -74,7 +74,7 @@ export const MOCK_TOKENS: TokenListItem[] = [
     created_at: isoHoursAgo(8),
     first_seen_at: isoHoursAgo(8),
     current_price: "0.00087",
-    xyz_reserves: "7500000",
+    bwick_reserves: "7500000",
     volume_24h: "23900000",
     trade_count_24h: 61,
   },
@@ -90,7 +90,7 @@ export const MOCK_TOKENS: TokenListItem[] = [
     created_at: isoHoursAgo(13),
     first_seen_at: isoHoursAgo(13),
     current_price: "0.00384",
-    xyz_reserves: "27400000",
+    bwick_reserves: "27400000",
     volume_24h: "76200000",
     trade_count_24h: 228,
   },
@@ -106,7 +106,7 @@ export const MOCK_TOKENS: TokenListItem[] = [
     created_at: isoHoursAgo(22),
     first_seen_at: isoHoursAgo(22),
     current_price: "0.00299",
-    xyz_reserves: "22100000",
+    bwick_reserves: "22100000",
     volume_24h: "68800000",
     trade_count_24h: 207,
   },
@@ -122,7 +122,7 @@ export const MOCK_TOKENS: TokenListItem[] = [
     created_at: isoHoursAgo(31),
     first_seen_at: isoHoursAgo(31),
     current_price: "0.00251",
-    xyz_reserves: "17900000",
+    bwick_reserves: "17900000",
     volume_24h: "50200000",
     trade_count_24h: 176,
   },
@@ -138,7 +138,7 @@ export const MOCK_TOKENS: TokenListItem[] = [
     created_at: isoHoursAgo(40),
     first_seen_at: isoHoursAgo(40),
     current_price: "0.00214",
-    xyz_reserves: "14200000",
+    bwick_reserves: "14200000",
     volume_24h: "41900000",
     trade_count_24h: 133,
   },
@@ -154,7 +154,7 @@ export const MOCK_TOKENS: TokenListItem[] = [
     created_at: isoHoursAgo(16),
     first_seen_at: isoHoursAgo(16),
     current_price: "0.00066",
-    xyz_reserves: "4900000",
+    bwick_reserves: "4900000",
     volume_24h: "17600000",
     trade_count_24h: 48,
   },
@@ -170,7 +170,7 @@ export const MOCK_TOKENS: TokenListItem[] = [
     created_at: isoHoursAgo(28),
     first_seen_at: isoHoursAgo(28),
     current_price: "0.00058",
-    xyz_reserves: "3700000",
+    bwick_reserves: "3700000",
     volume_24h: "13200000",
     trade_count_24h: 41,
   },
@@ -179,7 +179,7 @@ export const MOCK_TOKENS: TokenListItem[] = [
 const DEFAULT_PROGRESS: CurveProgress = {
   tokens_sold: "453000000",
   tokens_remaining: "547000000",
-  xyz_reserves: "1220000",
+  bwick_reserves: "1220000",
   graduation_threshold: "26436000",
   progress_percent: 3.56,
   current_price: "0.00112",
@@ -195,13 +195,13 @@ const MOCK_PROGRESS: Record<string, CurveProgress> = {
   [MOCK_TOKENS[1].address]: {
     ...DEFAULT_PROGRESS,
     progress_percent: 4.88,
-    xyz_reserves: "1460000",
+    bwick_reserves: "1460000",
     current_price: MOCK_TOKENS[1].current_price,
   },
   [MOCK_TOKENS[2].address]: {
     ...DEFAULT_PROGRESS,
     progress_percent: 2.71,
-    xyz_reserves: "980000",
+    bwick_reserves: "980000",
     current_price: MOCK_TOKENS[2].current_price,
   },
 };
@@ -228,16 +228,16 @@ export function getMockTokenTrades(address: string): TokenTrade[] {
   const entries = Array.from({ length: 14 }).map((_, index) => {
     const id = seed + index * 9_971;
     const isBuy = index % 3 !== 0;
-    const xyzAmount = 90_000 + (id % 700_000);
+    const bwickAmount = 90_000 + (id % 700_000);
     const tokenAmount = 180_000 + (id % 540_000);
     return {
       time: new Date(Date.now() - (index + 1) * 14 * 60 * 1000).toISOString(),
       tx_hash: `MOCK${id.toString(16).toUpperCase().slice(0, 10)}`,
       action: isBuy ? "buy" : "sell",
       trader: `new1${id.toString(36).padStart(12, "0")}`,
-      xyz_amount: String(xyzAmount),
+      bwick_amount: String(bwickAmount),
       token_amount: String(tokenAmount),
-      fee: String(Math.floor(xyzAmount * 0.0035)),
+      fee: String(Math.floor(bwickAmount * 0.0035)),
     } satisfies TokenTrade;
   });
 

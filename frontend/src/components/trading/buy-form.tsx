@@ -15,9 +15,9 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { useWalletStore } from "@/stores/wallet-store";
 import { simulateBuy, buyTokens } from "@/lib/contract-clients/launchpad";
-import { createContractClient } from "@xyz-chain/sdk";
+import { createContractClient } from "@bwick-chain/sdk";
 import { RPC_ENDPOINT, REST_ENDPOINT, CHAIN_ID, NATIVE_SYMBOL } from "@/lib/chain-config";
-import { toUxyz, computeMinOutput } from "@/lib/utils";
+import { toUbwick, computeMinOutput } from "@/lib/utils";
 import { buyFormSchema, type BuyFormValues } from "@/lib/validation/trading-schemas";
 import { AmountInput } from "./amount-input";
 import { TradePreview } from "./trade-preview";
@@ -35,24 +35,24 @@ export function BuyForm({ tokenAddress, tokenSymbol }: BuyFormProps) {
 
   const form = useForm<BuyFormValues>({
     resolver: zodResolver(buyFormSchema),
-    defaultValues: { xyzAmount: "", slippage: 1 },
+    defaultValues: { bwickAmount: "", slippage: 1 },
   });
 
-  const xyzAmount = useWatch({ control: form.control, name: "xyzAmount" });
+  const bwickAmount = useWatch({ control: form.control, name: "bwickAmount" });
   const slippage = useWatch({ control: form.control, name: "slippage" });
 
   // Real-time simulation query
   const { data: simulation, isLoading: isSimulating } = useQuery({
-    queryKey: ["simulate-buy", tokenAddress, xyzAmount],
+    queryKey: ["simulate-buy", tokenAddress, bwickAmount],
     queryFn: () => {
-      const amountUxyz = toUxyz(xyzAmount);
-      return simulateBuy(client!, tokenAddress, amountUxyz);
+      const amountUbwick = toUbwick(bwickAmount);
+      return simulateBuy(client!, tokenAddress, amountUbwick);
     },
     enabled:
       !!client &&
-      !!xyzAmount &&
-      !isNaN(Number(xyzAmount)) &&
-      Number(xyzAmount) >= 0.001,
+      !!bwickAmount &&
+      !isNaN(Number(bwickAmount)) &&
+      Number(bwickAmount) >= 0.001,
     staleTime: 5_000,
   });
 
@@ -66,7 +66,7 @@ export function BuyForm({ tokenAddress, tokenSymbol }: BuyFormProps) {
         connection
       );
 
-      const amountUxyz = toUxyz(values.xyzAmount);
+      const amountUbwick = toUbwick(values.bwickAmount);
       const minTokensOut = computeMinOutput(
         simulation.tokens_out,
         values.slippage
@@ -76,7 +76,7 @@ export function BuyForm({ tokenAddress, tokenSymbol }: BuyFormProps) {
         contractClient,
         address,
         tokenAddress,
-        amountUxyz,
+        amountUbwick,
         minTokensOut
       );
     },
@@ -120,7 +120,7 @@ export function BuyForm({ tokenAddress, tokenSymbol }: BuyFormProps) {
       >
         <FormField
           control={form.control}
-          name="xyzAmount"
+          name="bwickAmount"
           render={({ field, fieldState }) => (
             <FormItem>
               <AmountInput
@@ -163,7 +163,7 @@ export function BuyForm({ tokenAddress, tokenSymbol }: BuyFormProps) {
             feeAmount={simulation.fee_amount}
             slippagePercent={slippage}
             outputDenom={tokenSymbol}
-            outputIsXyz={false}
+            outputIsBwick={false}
             newPrice={simulation.new_price}
           />
         )}

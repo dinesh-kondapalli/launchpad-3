@@ -8,14 +8,14 @@ export function isLeapAvailable(): boolean {
   return typeof window !== "undefined" && !!window.leap;
 }
 
-export function isXYZAvailable(): boolean {
-  return typeof window !== "undefined" && !!window.xyz;
+export function isBwickWalletAvailable(): boolean {
+  return typeof window !== "undefined" && !!window.bwick;
 }
 
 export function getAvailableWallets(): WalletType[] {
   const wallets: WalletType[] = [];
   if (isKeplrAvailable()) wallets.push("keplr");
   if (isLeapAvailable()) wallets.push("leap");
-  if (isXYZAvailable()) wallets.push("xyz");
+  if (isBwickWalletAvailable()) wallets.push("bwick");
   return wallets;
 }

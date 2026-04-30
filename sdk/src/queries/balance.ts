@@ -1,15 +1,15 @@
-import type { XYZClient } from "../client.js";
+import type { BwickClient } from "../client.js";
 import type { Coin } from "../types/coin.js";
-import { XYZ_DENOM } from "../types/coin.js";
+import { BWICK_DENOM } from "../types/coin.js";
 
 /**
- * Get native XYZ balance for an address
+ * Get native BWICK balance for an address
  */
 export async function getBalance(
-  client: XYZClient,
+  client: BwickClient,
   address: string
 ): Promise<Coin> {
-  const coin = await client.stargate.getBalance(address, XYZ_DENOM);
+  const coin = await client.stargate.getBalance(address, BWICK_DENOM);
   return {
     denom: coin.denom,
     amount: coin.amount,
@@ -20,7 +20,7 @@ export async function getBalance(
  * Get all native token balances for an address
  */
 export async function getAllBalances(
-  client: XYZClient,
+  client: BwickClient,
   address: string
 ): Promise<readonly Coin[]> {
   const balances = await client.stargate.getAllBalances(address);

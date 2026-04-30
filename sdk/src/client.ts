@@ -1,8 +1,8 @@
 import { StargateClient } from "@cosmjs/stargate";
-import { XYZChainConfig, DEFAULT_CONFIG } from "./types/chain.js";
+import { BwickChainConfig, DEFAULT_CONFIG } from "./types/chain.js";
 
-export interface XYZClient {
-  readonly config: Required<XYZChainConfig>;
+export interface BwickClient {
+  readonly config: Required<BwickChainConfig>;
   readonly stargate: StargateClient;
   getChainId(): Promise<string>;
   getHeight(): Promise<number>;
@@ -10,9 +10,9 @@ export interface XYZClient {
 }
 
 export async function createClient(
-  config: XYZChainConfig
-): Promise<XYZClient> {
-  const fullConfig: Required<XYZChainConfig> = {
+  config: BwickChainConfig
+): Promise<BwickClient> {
+  const fullConfig: Required<BwickChainConfig> = {
     rpcEndpoint: config.rpcEndpoint,
     restEndpoint:
       config.restEndpoint ?? config.rpcEndpoint.replace(/:\d+$/, ":1317"),

@@ -17,12 +17,12 @@ import { Slider } from "@/components/ui/slider";
 import { useWalletStore } from "@/stores/wallet-store";
 import {
   simulateSwap,
-  swapXyzForToken,
-  swapTokenForXyz,
+  swapBwickForToken,
+  swapTokenForBwick,
 } from "@/lib/contract-clients/amm";
-import { createContractClient } from "@xyz-chain/sdk";
+import { createContractClient } from "@bwick-chain/sdk";
 import { RPC_ENDPOINT, REST_ENDPOINT, CHAIN_ID, NATIVE_SYMBOL } from "@/lib/chain-config";
-import { toUxyz, computeMinOutput } from "@/lib/utils";
+import { toUbwick, computeMinOutput } from "@/lib/utils";
 import { swapFormSchema, type SwapFormValues } from "@/lib/validation/trading-schemas";
 import { AmountInput } from "./amount-input";
 import { TradePreview } from "./trade-preview";
@@ -54,11 +54,11 @@ export function SwapForm({ tokenAddress, tokenSymbol }: SwapFormProps) {
     queryKey: [
       "simulate-swap",
       tokenAddress,
-      buyDirection ? "xyz_to_token" : "token_to_xyz",
+      buyDirection ? "bwick_to_token" : "token_to_bwick",
       offerAmount,
     ],
     queryFn: () => {
-      const amountMicro = toUxyz(offerAmount);
+      const amountMicro = toUbwick(offerAmount);
       return simulateSwap(client!, tokenAddress, buyDirection, amountMicro);
     },
     enabled:
@@ -79,7 +79,7 @@ export function SwapForm({ tokenAddress, tokenSymbol }: SwapFormProps) {
         connection
       );
 
-      const amountMicro = toUxyz(values.offerAmount);
+      const amountMicro = toUbwick(values.offerAmount);
       const minOutput = computeMinOutput(
         simulation.output_amount,
         values.slippage
@@ -87,7 +87,7 @@ export function SwapForm({ tokenAddress, tokenSymbol }: SwapFormProps) {
 
       if (buyDirection) {
         // BWICK -> Token: send native funds
-        return swapXyzForToken(
+        return swapBwickForToken(
           contractClient,
           address,
           tokenAddress,
@@ -96,7 +96,7 @@ export function SwapForm({ tokenAddress, tokenSymbol }: SwapFormProps) {
         );
       } else {
         // Token -> BWICK: use CW20 Send pattern
-        return swapTokenForXyz(
+        return swapTokenForBwick(
           contractClient,
           address,
           tokenAddress,
@@ -139,7 +139,7 @@ export function SwapForm({ tokenAddress, tokenSymbol }: SwapFormProps) {
 
   const inputDenom = buyDirection ? NATIVE_SYMBOL : tokenSymbol;
   const outputDenom = buyDirection ? tokenSymbol : NATIVE_SYMBOL;
-  const outputIsXyz = !buyDirection;
+  const outputIsBwick = !buyDirection;
 
   return (
     <Form {...form}>
@@ -231,7 +231,7 @@ export function SwapForm({ tokenAddress, tokenSymbol }: SwapFormProps) {
             feeAmount={simulation.fee_amount}
             slippagePercent={slippage}
             outputDenom={outputDenom}
-            outputIsXyz={outputIsXyz}
+            outputIsBwick={outputIsBwick}
             priceImpact={simulation.price_impact}
           />
         )}

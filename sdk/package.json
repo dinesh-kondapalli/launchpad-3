@@ -1,7 +1,7 @@
 {
-  "name": "@xyz-chain/sdk",
+  "name": "@bwick-chain/sdk",
   "version": "0.1.0",
-  "description": "TypeScript SDK for XYZ Chain - a zero-inflation blockchain for bridged Solana tokens",
+  "description": "TypeScript SDK for BWICK Chain",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -20,13 +20,13 @@
     "test": "vitest run"
   },
   "keywords": [
-    "xyz-chain",
+    "bwick-chain",
     "cosmos",
     "blockchain",
     "sdk",
     "typescript"
   ],
-  "author": "XYZ Chain",
+  "author": "BWICK Chain",
   "license": "MIT",
   "dependencies": {
     "@cosmjs/amino": "^0.32.4",

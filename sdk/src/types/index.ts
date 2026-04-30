@@ -1,8 +1,8 @@
-export type { XYZChainConfig } from "./chain.js";
+export type { BwickChainConfig } from "./chain.js";
 export { DEFAULT_CONFIG } from "./chain.js";
 
 export type { Coin } from "./coin.js";
-export { XYZ_DECIMALS, XYZ_DENOM, formatXYZ, parseXYZ } from "./coin.js";
+export { BWICK_DECIMALS, BWICK_DENOM, formatBwick, parseBwick } from "./coin.js";
 
 export type {
   TokenInfo,

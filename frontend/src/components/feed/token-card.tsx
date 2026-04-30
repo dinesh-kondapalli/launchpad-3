@@ -5,7 +5,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Progress } from "@/components/ui/progress";
 import type { TokenListItem } from "@/lib/api";
 import { useCurveProgress } from "@/hooks/use-curve-progress";
-import { useXyzPrice } from "@/hooks/use-xyz-price";
+import { useBwickPrice } from "@/hooks/use-bwick-price";
 import { DEFAULT_TOKEN_SUPPLY } from "@/lib/chain-config";
 import { formatUsd } from "@/lib/utils";
 
@@ -15,7 +15,7 @@ interface TokenCardProps {
 
 export function TokenCard({ token }: TokenCardProps) {
   const { data: progress } = useCurveProgress(token.address);
-  const { xyzPriceUsd } = useXyzPrice();
+  const { bwickPriceUsd } = useBwickPrice();
 
   const progressValue = token.graduated ? 100 : progress ? Math.min(100, progress.progress_percent) : 0;
 
@@ -58,7 +58,7 @@ export function TokenCard({ token }: TokenCardProps) {
 
           <div className="space-y-1">
             <p className="text-[10px] uppercase tracking-[0.1em] text-muted-foreground">Market Cap</p>
-            <p className="font-mono text-sm font-semibold text-primary">{formatMarketCap(token, xyzPriceUsd)}</p>
+            <p className="font-mono text-sm font-semibold text-primary">{formatMarketCap(token, bwickPriceUsd)}</p>
           </div>
 
           <div className="space-y-1">
@@ -74,7 +74,7 @@ export function TokenCard({ token }: TokenCardProps) {
 
           <div className="flex items-center justify-between border-t border-border pt-2 text-[11px] text-muted-foreground">
             <span>{formatAge(token)}</span>
-            <span className="font-mono text-foreground">{formatPrice(token.current_price, xyzPriceUsd)}</span>
+            <span className="font-mono text-foreground">{formatPrice(token.current_price, bwickPriceUsd)}</span>
           </div>
         </div>
       </article>
@@ -82,15 +82,15 @@ export function TokenCard({ token }: TokenCardProps) {
   );
 }
 
-function formatPrice(priceXyz: string, xyzPriceUsd: number): string {
-  const usd = Number(priceXyz) * xyzPriceUsd;
+function formatPrice(priceBwick: string, bwickPriceUsd: number): string {
+  const usd = Number(priceBwick) * bwickPriceUsd;
   return formatUsd(usd);
 }
 
-function formatMarketCap(token: TokenListItem, xyzPriceUsd: number): string {
-  const priceXyz = Number(token.current_price || "0");
+function formatMarketCap(token: TokenListItem, bwickPriceUsd: number): string {
+  const priceBwick = Number(token.current_price || "0");
   const totalSupplyTokens = DEFAULT_TOKEN_SUPPLY;
-  const mcapUsd = priceXyz * totalSupplyTokens * xyzPriceUsd;
+  const mcapUsd = priceBwick * totalSupplyTokens * bwickPriceUsd;
   return formatUsd(mcapUsd);
 }
 

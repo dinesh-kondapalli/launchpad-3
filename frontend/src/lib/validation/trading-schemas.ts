@@ -25,7 +25,7 @@ const slippageField = z
 
 // Buy tokens on bonding curve
 export const buyFormSchema = z.object({
-  xyzAmount: positiveDecimal(0.001, 100_000_000_000),
+  bwickAmount: positiveDecimal(0.001, 100_000_000_000),
   slippage: slippageField,
 });
 export type BuyFormValues = z.infer<typeof buyFormSchema>;

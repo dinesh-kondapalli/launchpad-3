@@ -1,11 +1,11 @@
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import type { XYZClient } from "../client.js";
+import type { BwickClient } from "../client.js";
 import type { ContractQuery } from "../types/contract.js";
 
 // Cache CosmWasm clients
 const cwClientCache = new Map<string, CosmWasmClient>();
 
-async function getCwClient(client: XYZClient): Promise<CosmWasmClient> {
+async function getCwClient(client: BwickClient): Promise<CosmWasmClient> {
   const endpoint = client.config.rpcEndpoint;
   let cwClient = cwClientCache.get(endpoint);
   if (!cwClient) {
@@ -17,13 +17,13 @@ async function getCwClient(client: XYZClient): Promise<CosmWasmClient> {
 
 /**
  * Query a smart contract
- * @param client - XYZ client instance
- * @param contractAddress - Contract address (xyz1...)
- * @param queryMsg - Query message (e.g., { balance: { address: "xyz1..." } })
+ * @param client - BWICK client instance
+ * @param contractAddress - Contract address (bwick1...)
+ * @param queryMsg - Query message (e.g., { balance: { address: "bwick1..." } })
  * @returns Query result (type depends on contract)
  */
 export async function queryContract<T = unknown>(
-  client: XYZClient,
+  client: BwickClient,
   contractAddress: string,
   queryMsg: ContractQuery
 ): Promise<T> {
@@ -35,7 +35,7 @@ export async function queryContract<T = unknown>(
  * Get contract info (code_id, creator, admin, label)
  */
 export async function getContractInfo(
-  client: XYZClient,
+  client: BwickClient,
   contractAddress: string
 ): Promise<{
   codeId: number;
@@ -57,7 +57,7 @@ export async function getContractInfo(
  * Get raw contract state by key
  */
 export async function getContractState(
-  client: XYZClient,
+  client: BwickClient,
   contractAddress: string,
   key: Uint8Array
 ): Promise<Uint8Array | null> {

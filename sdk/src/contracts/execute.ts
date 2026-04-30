@@ -1,23 +1,23 @@
 import { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { GasPrice } from "@cosmjs/stargate";
-import type { XYZChainConfig } from "../types/chain.js";
+import type { BwickChainConfig } from "../types/chain.js";
 import type { ContractMsg, ExecuteOptions, ExecuteResult } from "../types/contract.js";
 import type { WalletConnection } from "../wallet/types.js";
 import { calculateTxFee } from "../transactions/signing.js";
-import { XYZ_DENOM } from "../types/coin.js";
+import { BWICK_DENOM } from "../types/coin.js";
 
 /**
  * Create a signing CosmWasm client from wallet connection
  */
 export async function createContractClient(
-  config: XYZChainConfig,
+  config: BwickChainConfig,
   wallet: WalletConnection
 ): Promise<SigningCosmWasmClient> {
   return SigningCosmWasmClient.connectWithSigner(
     config.rpcEndpoint,
     wallet.signer,
     {
-      gasPrice: GasPrice.fromString(`0.025${XYZ_DENOM}`),
+      gasPrice: GasPrice.fromString(`0.025${BWICK_DENOM}`),
     }
   );
 }

@@ -1,5 +1,5 @@
 {
-  "name": "xyz-sdk-react-example",
+  "name": "bwick-sdk-react-example",
   "version": "1.0.0",
   "type": "module",
   "scripts": {
@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@xyz-chain/sdk": "file:../..",
+    "@bwick-chain/sdk": "file:../..",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

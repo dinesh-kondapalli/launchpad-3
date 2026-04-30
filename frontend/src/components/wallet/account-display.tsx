@@ -37,8 +37,8 @@ export function AccountDisplay() {
       ? "Keplr"
       : walletType === "leap"
         ? "Leap"
-        : walletType === "xyz"
-          ? "XYZ Wallet"
+        : walletType === "bwick"
+          ? "BWICK Wallet"
           : "Direct";
 
   return (

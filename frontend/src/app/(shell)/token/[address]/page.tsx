@@ -10,7 +10,7 @@ import { TradingChartSkeleton } from "@/components/trading/trading-chart-skeleto
 import { useCurveProgress } from "@/hooks/use-curve-progress";
 import { useTokenDetail } from "@/hooks/use-token-detail";
 import { useTokenTrades } from "@/hooks/use-token-trades";
-import { useXyzPrice } from "@/hooks/use-xyz-price";
+import { useBwickPrice } from "@/hooks/use-bwick-price";
 import { DEFAULT_TOKEN_SUPPLY, NATIVE_SYMBOL } from "@/lib/chain-config";
 import { formatUsd } from "@/lib/utils";
 
@@ -32,7 +32,7 @@ export default function TokenDetailPage() {
   const tokenQuery = useTokenDetail(tokenAddress);
   const progressQuery = useCurveProgress(tokenAddress);
   const tradesQuery = useTokenTrades(tokenAddress, 20);
-  const { xyzPriceUsd } = useXyzPrice();
+  const { bwickPriceUsd } = useBwickPrice();
 
   const token = tokenQuery.data;
   const progress = useMemo(
@@ -43,7 +43,7 @@ export default function TokenDetailPage() {
           ? {
               tokens_sold: "0",
               tokens_remaining: "0",
-              xyz_reserves: token.xyz_reserves,
+              bwick_reserves: token.bwick_reserves,
               graduation_threshold: "0",
               progress_percent: token.graduated ? 100 : 0,
               current_price: token.current_price,
@@ -65,25 +65,25 @@ export default function TokenDetailPage() {
       };
     }
 
-    const marketCapUsd = Number(token.current_price) * DEFAULT_TOKEN_SUPPLY * xyzPriceUsd;
-    const liquidityUsd = (Number(progress.xyz_reserves) / 1_000_000) * xyzPriceUsd;
+    const marketCapUsd = Number(token.current_price) * DEFAULT_TOKEN_SUPPLY * bwickPriceUsd;
+    const liquidityUsd = (Number(progress.bwick_reserves) / 1_000_000) * bwickPriceUsd;
 
     return {
-      price: formatUsd(Number(token.current_price) * xyzPriceUsd),
+      price: formatUsd(Number(token.current_price) * bwickPriceUsd),
       marketCap: formatUsd(marketCapUsd),
       liquidity: formatUsd(liquidityUsd),
       oneHour: 0,
       sixHour: 0,
       twentyFourHour: 0,
     };
-  }, [progress, token, xyzPriceUsd]);
+  }, [progress, token, bwickPriceUsd]);
 
   const feedEntries = useMemo(() => {
     if (tradesQuery.data && tradesQuery.data.length > 0) {
       return tradesQuery.data.map((trade) => ({
         id: trade.tx_hash,
         side: trade.action === "buy" ? "Buy" : "Sell",
-        amountNative: Number(trade.xyz_amount) / 1_000_000,
+        amountNative: Number(trade.bwick_amount) / 1_000_000,
         trader: trade.trader,
         time: trade.time,
       }));
@@ -109,7 +109,7 @@ export default function TokenDetailPage() {
     );
   }
 
-  const reserve = Number(progress.xyz_reserves) / 1_000_000;
+  const reserve = Number(progress.bwick_reserves) / 1_000_000;
   const threshold = Number(progress.graduation_threshold) / 1_000_000;
   const toGraduate = Math.max(0, threshold - reserve);
   const creatorRewards = reserve * 0.027;

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import { randomUUID } from "crypto";
+import { mkdir, writeFile } from "fs/promises";
+import { join } from "path";
 
 const MAX_SIZE = 2 * 1024 * 1024; // 2MB
 const ALLOWED_TYPES = new Set([
@@ -18,6 +20,17 @@ const EXT_MAP: Record<string, string> = {
   "image/webp": ".webp",
   "image/svg+xml": ".svg",
 };
+
+async function uploadToLocalPublic(file: File, filename: string) {
+  const uploadDir = join(process.cwd(), "public", "uploads", "tokens");
+  await mkdir(uploadDir, { recursive: true });
+
+  const publicFilename = filename.replace(/^tokens\//, "");
+  const bytes = Buffer.from(await file.arrayBuffer());
+  await writeFile(join(uploadDir, publicFilename), bytes);
+
+  return `/uploads/tokens/${publicFilename}`;
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -44,6 +57,11 @@ export async function POST(req: NextRequest) {
 
     const ext = EXT_MAP[file.type] ?? ".png";
     const filename = `tokens/${randomUUID()}${ext}`;
+
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      const url = await uploadToLocalPublic(file, filename);
+      return NextResponse.json({ url });
+    }
 
     const blob = await put(filename, file, {
       access: "public",

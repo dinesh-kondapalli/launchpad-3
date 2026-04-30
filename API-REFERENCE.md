@@ -1,6 +1,6 @@
-# API Reference: XYZ Launchpad + AMM Contracts
+# API Reference: BWICK Launchpad + AMM Contracts
 
-All contract interactions use CosmWasm JSON messages. Amounts are in **micro-units** (`uxyz` for the native token, 6 decimals for CW20 tokens). For example, `1 XYZ = 1,000,000 uxyz` and `1 TOKEN = 1,000,000 uTOKEN`.
+All contract interactions use CosmWasm JSON messages. Amounts are in **micro-units** (`ubwick` for the native token, 6 decimals for CW20 tokens). For example, `1 BWICK = 1,000,000 ubwick` and `1 TOKEN = 1,000,000 uTOKEN`.
 
 The TypeScript client wrappers live in `frontend/src/lib/contract-clients/` and types in `types.ts`.
 
@@ -14,7 +14,7 @@ Contract address is configured via `NEXT_PUBLIC_LAUNCHPAD_CONTRACT` in `.env.loc
 
 #### `CreateToken`
 
-Creates a new token with a bonding curve. Requires the creation fee in `uxyz` (query `Config` to get the current fee).
+Creates a new token with a bonding curve. Requires the creation fee in `ubwick` (query `Config` to get the current fee).
 
 ```json
 {
@@ -28,10 +28,10 @@ Creates a new token with a bonding curve. Requires the creation fee in `uxyz` (q
 }
 ```
 
-**Funds required:** `[{ "denom": "uxyz", "amount": "<creation_fee>" }]`
+**Funds required:** `[{ "denom": "ubwick", "amount": "<creation_fee>" }]`
 
 **What happens:**
-1. Creation fee is collected as initial XYZ reserves for the curve
+1. Creation fee is collected as initial BWICK reserves for the curve
 2. A new CW20 token is instantiated with 1 billion total supply (6 decimals)
 3. All tokens are held by the launchpad contract (released via buys)
 4. A bonding curve is created and indexed by the new token address
@@ -42,7 +42,7 @@ Creates a new token with a bonding curve. Requires the creation fee in `uxyz` (q
 
 #### `Buy`
 
-Buy tokens along the bonding curve by sending native XYZ.
+Buy tokens along the bonding curve by sending native BWICK.
 
 ```json
 {
@@ -53,15 +53,15 @@ Buy tokens along the bonding curve by sending native XYZ.
 }
 ```
 
-**Funds required:** `[{ "denom": "uxyz", "amount": "<xyz_to_spend>" }]`
+**Funds required:** `[{ "denom": "ubwick", "amount": "<bwick_to_spend>" }]`
 
 **Slippage protection:** `min_tokens_out` -- transaction reverts if you'd receive fewer tokens.
 
-**Fee:** 0.5% (50 bps) deducted from XYZ input before curve calculation. A portion goes to the token creator.
+**Fee:** 0.5% (50 bps) deducted from BWICK input before curve calculation. A portion goes to the token creator.
 
-**Auto-graduation:** If this buy pushes `xyz_reserves >= graduation_threshold` (5M XYZ), the curve automatically graduates: the token migrates to the AMM with all remaining tokens and XYZ reserves as initial liquidity.
+**Auto-graduation:** If this buy pushes `bwick_reserves >= graduation_threshold` (5M BWICK), the curve automatically graduates: the token migrates to the AMM with all remaining tokens and BWICK reserves as initial liquidity.
 
-**TS client:** `buyTokens(contractClient, senderAddress, tokenAddress, xyzAmount, minTokensOut)`
+**TS client:** `buyTokens(contractClient, senderAddress, tokenAddress, bwickAmount, minTokensOut)`
 
 ---
 
@@ -85,15 +85,15 @@ Send tokens to the launchpad contract address with an encoded `SellTokens` messa
 The inner message (before base64 encoding):
 ```json
 {
-  "min_xyz_out": "500000"
+  "min_bwick_out": "500000"
 }
 ```
 
-**Slippage protection:** `min_xyz_out` -- transaction reverts if you'd receive less XYZ.
+**Slippage protection:** `min_bwick_out` -- transaction reverts if you'd receive less BWICK.
 
-**Fee:** 3.5% (350 bps) deducted from XYZ output. Fee is split: 50% burned, 50% to LP (with creator getting a share of the LP portion).
+**Fee:** 3.5% (350 bps) deducted from BWICK output. Fee is split: 50% burned, 50% to LP (with creator getting a share of the LP portion).
 
-**TS client:** `sellTokens(contractClient, senderAddress, tokenAddress, tokenAmount, minXyzOut)` -- handles the CW20 Send encoding automatically.
+**TS client:** `sellTokens(contractClient, senderAddress, tokenAddress, tokenAmount, minBwickOut)` -- handles the CW20 Send encoding automatically.
 
 ---
 
@@ -115,7 +115,7 @@ Manually trigger graduation for a token that has reached the threshold. Permissi
 
 **What happens:**
 1. Curve is marked as graduated (no more buys/sells on curve)
-2. All XYZ reserves are sent to the AMM as initial pool liquidity
+2. All BWICK reserves are sent to the AMM as initial pool liquidity
 3. All unsold tokens are sent to the AMM as the token side of the pool
 4. A new AMM pool is created with these reserves
 
@@ -136,8 +136,8 @@ Returns global launchpad configuration.
 {
   amm_contract: string;       // AMM contract address
   cw20_code_id: number;       // Code ID for CW20 token instantiation
-  creation_fee: string;       // Token creation fee in uxyz (e.g. "80000000000")
-  graduation_threshold: string; // XYZ threshold in uxyz (e.g. "5000000000000")
+  creation_fee: string;       // Token creation fee in ubwick (e.g. "80000000000")
+  graduation_threshold: string; // BWICK threshold in ubwick (e.g. "5000000000000")
   buy_fee_bps: number;        // Buy fee in basis points (50 = 0.5%)
   sell_fee_bps: number;       // Sell fee in basis points (350 = 3.5%)
 }
@@ -167,7 +167,7 @@ Get full curve info for a specific token.
   creator: string;
   tokens_sold: string;       // Tokens sold so far (micro-units)
   tokens_remaining: string;  // Tokens still available on curve
-  xyz_reserves: string;      // XYZ locked in curve (micro-units)
+  bwick_reserves: string;      // BWICK locked in curve (micro-units)
   current_price: string;     // Current price as decimal string (e.g. "0.000015")
   graduated: boolean;
   created_at: number;        // Block height
@@ -210,8 +210,8 @@ Graduation progress for a specific token.
 ```typescript
 {
   token_address: string;
-  xyz_raised: string;            // Current XYZ in reserves
-  graduation_threshold: string;  // Target XYZ amount
+  bwick_raised: string;            // Current BWICK in reserves
+  graduation_threshold: string;  // Target BWICK amount
   progress_percent: string;      // e.g. "45.23%"
   tokens_sold: string;
   tokens_remaining: string;
@@ -229,7 +229,7 @@ Preview a buy without executing. Use for UI price display.
 {
   "simulate_buy": {
     "token_address": "<cw20_token_address>",
-    "xyz_amount": "1000000"
+    "bwick_amount": "1000000"
   }
 }
 ```
@@ -238,7 +238,7 @@ Preview a buy without executing. Use for UI price display.
 ```typescript
 {
   tokens_out: string;    // Tokens you'd receive
-  fee_amount: string;    // Fee deducted (in uxyz)
+  fee_amount: string;    // Fee deducted (in ubwick)
   new_price: string;     // Price after this trade
 }
 ```
@@ -261,7 +261,7 @@ Preview a sell without executing.
 **Response (`SimulateSellResponse`):**
 ```typescript
 {
-  xyz_out: string;       // XYZ you'd receive
+  bwick_out: string;       // BWICK you'd receive
   fee_amount: string;    // Total fee (burned + LP)
   burned_amount: string; // Portion of fee that is burned
   new_price: string;     // Price after this trade
@@ -278,31 +278,31 @@ Pools are created automatically when tokens graduate from the bonding curve. The
 
 ### Execute Messages
 
-#### `Swap` (XYZ -> Token)
+#### `Swap` (BWICK -> Token)
 
-Swap native XYZ for tokens.
+Swap native BWICK for tokens.
 
 ```json
 {
   "swap": {
     "token_address": "<cw20_token_address>",
-    "offer_xyz": true,
+    "offer_bwick": true,
     "min_output": "1000000"
   }
 }
 ```
 
-**Funds required:** `[{ "denom": "uxyz", "amount": "<xyz_to_swap>" }]`
+**Funds required:** `[{ "denom": "ubwick", "amount": "<bwick_to_swap>" }]`
 
 **Slippage protection:** `min_output` -- reverts if output amount is less.
 
-**TS client:** `swapXyzForToken(contractClient, senderAddress, tokenAddress, xyzAmount, minOutput)`
+**TS client:** `swapBwickForToken(contractClient, senderAddress, tokenAddress, bwickAmount, minOutput)`
 
 ---
 
-#### `Receive` (Token -> XYZ via CW20 Send)
+#### `Receive` (Token -> BWICK via CW20 Send)
 
-Swap tokens for native XYZ. Uses the CW20 Send pattern (same as launchpad sells):
+Swap tokens for native BWICK. Uses the CW20 Send pattern (same as launchpad sells):
 
 ```json
 // Sent to the TOKEN contract
@@ -310,7 +310,7 @@ Swap tokens for native XYZ. Uses the CW20 Send pattern (same as launchpad sells)
   "send": {
     "contract": "<amm_contract_address>",
     "amount": "1000000",
-    "msg": "<base64_encoded_SwapTokenForXyz>"
+    "msg": "<base64_encoded_SwapTokenForBwick>"
   }
 }
 ```
@@ -322,7 +322,7 @@ Inner message (before base64):
 }
 ```
 
-**TS client:** `swapTokenForXyz(contractClient, senderAddress, tokenAddress, tokenAmount, minOutput)` -- handles encoding automatically.
+**TS client:** `swapTokenForBwick(contractClient, senderAddress, tokenAddress, tokenAmount, minOutput)` -- handles encoding automatically.
 
 ---
 
@@ -334,15 +334,15 @@ Only callable by authorized creators (the launchpad contract). Called automatica
 {
   "create_pool": {
     "token_address": "<cw20_token_address>",
-    "xyz_amount": "5000000000000",
+    "bwick_amount": "5000000000000",
     "token_amount": "200000000000000",
     "augmented_fee_bps": 100,
-    "lp_target_uxyz": "20000000000000"
+    "lp_target_ubwick": "20000000000000"
   }
 }
 ```
 
-**Note:** `augmented_fee_bps` and `lp_target_uxyz` are optional. If provided, the pool charges an extra fee until the pool value reaches the target, then the augmented fee auto-disables.
+**Note:** `augmented_fee_bps` and `lp_target_ubwick` are optional. If provided, the pool charges an extra fee until the pool value reaches the target, then the augmented fee auto-disables.
 
 ---
 
@@ -360,11 +360,11 @@ Get pool info for a token.
 ```typescript
 {
   token_address: string;
-  xyz_reserve: string;      // XYZ in pool (micro-units)
+  bwick_reserve: string;      // BWICK in pool (micro-units)
   token_reserve: string;    // Tokens in pool (micro-units)
   lp_token_address: string; // LP token address (locked, non-transferable)
   lp_total_supply: string;  // LP token supply
-  price: string;            // Current price: XYZ per token (decimal string)
+  price: string;            // Current price: BWICK per token (decimal string)
 }
 ```
 
@@ -395,13 +395,13 @@ Preview a swap in either direction.
 {
   "simulate_swap": {
     "token_address": "<cw20_token_address>",
-    "offer_xyz": true,
+    "offer_bwick": true,
     "offer_amount": "1000000"
   }
 }
 ```
 
-Set `offer_xyz: true` for XYZ->Token, `false` for Token->XYZ.
+Set `offer_bwick: true` for BWICK->Token, `false` for Token->BWICK.
 
 **Response (`SimulateSwapResponse`):**
 ```typescript
@@ -444,8 +444,8 @@ Check the augmented fee status for a specific pool.
 {
   active: boolean;                  // Whether augmented fee is currently active
   augmented_fee_bps: number;        // Extra fee in basis points
-  lp_target_uxyz: string;           // Pool value target to auto-disable
-  current_pool_value_uxyz: string;  // Current pool value (2 * xyz_reserve)
+  lp_target_ubwick: string;           // Pool value target to auto-disable
+  current_pool_value_ubwick: string;  // Current pool value (2 * bwick_reserve)
   progress_percent: string;         // e.g. "75.50"
 }
 ```
@@ -460,16 +460,16 @@ Check the augmented fee status for a specific pool.
 price(tokens_sold) = BASE_PRICE + SLOPE * tokens_sold
 ```
 
-- **Base price:** 0.000015 XYZ per token (15 uxyz per token at start)
-- **Slope:** 15 micro-XYZ per 10^12 tokens sold
+- **Base price:** 0.000015 BWICK per token (15 ubwick per token at start)
+- **Slope:** 15 micro-BWICK per 10^12 tokens sold
 - Price increases linearly as more tokens are bought
 
 ### Buy Calculation
 
-Uses the integral of the linear curve (quadratic formula) to determine tokens received for a given XYZ input:
+Uses the integral of the linear curve (quadratic formula) to determine tokens received for a given BWICK input:
 
 ```
-XYZ_input_after_fee = delta * (base + slope * t1) + slope * delta^2 / 2
+BWICK_input_after_fee = delta * (base + slope * t1) + slope * delta^2 / 2
 ```
 
 Solved via quadratic formula for `delta` (tokens out).
@@ -479,7 +479,7 @@ Solved via quadratic formula for `delta` (tokens out).
 Reverse integral from `tokens_sold` back to `tokens_sold - tokens_input`:
 
 ```
-XYZ_value = base * delta + slope * delta * (t1 + t2) / 2
+BWICK_value = base * delta + slope * delta * (t1 + t2) / 2
 ```
 
 ### Token Supply
@@ -492,19 +492,19 @@ XYZ_value = base * delta + slope * delta * (t1 + t2) / 2
 
 | Fee | Rate | Details |
 |-----|------|---------|
-| Token creation | Fixed | Query `Config.creation_fee` (currently 80,000 XYZ) |
-| Buy fee | 0.5% (50 bps) | Deducted from XYZ input before curve calc |
-| Sell fee | 3.5% (350 bps) | Deducted from XYZ output; 50% burned, 50% to LP |
+| Token creation | Fixed | Query `Config.creation_fee` (currently 80,000 BWICK) |
+| Buy fee | 0.5% (50 bps) | Deducted from BWICK input before curve calc |
+| Sell fee | 3.5% (350 bps) | Deducted from BWICK output; 50% burned, 50% to LP |
 | Creator share | Configurable | Creator gets a share of buy fees and LP portion of sell fees |
 | AMM swap fee | 1% (100 bps) | Constant product swap fee; stays in pool (auto-compounds) |
 | Augmented fee | 0-5% | Optional extra fee on AMM swaps; auto-disables at target |
 
 ### Graduation Mechanics
 
-1. **Threshold:** 5,000,000 XYZ (5M) in curve reserves triggers graduation
+1. **Threshold:** 5,000,000 BWICK (5M) in curve reserves triggers graduation
 2. **Auto-trigger:** Happens automatically during a `Buy` that crosses the threshold
 3. **Manual trigger:** Anyone can call `Graduate` if threshold is met
-4. **Migration:** All XYZ reserves + all unsold tokens move to a new AMM pool
+4. **Migration:** All BWICK reserves + all unsold tokens move to a new AMM pool
 5. **Post-graduation:** Bonding curve is closed; all trading moves to the AMM
 
 ### AMM Constant Product Formula
@@ -533,10 +533,10 @@ All response types are defined in `frontend/src/lib/contract-clients/types.ts`.
 
 ### Important: CW20 Send Pattern
 
-Both selling on the launchpad and swapping Token->XYZ on the AMM use the **CW20 Send pattern**. You don't call the launchpad/AMM contract directly. Instead:
+Both selling on the launchpad and swapping Token->BWICK on the AMM use the **CW20 Send pattern**. You don't call the launchpad/AMM contract directly. Instead:
 
 1. Call `Send` on the **CW20 token contract**
 2. Pass the launchpad/AMM as the recipient
-3. Include a base64-encoded inner message (`SellTokens` or `SwapTokenForXyz`)
+3. Include a base64-encoded inner message (`SellTokens` or `SwapTokenForBwick`)
 
 The SDK's `sendCW20()` helper handles this encoding. See `frontend/src/lib/contract-clients/launchpad.ts` and `amm.ts` for usage.

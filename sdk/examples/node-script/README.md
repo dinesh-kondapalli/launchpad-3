@@ -1,13 +1,13 @@
 # Node.js Example
 
-Demonstrates using the XYZ Chain SDK from Node.js to connect to the chain,
+Demonstrates using the BWICK Chain SDK from Node.js to connect to the chain,
 query balances, and sign transactions.
 
 ## Setup
 
-1. Start local XYZ Chain:
+1. Start local BWICK Chain:
    ```bash
-   xyz localnet start
+   bwick localnet start
    ```
 
 2. Install dependencies:
@@ -28,4 +28,4 @@ query balances, and sign transactions.
 - Querying chain info (chain ID, block height)
 - Querying account balance (`getBalance`)
 - Creating a signing client from mnemonic (`createSigningClient`)
-- Sending XYZ tokens (`sendXYZ`) - commented out, uncomment to test
+- Sending BWICK tokens (`sendBWICK`) - commented out, uncomment to test

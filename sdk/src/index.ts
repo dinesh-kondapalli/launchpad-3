@@ -1,7 +1,7 @@
-// @xyz-chain/sdk - TypeScript SDK for XYZ Chain
+// @bwick-chain/sdk - TypeScript SDK for BWICK Chain
 
 // Client
-export { createClient, type XYZClient } from "./client.js";
+export { createClient, type BwickClient } from "./client.js";
 
 // Types
 export * from "./types/index.js";

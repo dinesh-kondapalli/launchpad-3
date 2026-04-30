@@ -1,5 +1,5 @@
 import type { WalletConnection } from "./types.js";
-import { getXYZChainInfo } from "./chain-info.js";
+import { getBwickChainInfo } from "./chain-info.js";
 import { isLeapAvailable } from "./detect.js";
 
 export interface ConnectLeapOptions {
@@ -25,7 +25,7 @@ export async function connectLeap(options: ConnectLeapOptions): Promise<WalletCo
   // Try to suggest chain if not already configured
   if (options.suggestChain !== false) {
     try {
-      const chainInfo = getXYZChainInfo(options.rpcEndpoint, restEndpoint, chainId);
+      const chainInfo = getBwickChainInfo(options.rpcEndpoint, restEndpoint, chainId);
       await leap.experimentalSuggestChain(chainInfo);
     } catch (error) {
       console.debug("Chain suggestion failed (may already exist):", error);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTokenTrades } from "@/hooks/use-token-trades";
-import { useXyzPrice } from "@/hooks/use-xyz-price";
+import { useBwickPrice } from "@/hooks/use-bwick-price";
 import { formatUsd } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -12,7 +12,7 @@ interface RecentTradesProps {
 
 export function RecentTrades({ tokenAddress, tokenSymbol }: RecentTradesProps) {
   const { data: trades, isLoading } = useTokenTrades(tokenAddress);
-  const { xyzPriceUsd } = useXyzPrice();
+  const { bwickPriceUsd } = useBwickPrice();
 
   return (
     <div className="h-full">
@@ -101,7 +101,7 @@ export function RecentTrades({ tokenAddress, tokenSymbol }: RecentTradesProps) {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right font-mono whitespace-nowrap">
-                    {formatUxyzAsUsd(trade.xyz_amount, xyzPriceUsd)}
+                    {formatUbwickAsUsd(trade.bwick_amount, bwickPriceUsd)}
                   </td>
                   <td className="px-4 py-3 text-right font-mono whitespace-nowrap">
                     {formatMicroTokens(trade.token_amount)}
@@ -141,8 +141,8 @@ function formatTimeAgo(isoTime: string): string {
   return `${diffDay}d ago`;
 }
 
-function formatUxyzAsUsd(uxyz: string, xyzPriceUsd: number): string {
-  const usd = (Number(uxyz) / 1_000_000) * xyzPriceUsd;
+function formatUbwickAsUsd(ubwick: string, bwickPriceUsd: number): string {
+  const usd = (Number(ubwick) / 1_000_000) * bwickPriceUsd;
   return formatUsd(usd);
 }
 

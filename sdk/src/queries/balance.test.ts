@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { createClient, type XYZClient } from "../client.js";
+import { createClient, type BwickClient } from "../client.js";
 import { getBalance, getAllBalances } from "./balance.js";
-import { XYZ_DENOM } from "../types/coin.js";
+import { BWICK_DENOM } from "../types/coin.js";
 
 describe("balance queries", () => {
-  let client: XYZClient | null = null;
+  let client: BwickClient | null = null;
   // Test address from genesis or localnet
-  const testAddress = "xyz1cyyzpxplxdzkeea7kwsydadg87357qnalx9dqz";
+  const testAddress = "bwick1cyyzpxplxdzkeea7kwsydadg87357qnalx9dqz";
 
   beforeAll(async () => {
     try {
@@ -30,7 +30,7 @@ describe("balance queries", () => {
     }
 
     const balance = await getBalance(client, testAddress);
-    expect(balance.denom).toBe(XYZ_DENOM);
+    expect(balance.denom).toBe(BWICK_DENOM);
     expect(typeof balance.amount).toBe("string");
     expect(BigInt(balance.amount)).toBeGreaterThanOrEqual(0n);
   });
@@ -57,9 +57,9 @@ describe("balance queries", () => {
     }
 
     // Random address that likely has no balance
-    const emptyAddress = "xyz1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqdpz7hp";
+    const emptyAddress = "bwick1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqdpz7hp";
     const balance = await getBalance(client, emptyAddress);
-    expect(balance.denom).toBe(XYZ_DENOM);
+    expect(balance.denom).toBe(BWICK_DENOM);
     expect(balance.amount).toBe("0");
   });
 });

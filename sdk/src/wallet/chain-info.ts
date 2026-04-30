@@ -4,7 +4,7 @@ import type { ChainInfo } from "./types.js";
  * BWICK chain info for wallet registration
  * Used when chain is not yet in wallet's chain registry
  */
-export function getXYZChainInfo(rpcEndpoint: string, restEndpoint: string, chainId?: string): ChainInfo {
+export function getBwickChainInfo(rpcEndpoint: string, restEndpoint: string, chainId?: string): ChainInfo {
   const id = chainId ?? "bwick-1";
   const isTestnet = id.includes("testnet");
   return {

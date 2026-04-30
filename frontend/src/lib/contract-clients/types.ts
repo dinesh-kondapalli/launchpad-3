@@ -15,7 +15,7 @@ export interface SimulateBuyResponse {
 }
 
 export interface SimulateSellResponse {
-  xyz_out: string;
+  bwick_out: string;
   fee_amount: string;
   burned_amount: string;
   new_price: string;
@@ -27,7 +27,7 @@ export interface CurveResponse {
   creator: string;
   tokens_sold: string;
   tokens_remaining: string;
-  xyz_reserves: string;
+  bwick_reserves: string;
   current_price: string;
   graduated: boolean;
   created_at: number;
@@ -35,7 +35,7 @@ export interface CurveResponse {
 
 export interface ProgressResponse {
   token_address: string;
-  xyz_raised: string;
+  bwick_raised: string;
   graduation_threshold: string;
   progress_percent: string;
   tokens_sold: string;
@@ -63,7 +63,7 @@ export interface SimulateSwapResponse {
 
 export interface PoolResponse {
   token_address: string;
-  xyz_reserve: string;
+  bwick_reserve: string;
   token_reserve: string;
   lp_token_address: string;
   lp_total_supply: string;
@@ -71,7 +71,7 @@ export interface PoolResponse {
 }
 
 export interface OracleResponse {
-  xyz_usd_price: string;       // Uint128 as string (micro-USD, 6 decimals)
+  bwick_usd_price: string;       // Uint128 as string (micro-USD, 6 decimals)
   last_update_height: number;
   last_update_timestamp: number;
 }

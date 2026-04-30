@@ -1,5 +1,5 @@
 import type { SigningCosmWasmClient } from "@cosmjs/cosmwasm-stargate";
-import type { XYZClient } from "../client.js";
+import type { BwickClient } from "../client.js";
 import type { ExecuteOptions, ExecuteResult } from "../types/contract.js";
 import type { TokenInfo, TokenBalance } from "../types/token.js";
 import { queryContract } from "./query.js";
@@ -11,7 +11,7 @@ import { executeContract } from "./execute.js";
  * Get CW20 token balance
  */
 export async function getCW20Balance(
-  client: XYZClient,
+  client: BwickClient,
   tokenAddress: string,
   ownerAddress: string
 ): Promise<string> {
@@ -25,7 +25,7 @@ export async function getCW20Balance(
  * Get CW20 token info
  */
 export async function getCW20TokenInfo(
-  client: XYZClient,
+  client: BwickClient,
   tokenAddress: string
 ): Promise<TokenInfo> {
   return queryContract<TokenInfo>(client, tokenAddress, {
@@ -37,7 +37,7 @@ export async function getCW20TokenInfo(
  * Get CW20 allowance
  */
 export async function getCW20Allowance(
-  client: XYZClient,
+  client: BwickClient,
   tokenAddress: string,
   owner: string,
   spender: string

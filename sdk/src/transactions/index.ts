@@ -1,6 +1,6 @@
 export {
   createSigningClient,
   calculateTxFee,
-  type XYZSigningClient,
+  type BwickSigningClient,
 } from "./signing.js";
-export { sendTokens, sendXYZ } from "./send.js";
+export { sendTokens, sendBwick } from "./send.js";

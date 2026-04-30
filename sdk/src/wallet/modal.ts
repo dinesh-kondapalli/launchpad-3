@@ -2,7 +2,7 @@ import type { WalletConnection, WalletType } from "./types.js";
 import { getAvailableWallets } from "./detect.js";
 import { connectKeplr, KEPLR_ICON } from "./keplr.js";
 import { connectLeap, LEAP_ICON } from "./leap.js";
-import { connectXYZ, XYZ_ICON } from "./xyz.js";
+import { connectBwickWallet, BWICK_WALLET_ICON } from "./bwick-wallet.js";
 
 export interface WalletModalOptions {
   rpcEndpoint: string;
@@ -22,7 +22,7 @@ const WALLET_CONFIG: Record<WalletType, { name: string; icon: string }> = {
   keplr: { name: "Keplr", icon: KEPLR_ICON },
   leap: { name: "Leap", icon: LEAP_ICON },
   direct: { name: "Direct", icon: "" },
-  xyz: { name: "XYZ Wallet", icon: XYZ_ICON },
+  bwick: { name: "BWICK Wallet", icon: BWICK_WALLET_ICON },
 };
 
 /**
@@ -82,7 +82,7 @@ export async function showWalletModal(
     const wallets: WalletOption[] = [
       { type: "keplr", ...WALLET_CONFIG.keplr, available: availableWallets.includes("keplr") },
       { type: "leap", ...WALLET_CONFIG.leap, available: availableWallets.includes("leap") },
-      { type: "xyz", ...WALLET_CONFIG.xyz, available: availableWallets.includes("xyz") },
+      { type: "bwick", ...WALLET_CONFIG.bwick, available: availableWallets.includes("bwick") },
     ];
 
     const cleanup = () => {
@@ -143,7 +143,7 @@ export async function showWalletModal(
 
             const connectFn = wallet.type === "keplr" ? connectKeplr
                             : wallet.type === "leap" ? connectLeap
-                            : connectXYZ;
+                            : connectBwickWallet;
             const connection = await connectFn(options);
 
             cleanup();

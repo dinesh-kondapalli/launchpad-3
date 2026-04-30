@@ -14,7 +14,7 @@ import {
   LineSeries,
 } from "lightweight-charts";
 import type { CandleResponse } from "@/lib/api";
-import { useXyzPrice } from "@/hooks/use-xyz-price";
+import { useBwickPrice } from "@/hooks/use-bwick-price";
 import { DEFAULT_TOKEN_SUPPLY } from "@/lib/chain-config";
 import type { ActiveIndicators } from "./indicator-toolbar";
 import {
@@ -84,7 +84,7 @@ export function TradingChartCanvas({
   indicators,
   showMCap,
 }: TradingChartCanvasProps) {
-  const { xyzPriceUsd } = useXyzPrice();
+  const { bwickPriceUsd } = useBwickPrice();
   const [legend, setLegend] = useState<LegendData | null>(null);
 
   // Main chart refs
@@ -98,8 +98,8 @@ export function TradingChartCanvas({
 
   // Pre-compute data for all indicators
   const computed = useMemo(() => {
-    const priceMul = (xyzPriceUsd || 1) * multiplier;
-    const volMul = xyzPriceUsd || 1;
+    const priceMul = (bwickPriceUsd || 1) * multiplier;
+    const volMul = bwickPriceUsd || 1;
     const timestamps: UTCTimestamp[] = [];
     const closes: number[] = [];
     const candleData: CandlestickData<UTCTimestamp>[] = [];
@@ -132,7 +132,7 @@ export function TradingChartCanvas({
     const macd = calculateMACD(closes, 12, 26, 9);
 
     return { timestamps, closes, candleData, volumeData, rsi, macd };
-  }, [data, xyzPriceUsd, multiplier]);
+  }, [data, bwickPriceUsd, multiplier]);
 
   const initialLegend = useMemo<LegendData | null>(() => {
     const last = computed.candleData[computed.candleData.length - 1];

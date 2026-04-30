@@ -6,18 +6,24 @@ import {
   connectKeplr,
   connectLeap,
   connectDirect,
-  connectXYZ,
+  connectBwickWallet,
   createClient,
   getBalance,
-  formatXYZ,
+  formatBwick,
   isKeplrAvailable,
   isLeapAvailable,
-  isXYZAvailable,
+  isBwickWalletAvailable,
   type WalletConnection,
   type WalletType,
-  type XYZClient,
-} from "@xyz-chain/sdk";
-import { RPC_ENDPOINT, REST_ENDPOINT, CHAIN_ID } from "@/lib/chain-config";
+  type BwickClient,
+} from "@bwick-chain/sdk";
+import {
+  RPC_ENDPOINT,
+  REST_ENDPOINT,
+  PUBLIC_RPC_ENDPOINT,
+  PUBLIC_REST_ENDPOINT,
+  CHAIN_ID,
+} from "@/lib/chain-config";
 
 interface WalletState {
   // Persisted (only lastWalletType goes to localStorage)
@@ -33,7 +39,7 @@ interface WalletState {
 
   // Non-serializable (excluded from persist via partialize)
   connection: WalletConnection | null;
-  client: XYZClient | null;
+  client: BwickClient | null;
 
   // Actions
   connect: (type: WalletType, mnemonic?: string) => Promise<void>;
@@ -79,11 +85,11 @@ export const useWalletStore = create<WalletState>()(
             } else if (type === "leap") {
               connectFn = connectLeap;
             } else {
-              connectFn = connectXYZ;
+              connectFn = connectBwickWallet;
             }
             connection = await connectFn({
-              rpcEndpoint: RPC_ENDPOINT,
-              restEndpoint: REST_ENDPOINT,
+              rpcEndpoint: PUBLIC_RPC_ENDPOINT,
+              restEndpoint: PUBLIC_REST_ENDPOINT,
               chainId: CHAIN_ID,
               suggestChain: true,
             });
@@ -96,7 +102,7 @@ export const useWalletStore = create<WalletState>()(
           });
 
           const coin = await getBalance(client, connection.address);
-          const balance = formatXYZ(coin.amount);
+          const balance = formatBwick(coin.amount);
 
           set({
             connection,
@@ -140,7 +146,7 @@ export const useWalletStore = create<WalletState>()(
 
         try {
           const coin = await getBalance(client, address);
-          const balance = formatXYZ(coin.amount);
+          const balance = formatBwick(coin.amount);
           set({ balance, balanceRaw: coin.amount });
         } catch (err) {
           console.error("Failed to refresh balance:", err);
@@ -167,7 +173,7 @@ export const useWalletStore = create<WalletState>()(
         } else if (lastWalletType === "leap") {
           isAvailable = isLeapAvailable();
         } else {
-          isAvailable = isXYZAvailable();
+          isAvailable = isBwickWalletAvailable();
         }
 
         if (!isAvailable) {

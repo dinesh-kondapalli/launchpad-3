@@ -1,12 +1,12 @@
 import { describe, it, expect, afterAll } from "vitest";
-import { createSigningClient, calculateTxFee, type XYZSigningClient } from "./signing.js";
+import { createSigningClient, calculateTxFee, type BwickSigningClient } from "./signing.js";
 
 // Test mnemonic - use standard test words (DO NOT use in production)
 // This is a well-known test mnemonic for development only
 const TEST_MNEMONIC = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about";
 
 describe("signing client", () => {
-  let client: XYZSigningClient | null = null;
+  let client: BwickSigningClient | null = null;
 
   afterAll(() => {
     client?.disconnect();

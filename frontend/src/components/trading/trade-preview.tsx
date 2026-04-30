@@ -1,7 +1,7 @@
 "use client";
 
-import { formatTokenAmount, formatUsd, fromUxyz } from "@/lib/utils";
-import { useXyzPrice } from "@/hooks/use-xyz-price";
+import { formatTokenAmount, formatUsd, fromUbwick } from "@/lib/utils";
+import { useBwickPrice } from "@/hooks/use-bwick-price";
 
 interface TradePreviewProps {
   /** Estimated output amount in micro-units */
@@ -12,11 +12,11 @@ interface TradePreviewProps {
   feeAmount: string;
   /** Current slippage percentage */
   slippagePercent: number;
-  /** Output denomination label (e.g., "XYZ" or token symbol) */
+  /** Output denomination label (e.g., "BWICK" or token symbol) */
   outputDenom: string;
-  /** Whether output is in uxyz (true) or token micro-units (false) */
-  outputIsXyz: boolean;
-  /** New price after trade (optional, decimal XYZ string) */
+  /** Whether output is in ubwick (true) or token micro-units (false) */
+  outputIsBwick: boolean;
+  /** New price after trade (optional, decimal BWICK string) */
   newPrice?: string;
   /** Price impact percentage (optional, for AMM swaps) */
   priceImpact?: string;
@@ -28,19 +28,19 @@ export function TradePreview({
   feeAmount,
   slippagePercent,
   outputDenom,
-  outputIsXyz,
+  outputIsBwick,
   newPrice,
   priceImpact,
 }: TradePreviewProps) {
-  const { xyzPriceUsd } = useXyzPrice();
+  const { bwickPriceUsd } = useBwickPrice();
 
-  const formatOutput = outputIsXyz
-    ? (v: string) => formatUsd(fromUxyz(v) * xyzPriceUsd)
+  const formatOutput = outputIsBwick
+    ? (v: string) => formatUsd(fromUbwick(v) * bwickPriceUsd)
     : formatTokenAmount;
 
-  const feeUsd = formatUsd(fromUxyz(feeAmount) * xyzPriceUsd);
+  const feeUsd = formatUsd(fromUbwick(feeAmount) * bwickPriceUsd);
   const newPriceUsd = newPrice
-    ? formatUsd(Number(newPrice) * xyzPriceUsd)
+    ? formatUsd(Number(newPrice) * bwickPriceUsd)
     : null;
 
   return (
@@ -48,7 +48,7 @@ export function TradePreview({
       <div className="flex justify-between">
         <span className="text-muted-foreground">You receive (est.)</span>
         <span className="font-mono text-foreground">
-          {formatOutput(estimatedOutput)} {!outputIsXyz && outputDenom}
+          {formatOutput(estimatedOutput)} {!outputIsBwick && outputDenom}
         </span>
       </div>
       <div className="flex justify-between">
@@ -56,7 +56,7 @@ export function TradePreview({
           Min after slippage ({slippagePercent}%)
         </span>
         <span className="font-mono text-foreground">
-          {formatOutput(minOutput)} {!outputIsXyz && outputDenom}
+          {formatOutput(minOutput)} {!outputIsBwick && outputDenom}
         </span>
       </div>
       <div className="flex justify-between">

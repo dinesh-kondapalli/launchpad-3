@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState, type ReactNode } from "react";
-import { isKeplrAvailable, isLeapAvailable, isXYZAvailable, type WalletType } from "@xyz-chain/sdk";
+import { isKeplrAvailable, isLeapAvailable, isBwickWalletAvailable, type WalletType } from "@bwick-chain/sdk";
 import { useWalletStore } from "@/stores/wallet-store";
 import {
   Popover,
@@ -26,7 +26,7 @@ export function WalletSelector({ open, onOpenChange, trigger }: WalletSelectorPr
 
   const keplrAvailable = open && isKeplrAvailable();
   const leapAvailable = open && isLeapAvailable();
-  const xyzAvailable = open && isXYZAvailable();
+  const bwickAvailable = open && isBwickWalletAvailable();
 
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {
@@ -95,11 +95,11 @@ export function WalletSelector({ open, onOpenChange, trigger }: WalletSelectorPr
             variant="outline"
             size="lg"
             className="justify-between h-14 text-base"
-            disabled={!xyzAvailable || isConnecting}
-            onClick={() => handleConnect("xyz")}
+            disabled={!bwickAvailable || isConnecting}
+            onClick={() => handleConnect("bwick")}
           >
             <span>new Wallet</span>
-            {!xyzAvailable && (
+            {!bwickAvailable && (
               <span className="text-xs text-muted-foreground">Not installed</span>
             )}
           </Button>

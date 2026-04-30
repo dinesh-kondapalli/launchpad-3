@@ -7,35 +7,35 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 // BWICK has 6 decimals: 1 BWICK = 1,000,000 ubwick
-const UXYZ_DECIMALS = 6;
-const UXYZ_MULTIPLIER = 10 ** UXYZ_DECIMALS;
+const UBWICK_DECIMALS = 6;
+const UBWICK_MULTIPLIER = 10 ** UBWICK_DECIMALS;
 
 /**
  * Convert display BWICK amount to micro-unit string for contract calls.
  * Example: "1.5" -> "1500000"
  */
-export function toUxyz(xyzAmount: string): string {
-  const num = Number(xyzAmount);
+export function toUbwick(bwickAmount: string): string {
+  const num = Number(bwickAmount);
   if (isNaN(num) || num <= 0) return "0";
-  return Math.floor(num * UXYZ_MULTIPLIER).toString();
+  return Math.floor(num * UBWICK_MULTIPLIER).toString();
 }
 
 /**
  * Convert micro-unit string to display BWICK number.
  * Example: "1500000" -> 1.5
  */
-export function fromUxyz(uxyzAmount: string): number {
-  const num = Number(uxyzAmount);
+export function fromUbwick(ubwickAmount: string): number {
+  const num = Number(ubwickAmount);
   if (isNaN(num)) return 0;
-  return num / UXYZ_MULTIPLIER;
+  return num / UBWICK_MULTIPLIER;
 }
 
 /**
  * Format a native micro-unit amount as a human-readable BWICK string.
  * Example: "1500000" -> "1.50 BWICK"
  */
-export function formatXyzAmount(uxyzAmount: string): string {
-  const num = fromUxyz(uxyzAmount);
+export function formatBwickAmount(ubwickAmount: string): string {
+  const num = fromUbwick(ubwickAmount);
   if (num === 0) return `0 ${NATIVE_SYMBOL}`;
   if (num < 0.001) return `${num.toExponential(2)} ${NATIVE_SYMBOL}`;
   if (num < 1) return `${num.toFixed(6)} ${NATIVE_SYMBOL}`;
@@ -49,7 +49,7 @@ export function formatXyzAmount(uxyzAmount: string): string {
  * Example: "1500000" -> "1.50"
  */
 export function formatTokenAmount(amount: string): string {
-  const num = Number(amount) / UXYZ_MULTIPLIER;
+  const num = Number(amount) / UBWICK_MULTIPLIER;
   if (num === 0) return "0";
   if (num < 0.01) return num.toExponential(2);
   if (num < 1000) return num.toFixed(2);
@@ -71,10 +71,10 @@ export function formatUsd(usdAmount: number): string {
 }
 
 /**
- * Format a uxyz amount as a USD string using oracle price.
+ * Format a ubwick amount as a USD string using oracle price.
  */
-export function formatUxyzAsUsd(uxyzAmount: string, xyzPriceUsd: number): string {
-  return formatUsd(fromUxyz(uxyzAmount) * xyzPriceUsd);
+export function formatUbwickAsUsd(ubwickAmount: string, bwickPriceUsd: number): string {
+  return formatUsd(fromUbwick(ubwickAmount) * bwickPriceUsd);
 }
 
 /**
