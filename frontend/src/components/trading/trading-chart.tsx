@@ -66,19 +66,19 @@ export function TradingChart({ tokenAddress }: TradingChartProps) {
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-2 pb-2">
-        <div className="inline-flex items-center gap-0.5 rounded bg-muted p-0.5 text-[11px] font-semibold uppercase tracking-wider">
+      <div className="flex flex-wrap items-center justify-between gap-2 pb-2">
+        <div className="inline-flex items-center gap-0.5 bg-muted p-0.5 text-[11px] font-semibold uppercase tracking-wider">
           <button
             type="button"
             onClick={() => setShowMCap(true)}
-            className={`rounded px-1.5 py-0.5 transition-colors ${showMCap ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            className={`px-1.5 py-0.5 transition-colors ${showMCap ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
           >
             MCAP
           </button>
           <button
             type="button"
             onClick={() => setShowMCap(false)}
-            className={`rounded px-1.5 py-0.5 transition-colors ${!showMCap ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+            className={`px-1.5 py-0.5 transition-colors ${!showMCap ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
           >
             PRICE
           </button>
@@ -94,7 +94,7 @@ export function TradingChart({ tokenAddress }: TradingChartProps) {
                 onClick={() => {
                   if (button.value) setTimeframe(button.value);
                 }}
-                className={`rounded px-1.5 py-0.5 text-[11px] font-medium transition-colors ${active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                className={`px-1.5 py-0.5 text-[11px] font-medium transition-colors ${active ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
               >
                 {button.label}
               </button>
@@ -104,7 +104,7 @@ export function TradingChart({ tokenAddress }: TradingChartProps) {
       </div>
 
       {hasData ? (
-        <div className="overflow-hidden rounded-sm border border-border bg-background">
+        <div className="overflow-hidden bg-background">
           <TradingChartCanvas
             data={data}
             indicators={indicators}
@@ -112,7 +112,7 @@ export function TradingChart({ tokenAddress }: TradingChartProps) {
           />
         </div>
       ) : (
-        <div className="flex h-[400px] items-center justify-center rounded-sm border border-border bg-background">
+        <div className="flex h-[400px] items-center justify-center bg-background">
           <div className="text-center space-y-2">
             <p className="text-muted-foreground">
               No trading data available yet

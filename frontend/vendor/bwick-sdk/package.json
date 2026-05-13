@@ -1,0 +1,26 @@
+{
+  "name": "@bwick-chain/sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for BWICK Chain",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@cosmjs/amino": "^0.32.4",
+    "@cosmjs/cosmwasm-stargate": "^0.32.4",
+    "@cosmjs/proto-signing": "^0.32.4",
+    "@cosmjs/stargate": "^0.32.4"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

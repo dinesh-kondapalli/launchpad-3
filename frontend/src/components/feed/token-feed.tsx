@@ -1,51 +1,21 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, CaretDown, Circle, Flame, GraduationCap } from "@phosphor-icons/react";
+import { CaretDown } from "@phosphor-icons/react";
 import { useSSEFeed } from "@/hooks/use-sse";
 import { useTokens } from "@/hooks/use-tokens";
 import { useBwickPrice } from "@/hooks/use-bwick-price";
-import { DEFAULT_TOKEN_SUPPLY, RPC_ENDPOINT, REST_ENDPOINT, CHAIN_ID } from "@/lib/chain-config";
+import { DEFAULT_TOKEN_SUPPLY } from "@/lib/chain-config";
 import { formatUsd } from "@/lib/utils";
 import type { TokenListItem } from "@/lib/api";
-import { getConfig } from "@/lib/contract-clients/launchpad";
 
 type SortMode = "activity" | "newest" | "reserves";
-
-const TILE_BACKGROUNDS = [
-  "#5a6e8a",
-  "#637894",
-  "#4d6280",
-  "#7389a7",
-  "#44546e",
-  "#596f8d",
-];
-
-const MIN_TICKER_ITEMS = 44;
 
 export function TokenFeed() {
   const [sortMode, setSortMode] = useState<SortMode>("activity");
   const { data: tokens = [], error } = useTokens();
   const { bwickPriceUsd } = useBwickPrice();
-  const { data: launchpadConfig } = useQuery({
-    queryKey: ["launchpad-config"],
-    queryFn: async () => {
-      const { createClient } = await import("@bwick-chain/sdk");
-      const readClient = await createClient({
-        rpcEndpoint: RPC_ENDPOINT,
-        restEndpoint: REST_ENDPOINT,
-        chainId: CHAIN_ID,
-      });
-      try {
-        return await getConfig(readClient);
-      } finally {
-        readClient.disconnect();
-      }
-    },
-    staleTime: 60_000,
-  });
 
   useSSEFeed();
 
@@ -54,52 +24,35 @@ export function TokenFeed() {
     [tokens, sortMode],
   );
 
-  const liveTokens = sortedTokens.filter((token) => !token.graduated);
-  const graduatedTokens = sortedTokens.filter((token) => token.graduated);
-  const trendingTokens = sortedTokens;
-
-  const tickerItems = useMemo(() => buildTickerItems(sortedTokens), [sortedTokens]);
-  const loopingTickerItems = useMemo(
-    () => [...tickerItems, ...tickerItems].map((item, index) => ({
-      ...item,
-      key: `${item.key}-loop-${index}`,
-    })),
-    [tickerItems],
-  );
-
   return (
-    <div className="overflow-hidden border-x border-b border-border bg-background pb-2">
-      <section className="relative overflow-hidden border-y border-border">
-        {loopingTickerItems.length > 0 ? (
-          <div className="overflow-hidden">
-            <div className="token-ticker-track flex w-max">
-              {loopingTickerItems.map((item) => (
-                <Link
-                  key={item.key}
-                  href={`/token/${item.token.address}`}
-                  className="inline-flex h-9 items-center gap-2 border-r border-border px-3 text-xs text-foreground/80 transition-colors hover:bg-accent hover:text-accent-foreground"
-                >
-                  <span className="flex h-4 w-4 items-center justify-center overflow-hidden rounded-sm border border-border bg-card text-[9px] font-semibold text-muted-foreground">
-                    {(item.token.symbol ?? "?").slice(0, 1).toUpperCase()}
-                  </span>
-                  <span className="font-semibold text-foreground">{item.token.symbol ?? "TOKEN"}</span>
-                </Link>
-              ))}
-            </div>
+    <div className="min-h-[calc(100dvh-6rem)] w-full bg-background">
+      <div className="overflow-hidden bg-card">
+      <section className="relative overflow-hidden bg-background px-3 py-6 text-center sm:py-8">
+        <Link href="/create" className="inline-block text-xl font-bold leading-none hover:text-primary hover:underline sm:text-2xl">
+          [lay your first brick]
+        </Link>
+        <div className="mx-auto mt-6 grid w-fit grid-cols-[88px_minmax(0,320px)] items-center gap-3 text-left sm:grid-cols-[96px_340px]">
+          <div className="aspect-square overflow-hidden bg-primary">
+            <div className="flex h-full items-center justify-center text-4xl font-black text-primary-foreground">B</div>
           </div>
-        ) : (
-          <div className="px-4 py-3 text-xs text-muted-foreground">
-            No BWICK launches yet.
+          <div className="min-w-0 space-y-2">
+            <p className="inline-block bg-primary px-3 py-1 text-sm font-black uppercase text-primary-foreground sm:text-base">
+              King of the Stack
+            </p>
+            <p className="text-sm font-bold">Bwick brick (ticker: $BRICK)</p>
+            <p className="text-xs text-muted-foreground">created by dev - market cap: 0.00K - replies: 0</p>
           </div>
-        )}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-background via-background/95 to-transparent shadow-[20px_0_24px_-20px_rgba(40,55,80,0.55)]"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-background via-background/95 to-transparent shadow-[-20px_0_24px_-20px_rgba(40,55,80,0.55)]"
-        />
+        </div>
+        <div className="mx-auto mt-5 flex max-w-[470px] gap-2">
+          <input
+            type="search"
+            placeholder="search for token"
+            className="h-10 flex-1 border border-muted bg-card px-3 text-sm outline-none placeholder:text-muted-foreground focus:border-primary"
+          />
+          <button type="button" className="bg-primary px-4 text-sm font-bold text-primary-foreground hover:bg-primary/90">
+            search
+          </button>
+        </div>
       </section>
 
       {error ? (
@@ -108,265 +61,115 @@ export function TokenFeed() {
         </div>
       ) : null}
 
-      <TokenRowSection
-        title="Live Now"
-        icon={
-          <span className="relative inline-flex h-2.5 w-2.5">
-            <span className="live-dot-spread absolute inset-0 rounded-full bg-primary/25" />
-            <Circle size={10} weight="fill" className="relative z-[1] text-primary" />
-          </span>
-        }
-        iconPlain
-        tokens={liveTokens}
-        bwickPriceUsd={bwickPriceUsd}
-        graduationThreshold={launchpadConfig?.graduation_threshold}
-        sortMode={sortMode}
-        onSortChange={setSortMode}
-      />
-
-      <TokenRowSection
-        title="Graduated"
-        icon={<GraduationCap size={16} weight="regular" className="text-foreground" />}
-        tokens={graduatedTokens}
-        bwickPriceUsd={bwickPriceUsd}
-        graduationThreshold={launchpadConfig?.graduation_threshold}
-        sortMode={sortMode}
-        onSortChange={setSortMode}
-      />
-
-      <TokenRowSection
-        title="Trending"
-        icon={<Flame size={16} weight="regular" className="text-foreground" />}
-        tokens={trendingTokens}
-        bwickPriceUsd={bwickPriceUsd}
-        graduationThreshold={launchpadConfig?.graduation_threshold}
-        sortMode={sortMode}
-        onSortChange={setSortMode}
-      />
-    </div>
-  );
-}
-
-function TokenRowSection({
-  title,
-  icon,
-  iconPlain,
-  tokens,
-  bwickPriceUsd,
-  graduationThreshold,
-  sortMode,
-  onSortChange,
-}: {
-  title: string;
-  icon: React.ReactNode;
-  iconPlain?: boolean;
-  tokens: TokenListItem[];
-  bwickPriceUsd: number;
-  graduationThreshold?: string;
-  sortMode: SortMode;
-  onSortChange: (mode: SortMode) => void;
-}) {
-  const scrollerRef = useRef<HTMLDivElement>(null);
-
-  const scrollByCards = (direction: 1 | -1) => {
-    if (!scrollerRef.current) return;
-    scrollerRef.current.scrollBy({ left: direction * 420, behavior: "smooth" });
-  };
-
-  return (
-    <section className="overflow-hidden border-b border-border bg-background last:border-b-0">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-6">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="flex items-center gap-2.5">
-            {iconPlain ? (
-              <span className="inline-flex h-6 w-6 items-center justify-center text-foreground">{icon}</span>
-            ) : (
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-sm border border-border bg-card text-foreground">
-                {icon}
-              </span>
-            )}
-            <h3 className="text-xl font-semibold tracking-tight text-foreground md:text-2xl">{title}</h3>
+      <section className="bg-card">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-3 py-4 sm:px-16">
+          <div className="flex h-8 items-start gap-4">
+            <button type="button" className="py-1 text-sm leading-none text-muted-foreground hover:text-foreground">
+              Following
+            </button>
+            <button type="button" className="border-b-4 border-primary px-0 py-1 text-sm font-bold leading-none text-foreground">
+              Terminal
+            </button>
           </div>
-
-          <div className="inline-flex items-center gap-2 border-l border-border pl-4">
-            <span className="text-sm text-muted-foreground">Sort by</span>
+          <div className="flex h-8 items-start gap-2">
+            <span className="py-1 text-xs leading-none text-muted-foreground">sort:</span>
             <div className="relative">
               <select
                 value={sortMode}
-                onChange={(event) => onSortChange(event.target.value as SortMode)}
-                className="h-8 w-[148px] appearance-none rounded-sm border border-border bg-background pl-3 pr-8 text-sm capitalize text-foreground outline-none focus:border-primary focus-visible:outline-none focus-visible:ring-0"
+                onChange={(event) => setSortMode(event.target.value as SortMode)}
+                className="h-8 w-[132px] appearance-none rounded-none border-0 bg-primary px-3 pr-7 text-xs font-bold capitalize text-primary-foreground outline-none focus-visible:outline-none focus-visible:ring-0 [&_option]:bg-card [&_option]:text-foreground [&_option:checked]:bg-primary [&_option:checked]:text-primary-foreground"
               >
-                <option value="activity">24h trades</option>
-                <option value="newest">Recently launched</option>
-                <option value="reserves">Reserves</option>
+                <option value="activity">featured</option>
+                <option value="newest">newest</option>
+                <option value="reserves">reserves</option>
               </select>
-              <CaretDown
-                size={12}
-                className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground"
-              />
+              <CaretDown size={12} className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-primary-foreground" />
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => scrollByCards(-1)}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-border bg-card text-foreground/80 transition-colors hover:bg-accent hover:text-accent-foreground"
-            aria-label={`Scroll ${title} left`}
-          >
-            <ArrowLeft size={14} weight="bold" />
-          </button>
-          <button
-            type="button"
-            onClick={() => scrollByCards(1)}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-sm border border-border bg-card text-foreground/80 transition-colors hover:bg-accent hover:text-accent-foreground"
-            aria-label={`Scroll ${title} right`}
-          >
-            <ArrowRight size={14} weight="bold" />
-          </button>
-        </div>
-      </div>
-
-      {tokens.length === 0 ? (
-        <p className="p-4 text-sm text-muted-foreground">No launches available.</p>
-      ) : (
-        <div ref={scrollerRef} className="no-scrollbar overflow-x-auto">
-          <div className="flex min-w-max">
-            {tokens.map((token, index) => (
+        {sortedTokens.length === 0 ? (
+          <p className="px-3 py-3 text-sm text-muted-foreground sm:px-16">No launches available.</p>
+        ) : (
+          <div className="grid grid-cols-1 gap-x-8 gap-y-8 px-3 pb-8 sm:grid-cols-2 sm:px-16 xl:grid-cols-3">
+            {sortedTokens.map((token, index) => (
               <LaunchTile
                 key={`${token.address}-${index}`}
                 token={token}
                 bwickPriceUsd={bwickPriceUsd}
-                graduationThreshold={graduationThreshold}
-                tileIndex={index}
               />
             ))}
           </div>
-        </div>
-      )}
-    </section>
+        )}
+      </section>
+      </div>
+    </div>
   );
 }
 
 function LaunchTile({
   token,
   bwickPriceUsd,
-  graduationThreshold,
-  tileIndex,
 }: {
   token: TokenListItem;
   bwickPriceUsd: number;
-  graduationThreshold?: string;
-  tileIndex: number;
 }) {
-  const reserve = Number(token.bwick_reserves) / 1_000_000;
-  const threshold = Number(graduationThreshold || "0") / 1_000_000;
-  const progress = token.graduated
-    ? 100
-    : threshold > 0
-      ? Math.min(100, (reserve / threshold) * 100)
-      : 0;
-  const fallbackBackground = TILE_BACKGROUNDS[tileIndex % TILE_BACKGROUNDS.length];
-  const previewImage = getDisplayImage(token, tileIndex);
-  const initial = (token.symbol ?? "?").slice(0, 1).toUpperCase();
+  const previewImage = getDisplayImage(token);
 
   return (
     <Link
       href={`/token/${token.address}`}
-      className="group block w-[340px] border-r border-border bg-background transition-colors hover:bg-accent first:border-l"
+      className="group grid min-h-[132px] grid-cols-[128px_1fr] gap-4 bg-card transition-colors hover:bg-accent/45"
     >
-      <div className="relative aspect-[1.7] w-full border-b border-border" style={{ background: fallbackBackground }}>
-        <div className="grid h-full place-items-center text-4xl font-black tracking-tight text-primary-foreground/75">
-          {initial}
-        </div>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={previewImage}
-          alt={token.symbol ?? "token"}
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-          onError={(event) => {
-            (event.target as HTMLImageElement).style.display = "none";
-          }}
-        />
+      <div className="relative aspect-square w-full overflow-hidden bg-[#ffd1b9]">
+        {previewImage ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={previewImage}
+            alt={token.symbol ?? "token"}
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+            onError={(event) => {
+              (event.target as HTMLImageElement).style.display = "none";
+            }}
+          />
+        ) : (
+          <div className="grid h-full place-items-center px-2 text-center text-[12px] leading-snug text-muted-foreground">
+            unable to display image
+          </div>
+        )}
       </div>
 
-      <div className="space-y-2.5 p-3">
-        <div className="flex items-start gap-3">
-          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-border bg-card text-[9px] font-semibold text-foreground">
-            {(token.symbol ?? "?").slice(0, 1).toUpperCase()}
-          </span>
-          <div className="min-w-0">
-            <h4 className="truncate text-[18px] font-semibold leading-tight text-foreground md:text-[20px]">
-              {token.name ?? "Unnamed token"}
-            </h4>
-            <p className="truncate text-[11px] uppercase tracking-[0.1em] text-muted-foreground">
-              {token.symbol ?? "TOKEN"} - Bonding Curve
-            </p>
-          </div>
+      <div className="min-w-0 pt-0.5">
+        <div className="min-w-0">
+          <h4 className="truncate text-base font-bold leading-tight text-foreground">
+            {token.name ?? "Unnamed token"}
+          </h4>
+          <p className="truncate text-[11px] text-muted-foreground">
+            created by <span className="text-primary">{truncate(token.creator ?? token.address, 5)}</span>
+          </p>
+          <p className="truncate text-[11px] font-bold text-primary">
+            market cap: {formatMarketCap(token, bwickPriceUsd)} {token.graduated ? "[badge: live]" : ""}
+          </p>
+          <p className="text-[11px] text-muted-foreground">replies: {token.trade_count_24h ?? 0}</p>
         </div>
 
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>Bonding Curve Progress:</span>
-            <span className="font-mono text-xs text-foreground">{progress.toFixed(2)}%</span>
-          </div>
-          <div className="h-1 overflow-hidden rounded-full bg-muted">
-            <div
-              className="h-full rounded-full bg-primary"
-              style={{ width: `${Math.max(progress, 2)}%` }}
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-3 gap-3 border-t border-border pt-2.5 text-xs">
-          <Metric label="FDV" value={formatMarketCap(token, bwickPriceUsd)} />
-          <Metric label="Mkt Cap" value={formatMarketCap(token, bwickPriceUsd)} />
-          <Metric
-            label="Trades"
-            value={String(token.trade_count_24h ?? 0)}
-          />
-        </div>
+        <p className="mt-1 line-clamp-3 text-[13px] leading-snug text-muted-foreground">
+          <span className="font-bold text-foreground">{token.name ?? token.symbol ?? "Token"} (ticker: {token.symbol ?? "TOKEN"}):</span>{" "}
+          {token.description ?? "freshly stacked on the BWICK bonding curve"}
+        </p>
       </div>
     </Link>
   );
 }
 
-function Metric({
-  label,
-  value,
-  valueClassName,
-}: {
-  label: string;
-  value: string;
-  valueClassName?: string;
-}) {
-  return (
-    <div>
-      <p className="text-[11px] text-muted-foreground">{label}:</p>
-      <p className={`mt-1 truncate font-mono text-[12px] text-foreground ${valueClassName ?? ""}`}>{value}</p>
-    </div>
-  );
+function truncate(value: string, size: number): string {
+  if (value.length <= size * 2) return value;
+  return `${value.slice(0, size)}...${value.slice(-size)}`;
 }
 
-function buildTickerItems(tokens: TokenListItem[]) {
-  if (tokens.length === 0) return [];
-  const baseTokens = tokens;
-  const repeats = Math.max(2, Math.ceil(MIN_TICKER_ITEMS / baseTokens.length));
-  const expanded = Array.from({ length: repeats }).flatMap((_, repeatIndex) =>
-    baseTokens.map((token) => ({
-      token,
-      key: `${token.address}-${repeatIndex}`,
-    })),
-  );
-
-  return expanded;
-}
-
-function getDisplayImage(token: TokenListItem, tileIndex: number): string {
+function getDisplayImage(token: TokenListItem): string {
   if (token.image) return token.image;
-  const seed = encodeURIComponent(`${token.address}-${token.symbol ?? tileIndex}`);
-  return `https://picsum.photos/seed/${seed}/1200/700`;
+  return "";
 }
 
 function sortTokens(tokens: TokenListItem[], mode: SortMode): TokenListItem[] {

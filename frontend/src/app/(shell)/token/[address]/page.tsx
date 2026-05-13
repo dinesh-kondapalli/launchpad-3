@@ -115,13 +115,13 @@ export default function TokenDetailPage() {
   const creatorRewards = reserve * 0.027;
 
   return (
-    <div className="flex h-full flex-1 flex-col">
-      <div className="container mx-auto grid h-full w-full grid-cols-1 divide-x divide-border lg:grid-cols-12">
-        <div className="min-h-screen lg:col-span-7">
-          <div className="border-b border-border p-4 md:px-6 md:py-4">
+    <div className="w-full bg-card px-3 py-5 sm:px-16">
+      <div className="grid w-full grid-cols-1 gap-7 lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_440px]">
+        <div className="min-w-0">
+          <div className="bg-background py-2 md:py-3">
             <div className="flex flex-wrap justify-between gap-3 md:gap-4">
-              <div className="flex flex-row gap-3">
-                <div className="relative size-10 shrink-0 overflow-hidden rounded-sm border border-border bg-card lg:size-14">
+              <div className="flex flex-row gap-4">
+                <div className="relative size-16 shrink-0 overflow-hidden bg-muted lg:size-20">
                   {token.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -133,39 +133,42 @@ export default function TokenDetailPage() {
                       }}
                     />
                   ) : (
-                    <div className="grid h-full place-items-center text-foreground">
+                    <div className="grid h-full place-items-center text-2xl font-black text-primary">
                       {(token.symbol ?? "?").slice(0, 1).toUpperCase()}
                     </div>
                   )}
                 </div>
 
-                <div className="min-w-0 flex-1 space-y-0.5">
-                  <h1 className="flex w-full max-w-[280px] items-center gap-2 text-xl font-bold leading-tight md:max-w-[420px] lg:text-2xl">
+                <div className="min-w-0 flex-1 space-y-1">
+                  <h1 className="flex w-full max-w-[520px] items-center gap-2 text-2xl font-bold leading-tight">
                     <span className="min-w-0 truncate">{token.name ?? "Unknown Token"}</span>
-                    <Badge className="rounded-sm border border-border bg-card px-1.5 py-0 text-[10px] text-foreground">
-                      Agent
+                    <Badge className="rounded-none border-0 bg-primary px-1.5 py-0 text-[10px] text-primary-foreground">
+                      live
                     </Badge>
                   </h1>
 
-                  <div className="flex flex-wrap items-center gap-1 text-[10px] font-medium text-muted-foreground md:gap-1.5 md:text-xs">
+                  <div className="flex flex-wrap items-center gap-1 text-xs font-medium text-muted-foreground md:gap-1.5">
                     <span>{(token.symbol ?? "TOKEN").toUpperCase()}</span>
-                    <span className="text-border">·</span>
+                    <span>·</span>
                     <span>{truncate(tokenAddress, 4)}</span>
-                    <span className="text-border">·</span>
+                    <span>·</span>
                     <span>{truncate(token.creator ?? "creator", 5)}</span>
-                    <span className="text-border">·</span>
+                    <span>·</span>
                     <span>{formatRelative(token.first_seen_at, token.created_height)}</span>
                   </div>
+                  <p className="max-w-2xl text-sm leading-snug text-muted-foreground">
+                    <span className="font-bold text-foreground">{token.name ?? token.symbol ?? "Token"} (ticker: {token.symbol ?? "TOKEN"}):</span>{" "}
+                    {token.description ?? "freshly stacked on the BWICK bonding curve"}
+                  </p>
                 </div>
               </div>
             </div>
           </div>
 
           <div
-            className="grid grid-cols-3 -mr-px"
+            className="mt-4 grid grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-3"
             style={{
-              backgroundImage:
-                "repeating-linear-gradient(-45deg, transparent 0, transparent 6px, rgba(143,166,193,0.35) 6px, rgba(143,166,193,0.35) 7px)",
+              backgroundImage: "none",
             }}
           >
             <StatCell label="Price" value={tokenStats.price} />
@@ -176,14 +179,14 @@ export default function TokenDetailPage() {
             <ChangeCell label="24H" change={tokenStats.twentyFourHour} />
           </div>
 
-          <div className="border-y border-border">
-            <div className="p-2.5">
+          <div className="mt-5">
+            <div>
               <TradingChart tokenAddress={tokenAddress} />
             </div>
           </div>
 
-          <div className="border-t border-border px-4 py-3 md:border-b md:border-t-0 md:px-6">
-            <div className="mb-2 mt-1 flex items-center gap-2">
+          <div className="mt-6 border-t border-dashed border-muted pt-4">
+            <div className="mb-2 flex items-center gap-2">
                 <ShieldCheck size={14} weight="bold" className="text-primary" />
                 <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Token audit</span>
             </div>
@@ -196,30 +199,30 @@ export default function TokenDetailPage() {
             </div>
           </div>
 
-          <p className="border-t border-border p-4 text-xs text-muted-foreground md:px-8">
-            Metaplex.com is operated by Metaplex Global as an interface for interacting with decentralized protocols.
-            Token launches are conducted by third parties, and Metaplex Global does not issue or endorse tokens.
+          <p className="mt-5 border-t border-dashed border-muted pt-4 text-xs text-muted-foreground">
+            bwick.fun is an interface for interacting with decentralized protocols.
+            Token launches are conducted by third parties, and bwick.fun does not issue or endorse tokens.
             Participation is subject to the Terms of Use.
           </p>
         </div>
 
-        <div className="h-full max-w-xl px-4 py-4 md:px-6 md:py-2 lg:col-span-5">
-          <section className="my-4 space-y-1 lg:sticky lg:top-4">
-            <section className="space-y-1">
+        <div className="h-full min-w-0">
+          <section className="space-y-5 lg:sticky lg:top-4">
+            <section className="space-y-2 bg-background p-4">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
                     Bonding Curve Progress
                     <span className="inline-flex size-2 rounded-full bg-primary" />
                   </p>
-                  <p className="text-6xl font-bold tracking-tight tabular-nums lg:text-7xl">
+                  <p className="text-5xl font-bold tracking-tight tabular-nums lg:text-6xl">
                     {progress.progress_percent.toFixed(1)}
                     <span className="ml-1.5 text-sm tracking-wide text-muted-foreground">%</span>
                   </p>
                 </div>
               </div>
 
-              <div className="relative h-2 w-full overflow-hidden rounded-none bg-muted">
+              <div className="relative h-2 w-full overflow-hidden bg-muted">
                 <div
                   className="h-full bg-primary transition-all"
                   style={{ width: `${Math.max(progress.progress_percent, 1)}%` }}
@@ -232,17 +235,17 @@ export default function TokenDetailPage() {
               </div>
             </section>
 
-            <div className="mt-4 border-t border-dashed border-border pt-4">
-              <Button className="h-12 w-full rounded-sm bg-primary text-sm font-bold text-primary-foreground hover:bg-primary/90">
-                Connect Wallet
+            <div>
+              <Button className="h-12 w-full rounded-none border-0 bg-primary text-sm font-bold text-primary-foreground hover:bg-primary/90">
+                [connect wallet]
               </Button>
             </div>
 
-            <div className="mt-4 space-y-2.5 rounded-md border border-border bg-card p-3">
+            <div className="space-y-3 bg-background p-4">
               <p className="text-xs font-semibold text-muted-foreground md:text-sm">Creator Rewards</p>
 
               <div className="inline-flex items-center gap-2">
-                <div className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-sm border border-border bg-card">
+                <div className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden bg-muted">
                   {token.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={token.image} alt={token.name ?? "token"} className="h-full w-full object-cover" />
@@ -253,8 +256,8 @@ export default function TokenDetailPage() {
                   {truncate(token.creator ?? "Creator", 6)}
                 </h3>
 
-                <Badge className="rounded-sm border border-border bg-card px-1.5 py-0 text-[10px] text-foreground">
-                  Agent
+                <Badge className="rounded-none border-0 bg-primary px-1.5 py-0 text-[10px] text-primary-foreground">
+                  dev
                 </Badge>
               </div>
 
@@ -264,10 +267,10 @@ export default function TokenDetailPage() {
               </div>
             </div>
 
-            <div className="mt-3 border-t border-dashed border-border pt-3">
-              <h3 className="-mb-1 text-xs font-semibold text-muted-foreground md:text-sm">Recent Activity</h3>
+            <div className="border-t border-dashed border-muted pt-4">
+              <h3 className="text-xs font-semibold text-muted-foreground md:text-sm">Recent Activity</h3>
 
-              <div className="divide-y divide-dashed divide-border">
+              <div className="divide-y divide-dashed divide-muted">
                 {feedEntries.length === 0 ? (
                   <div className="py-6 text-sm text-muted-foreground">No trades yet on BWICK.</div>
                 ) : feedEntries.map((entry) => {
@@ -309,7 +312,7 @@ export default function TokenDetailPage() {
 
 function StatCell({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col gap-0.5 border-b border-r border-border bg-background p-2.5">
+    <div className="flex flex-col gap-0.5 bg-background px-3 py-2">
       <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">{label}</span>
       <span className="text-xs font-semibold text-foreground md:text-sm">{value}</span>
     </div>
@@ -319,7 +322,7 @@ function StatCell({ label, value }: { label: string; value: string }) {
 function ChangeCell({ label, change }: { label: string; change: number }) {
   const positive = change >= 0;
   return (
-    <div className="flex flex-col -space-y-0.5 border-b border-r border-border bg-background px-2.5 py-2 text-sm">
+    <div className="flex flex-col -space-y-0.5 bg-background px-3 py-2 text-sm">
       <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">{label}</span>
       <span
         className={
@@ -338,7 +341,7 @@ function ChangeCell({ label, change }: { label: string; change: number }) {
 function AuditRow({ label, value, good }: { label: string; value: string; good?: boolean }) {
   return (
     <div className="flex items-center justify-between gap-2 py-1.5 text-xs">
-      <span className="cursor-help border-b border-dashed border-border font-medium tracking-wide text-muted-foreground">
+      <span className="cursor-help border-b border-dashed border-muted font-medium tracking-wide text-muted-foreground">
         {label}
       </span>
       <span className="flex items-center gap-1.5 font-medium text-foreground">

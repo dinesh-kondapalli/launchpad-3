@@ -32,6 +32,28 @@ async function uploadToLocalPublic(file: File, filename: string) {
   return `/uploads/tokens/${publicFilename}`;
 }
 
+async function uploadToBlob(file: File, filename: string, origin: string) {
+  try {
+    const blob = await put(filename, file, {
+      access: "public",
+    });
+
+    return blob.url;
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    if (!message.includes("private store")) {
+      throw error;
+    }
+
+    const blob = await put(filename, file, {
+      access: "private",
+    });
+
+    const params = new URLSearchParams({ url: blob.url });
+    return `${origin}/api/blob?${params.toString()}`;
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
@@ -63,11 +85,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ url });
     }
 
-    const blob = await put(filename, file, {
-      access: "public",
-    });
-
-    return NextResponse.json({ url: blob.url });
+    const url = await uploadToBlob(file, filename, req.nextUrl.origin);
+    return NextResponse.json({ url });
   } catch (err) {
     console.error("Upload error:", err);
     return NextResponse.json(

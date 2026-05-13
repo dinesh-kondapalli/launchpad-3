@@ -40,7 +40,7 @@ export function ConnectButton({
           className={className}
         >
           {showIcon ? <Wallet size={16} weight="fill" /> : null}
-          {isConnecting ? "Connecting..." : label}
+          {showIcon ? (isConnecting ? "Connecting..." : label) : `[${isConnecting ? "connecting..." : label}]`}
         </Button>
       }
     />

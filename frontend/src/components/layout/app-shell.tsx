@@ -2,8 +2,6 @@
 
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
-import { Sidebar } from "@/components/layout/sidebar";
-import { SidebarProvider, useSidebar } from "@/components/layout/sidebar-context";
 import { WelcomeModal } from "@/components/welcome-modal";
 
 interface AppShellProps {
@@ -11,37 +9,22 @@ interface AppShellProps {
 }
 
 function ShellInner({ children }: AppShellProps) {
-  const { isCollapsed } = useSidebar();
-
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen text-foreground">
       <WelcomeModal />
-      <Sidebar />
       <Header />
-      <main
-        className={`pt-16 transition-[padding-left] duration-300 ease-in-out ${
-          isCollapsed ? "lg:pl-20" : "lg:pl-64"
-        }`}
-      >
-        <div className="w-full px-4 py-6 sm:px-6 lg:px-0 lg:py-5">
+      <main>
+        <div className="w-full">
           {children}
         </div>
       </main>
-      <div
-        className={`transition-[padding-left] duration-300 ease-in-out ${
-          isCollapsed ? "lg:pl-20" : "lg:pl-64"
-        }`}
-      >
-        <Footer />
-      </div>
+      <Footer />
     </div>
   );
 }
 
 export function AppShell({ children }: AppShellProps) {
   return (
-    <SidebarProvider>
-      <ShellInner>{children}</ShellInner>
-    </SidebarProvider>
+    <ShellInner>{children}</ShellInner>
   );
 }

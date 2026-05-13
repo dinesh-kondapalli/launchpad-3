@@ -27,16 +27,16 @@ export function WelcomeModal() {
     <Dialog open={open} onOpenChange={(v) => { if (!v) handleClose(); }}>
       <DialogContent
         showCloseButton={false}
-        className="max-w-md gap-0 overflow-hidden p-0 sm:max-w-lg"
+        className="max-w-md gap-0 overflow-hidden rounded-none border-2 border-border p-0 sm:max-w-lg"
       >
         {/* Header band */}
-        <div className="bg-primary/10 border-b border-primary/20 px-6 pt-6 pb-4">
+        <div className="border-b-2 border-border bg-primary px-6 pb-4 pt-6 text-primary-foreground">
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-foreground">
-              Welcome to new Launchpad
+            <DialogTitle className="text-xl font-bold text-primary-foreground">
+              Welcome to bwick.fun
             </DialogTitle>
-            <p className="mt-1 text-sm text-muted-foreground">
-              A fair-launch platform designed to reward builders and long-term holders.
+            <p className="mt-1 text-sm text-primary-foreground/90">
+              A fair-launch board for stacking tiny internet bricks.
             </p>
           </DialogHeader>
         </div>
@@ -46,7 +46,7 @@ export function WelcomeModal() {
           <div>
             <h3 className="mb-1 font-semibold text-foreground">How it works</h3>
             <p>
-              Every token launches on a bonding curve — price starts low and rises as people buy.
+              Every token launches on a bonding curve - price starts low and rises as people buy.
               Once the reserve hits the graduation threshold, liquidity auto-migrates to the AMM
               pool for open trading.
             </p>
@@ -68,7 +68,7 @@ export function WelcomeModal() {
               </div>
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
-              Low entry cost, higher exit cost — aligned with builders who stay, not extractors who flip.
+              Low entry cost, higher exit cost - aligned with builders who stay, not extractors who flip.
             </p>
           </div>
 
@@ -86,8 +86,8 @@ export function WelcomeModal() {
 
         {/* Footer */}
         <DialogFooter className="px-6 pb-6 pt-2">
-          <Button onClick={handleClose} className="w-full" size="lg">
-            Got it, let&apos;s go
+          <Button onClick={handleClose} className="w-full rounded-none border-2 border-border" size="lg">
+            [enter]
           </Button>
         </DialogFooter>
       </DialogContent>

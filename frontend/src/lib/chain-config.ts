@@ -1,8 +1,8 @@
 export const PUBLIC_RPC_ENDPOINT =
-  process.env.NEXT_PUBLIC_RPC_ENDPOINT ?? "http://174.138.87.223:26657";
+  process.env.NEXT_PUBLIC_RPC_ENDPOINT ?? "http://167.99.147.85/rpc";
 
 export const PUBLIC_REST_ENDPOINT =
-  process.env.NEXT_PUBLIC_REST_ENDPOINT ?? "http://174.138.87.223:1317";
+  process.env.NEXT_PUBLIC_REST_ENDPOINT ?? "http://167.99.147.85/rest";
 
 // App-side CosmJS calls use local proxy paths in the browser to avoid CORS issues.
 // Wallet chain suggestions must use the public BWICK endpoints, not localhost proxy URLs.
@@ -27,5 +27,8 @@ export const LAUNCHPAD_CONTRACT =
 export const AMM_CONTRACT =
   process.env.NEXT_PUBLIC_AMM_CONTRACT ??
   "bwick1wug8sewp6cedgkmrmvhl3lf3tulagm9hnvy8p0rppz9yjw0g4wtql49ren";
+export const ORACLE_CONTRACT =
+  process.env.NEXT_PUBLIC_ORACLE_CONTRACT ??
+  "bwick1zwv6feuzhy6a9wekh96cd57lsarmqlwxdypdsplw6zhfncqw6ftqn5x9yy";
 
 export const DEFAULT_TOKEN_SUPPLY = 1_000_000_000;

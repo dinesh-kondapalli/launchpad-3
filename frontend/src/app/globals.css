@@ -7,8 +7,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-manrope);
-  --font-mono: var(--font-space-mono);
+  --font-sans: "Courier New", "Nimbus Mono PS", "Liberation Mono", monospace;
+  --font-mono: "Courier New", "Nimbus Mono PS", "Liberation Mono", monospace;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,71 +49,71 @@
 
 :root {
   --radius: 0.75rem;
-  --background: #283750;
-  --foreground: #b4c8e1;
-  --card: #31425d;
-  --card-foreground: #b4c8e1;
-  --popover: #31425d;
-  --popover-foreground: #b4c8e1;
-  --primary: #b4c8e1;
-  --primary-foreground: #283750;
-  --secondary: #37496a;
-  --secondary-foreground: #b4c8e1;
-  --muted: #31425d;
-  --muted-foreground: #90a6c2;
-  --accent: #41587d;
-  --accent-foreground: #b4c8e1;
-  --destructive: #c26f81;
-  --border: #445774;
-  --input: #37496a;
-  --ring: #b4c8e1;
-  --chart-1: #b4c8e1;
-  --chart-2: #90a6c2;
-  --chart-3: #6c84a5;
-  --chart-4: #496181;
-  --chart-5: #283750;
-  --sidebar: #283750;
-  --sidebar-foreground: #b4c8e1;
-  --sidebar-primary: #b4c8e1;
-  --sidebar-primary-foreground: #283750;
-  --sidebar-accent: #41587d;
-  --sidebar-accent-foreground: #b4c8e1;
-  --sidebar-border: #445774;
-  --sidebar-ring: #b4c8e1;
+  --background: #fffdf8;
+  --foreground: #191919;
+  --card: #ffffff;
+  --card-foreground: #191919;
+  --popover: #ffffff;
+  --popover-foreground: #191919;
+  --primary: #ff5a1f;
+  --primary-foreground: #ffffff;
+  --secondary: #fff0e7;
+  --secondary-foreground: #2b211d;
+  --muted: #f7efe7;
+  --muted-foreground: #746a63;
+  --accent: #ffeadf;
+  --accent-foreground: #191919;
+  --destructive: #c91c1c;
+  --border: #1c1c1c;
+  --input: #ffffff;
+  --ring: #ff5a1f;
+  --chart-1: #ff5a1f;
+  --chart-2: #ff9a62;
+  --chart-3: #2f2f2f;
+  --chart-4: #ffd1b9;
+  --chart-5: #fffdf8;
+  --sidebar: #fffdf8;
+  --sidebar-foreground: #191919;
+  --sidebar-primary: #ff5a1f;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ffeadf;
+  --sidebar-accent-foreground: #191919;
+  --sidebar-border: #1c1c1c;
+  --sidebar-ring: #ff5a1f;
 }
 
 .dark {
-  --background: #132033;
-  --foreground: #c8d6e8;
-  --card: #1b2a40;
-  --card-foreground: #c8d6e8;
-  --popover: #1f3048;
-  --popover-foreground: #c8d6e8;
-  --primary: #b4c8e1;
-  --primary-foreground: #132033;
-  --secondary: #1f3048;
-  --secondary-foreground: #c8d6e8;
-  --muted: #1f3048;
-  --muted-foreground: #a8bbd3;
-  --accent: #2a3d59;
-  --accent-foreground: #c8d6e8;
-  --destructive: #c26f81;
-  --border: #334766;
-  --input: #1f3048;
-  --ring: #b4c8e1;
-  --chart-1: #b4c8e1;
-  --chart-2: #a8bbd3;
-  --chart-3: #90a6c2;
-  --chart-4: #6c84a5;
-  --chart-5: #496181;
-  --sidebar: #132033;
-  --sidebar-foreground: #c8d6e8;
-  --sidebar-primary: #b4c8e1;
-  --sidebar-primary-foreground: #132033;
-  --sidebar-accent: #2a3d59;
-  --sidebar-accent-foreground: #c8d6e8;
-  --sidebar-border: #334766;
-  --sidebar-ring: #b4c8e1;
+  --background: #fffdf8;
+  --foreground: #191919;
+  --card: #ffffff;
+  --card-foreground: #191919;
+  --popover: #ffffff;
+  --popover-foreground: #191919;
+  --primary: #ff5a1f;
+  --primary-foreground: #ffffff;
+  --secondary: #fff0e7;
+  --secondary-foreground: #2b211d;
+  --muted: #f7efe7;
+  --muted-foreground: #746a63;
+  --accent: #ffeadf;
+  --accent-foreground: #191919;
+  --destructive: #c91c1c;
+  --border: #1c1c1c;
+  --input: #ffffff;
+  --ring: #ff5a1f;
+  --chart-1: #ff5a1f;
+  --chart-2: #ff9a62;
+  --chart-3: #2f2f2f;
+  --chart-4: #ffd1b9;
+  --chart-5: #fffdf8;
+  --sidebar: #fffdf8;
+  --sidebar-foreground: #191919;
+  --sidebar-primary: #ff5a1f;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ffeadf;
+  --sidebar-accent-foreground: #191919;
+  --sidebar-border: #1c1c1c;
+  --sidebar-ring: #ff5a1f;
 }
 
 @layer base {
@@ -122,14 +122,28 @@
   }
   body {
     @apply text-foreground font-sans;
-    background-color: #283750;
-    background-image: linear-gradient(180deg, #2f415f 0%, #283750 52%, #223049 100%);
+    background-color: #fffdf8;
+    background-image: radial-gradient(circle at 1px 1px, rgba(25,25,25,0.16) 2px, transparent 0);
+    background-size: 38px 38px;
   }
 
   ::selection {
-    background: #b4c8e1;
-    color: #283750;
+    background: #ff5a1f;
+    color: #ffffff;
   }
+}
+
+.pump-panel {
+  box-shadow: none;
+}
+
+.pixel-button {
+  box-shadow: none;
+}
+
+.pixel-button:active {
+  transform: none;
+  box-shadow: none;
 }
 
 @keyframes token-ticker {

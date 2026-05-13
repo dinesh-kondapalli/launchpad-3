@@ -189,12 +189,12 @@ export function CreateTokenForm() {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit((values) => mutation.mutate(values))}
-        className="overflow-hidden rounded-[20px] border border-border bg-card px-4 py-3 shadow-[0_10px_40px_rgba(40,55,80,0.18)] sm:px-5 sm:py-4"
+        className="overflow-hidden bg-card px-4 py-4 sm:px-5 sm:py-5"
       >
         <div className="space-y-2.5">
           <div className="space-y-1">
-            <h2 className="text-[1.5rem] font-semibold tracking-tight text-foreground">Create Token</h2>
-            <p className="text-xs text-muted-foreground sm:text-sm">Launch a new token on BWICK&apos;s bonding curve</p>
+            <h2 className="text-[1.35rem] font-bold tracking-tight text-foreground">[lay your first brick]</h2>
+            <p className="text-xs text-muted-foreground sm:text-sm">lay your first brick on BWICK&apos;s bonding curve</p>
           </div>
 
           <div className="grid gap-2 md:grid-cols-2">
@@ -203,13 +203,13 @@ export function CreateTokenForm() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-semibold text-foreground">Token Name</FormLabel>
+                  <FormLabel className="text-sm font-bold text-foreground">name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="My Awesome Token"
                       disabled={mutation.isPending}
-                      className="h-10 rounded-md border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground"
+                      className="h-10 rounded-none border border-muted bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-primary/20"
                     />
                   </FormControl>
                   <FormDescription className="text-xs text-muted-foreground">
@@ -225,14 +225,14 @@ export function CreateTokenForm() {
               name="symbol"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-sm font-semibold text-foreground">Symbol</FormLabel>
+                  <FormLabel className="text-sm font-bold text-foreground">ticker</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
                       placeholder="MAT"
                       onChange={(e) => field.onChange(e.target.value.toUpperCase())}
                       disabled={mutation.isPending}
-                      className="h-10 rounded-md border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground"
+                      className="h-10 rounded-none border border-muted bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-primary/20"
                     />
                   </FormControl>
                   <FormDescription className="text-xs text-muted-foreground">
@@ -249,7 +249,7 @@ export function CreateTokenForm() {
             name="image"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-semibold text-foreground">Token Image</FormLabel>
+                <FormLabel className="text-sm font-bold text-foreground">image</FormLabel>
                 <FormControl>
                   <div className="space-y-0">
                     <input
@@ -271,18 +271,18 @@ export function CreateTokenForm() {
                       onClick={() => fileInputRef.current?.click()}
                       disabled={mutation.isPending || isUploadingImage}
                       className={cn(
-                        "flex min-h-[112px] w-full flex-col items-center justify-center rounded-lg border border-dashed border-border bg-background px-4 py-3.5 text-center transition-colors",
+                        "flex min-h-[112px] w-full flex-col items-center justify-center border border-dashed border-muted bg-background px-4 py-3.5 text-center transition-colors",
                         "hover:border-primary/40 hover:bg-muted/40 disabled:cursor-not-allowed disabled:opacity-60",
                         imageValue && "border-solid"
                       )}
                     >
                       {imageValue ? (
                         <div className="space-y-2">
-                          <div className="mx-auto flex h-11 w-11 items-center justify-center overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+                          <div className="mx-auto flex h-11 w-11 items-center justify-center overflow-hidden bg-card shadow-sm">
                             <img src={imageValue} alt="Token preview" className="h-full w-full object-cover" />
                           </div>
                           <div className="space-y-1">
-                            <p className="text-sm font-semibold text-foreground">
+                            <p className="text-sm font-bold text-foreground">
                               {isUploadingImage ? "Uploading image..." : "Image uploaded. Click to replace"}
                             </p>
                             <p className="text-xs text-muted-foreground">PNG, JPG, GIF, WebP, SVG (max 2MB)</p>
@@ -290,11 +290,11 @@ export function CreateTokenForm() {
                         </div>
                       ) : (
                         <div className="space-y-2">
-                          <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground">
+                          <div className="mx-auto flex h-8 w-8 items-center justify-center bg-primary text-primary-foreground">
                             <UploadSimple size={18} />
                           </div>
                           <div className="space-y-1">
-                            <p className="text-sm font-semibold text-foreground">
+                            <p className="text-sm font-bold text-foreground">
                               {isUploadingImage ? "Uploading image..." : "Drop Image here or click to browse"}
                             </p>
                             <p className="text-xs text-muted-foreground">PNG, JPG, GIF, WebP, SVG (max 2MB)</p>
@@ -315,14 +315,14 @@ export function CreateTokenForm() {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-semibold text-foreground">Description (optional)</FormLabel>
+                <FormLabel className="text-sm font-bold text-foreground">description (optional)</FormLabel>
                 <FormControl>
                   <Textarea
                     {...field}
                     placeholder="Describe what makes your token unique..."
                     rows={4}
                     disabled={mutation.isPending}
-                    className="min-h-[64px] rounded-md border-border bg-background px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground"
+                    className="min-h-[64px] rounded-none border border-muted bg-background px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-primary/20"
                   />
                 </FormControl>
                 <FormDescription className="text-xs text-muted-foreground">
@@ -341,13 +341,13 @@ export function CreateTokenForm() {
             name="socialLinks"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-semibold text-foreground">Social Links (optional)</FormLabel>
+                <FormLabel className="text-sm font-bold text-foreground">social links (optional)</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     placeholder="https://twitter.com/..., https://discord.gg/..."
                     disabled={mutation.isPending}
-                    className="h-9 rounded-md border-border bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground"
+                    className="h-9 rounded-none border border-muted bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground focus-visible:ring-primary/20"
                   />
                 </FormControl>
                 <FormDescription className="text-xs text-muted-foreground">
@@ -358,19 +358,19 @@ export function CreateTokenForm() {
             )}
           />
 
-          <div className="grid gap-0 overflow-hidden rounded-lg border border-border md:grid-cols-[1fr_1.15fr]">
+          <div className="grid gap-0 overflow-hidden border border-muted md:grid-cols-[1fr_1.15fr]">
             <div className="bg-card px-4 py-2.5">
-              <p className="text-sm font-semibold text-foreground">Creation Fee: {creationFeeDisplay} BWICK</p>
+              <p className="text-sm font-bold text-foreground">creation fee: {creationFeeDisplay} BWICK</p>
               <p className="mt-1 text-xs text-muted-foreground">This fee is paid to create the bonding curve for your token.</p>
             </div>
 
             <Button
               type="submit"
-              className="h-full min-h-12 rounded-none bg-primary px-6 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+              className="h-full min-h-12 rounded-none border-0 bg-primary px-6 text-sm font-bold text-primary-foreground hover:bg-primary/90 md:border-l md:border-muted"
               disabled={!connection || mutation.isPending || !config || isUploadingImage}
             >
               {!connection ? <Wallet size={16} weight="fill" /> : null}
-              {!connection ? "Connect Wallet" : mutation.isPending ? "Creating..." : "Create Token"}
+              {!connection ? "connect wallet" : mutation.isPending ? "creating..." : "create token"}
             </Button>
           </div>
         </div>
