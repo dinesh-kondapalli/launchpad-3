@@ -81,6 +81,13 @@ export async function POST(req: NextRequest) {
     const filename = `tokens/${randomUUID()}${ext}`;
 
     if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      if (process.env.NODE_ENV === "production") {
+        return NextResponse.json(
+          { error: "Image storage is not configured" },
+          { status: 500 }
+        );
+      }
+
       const url = await uploadToLocalPublic(file, filename);
       return NextResponse.json({ url });
     }

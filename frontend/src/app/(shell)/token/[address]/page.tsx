@@ -12,6 +12,7 @@ import { useTokenDetail } from "@/hooks/use-token-detail";
 import { useTokenTrades } from "@/hooks/use-token-trades";
 import { useBwickPrice } from "@/hooks/use-bwick-price";
 import { DEFAULT_TOKEN_SUPPLY, NATIVE_SYMBOL } from "@/lib/chain-config";
+import { getTokenImageSrc } from "@/lib/token-image";
 import { formatUsd } from "@/lib/utils";
 
 const TradingChart = dynamic(
@@ -113,6 +114,7 @@ export default function TokenDetailPage() {
   const threshold = Number(progress.graduation_threshold) / 1_000_000;
   const toGraduate = Math.max(0, threshold - reserve);
   const creatorRewards = reserve * 0.027;
+  const tokenImageSrc = getTokenImageSrc(token.image);
 
   return (
     <div className="w-full bg-card px-3 py-5 sm:px-16">
@@ -122,10 +124,10 @@ export default function TokenDetailPage() {
             <div className="flex flex-wrap justify-between gap-3 md:gap-4">
               <div className="flex flex-row gap-4">
                 <div className="relative size-16 shrink-0 overflow-hidden bg-muted lg:size-20">
-                  {token.image ? (
+                  {tokenImageSrc ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={token.image}
+                      src={tokenImageSrc}
                       alt={token.name ?? "token"}
                       className="h-full w-full object-cover"
                       onError={(event) => {
@@ -246,9 +248,9 @@ export default function TokenDetailPage() {
 
               <div className="inline-flex items-center gap-2">
                 <div className="relative flex size-8 shrink-0 items-center justify-center overflow-hidden bg-muted">
-                  {token.image ? (
+                  {tokenImageSrc ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={token.image} alt={token.name ?? "token"} className="h-full w-full object-cover" />
+                    <img src={tokenImageSrc} alt={token.name ?? "token"} className="h-full w-full object-cover" />
                   ) : null}
                 </div>
 

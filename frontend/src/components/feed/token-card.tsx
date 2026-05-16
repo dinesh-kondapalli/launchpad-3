@@ -7,6 +7,7 @@ import type { TokenListItem } from "@/lib/api";
 import { useCurveProgress } from "@/hooks/use-curve-progress";
 import { useBwickPrice } from "@/hooks/use-bwick-price";
 import { DEFAULT_TOKEN_SUPPLY } from "@/lib/chain-config";
+import { getTokenImageSrc } from "@/lib/token-image";
 import { formatUsd } from "@/lib/utils";
 
 interface TokenCardProps {
@@ -16,6 +17,7 @@ interface TokenCardProps {
 export function TokenCard({ token }: TokenCardProps) {
   const { data: progress } = useCurveProgress(token.address);
   const { bwickPriceUsd } = useBwickPrice();
+  const imageSrc = getTokenImageSrc(token.image);
 
   const progressValue = token.graduated ? 100 : progress ? Math.min(100, progress.progress_percent) : 0;
 
@@ -23,10 +25,10 @@ export function TokenCard({ token }: TokenCardProps) {
     <Link href={`/token/${token.address}`} className="block w-full touch-manipulation">
       <article className="overflow-hidden rounded-2xl border border-border bg-card">
         <div className="relative aspect-square w-full overflow-hidden border-b border-border bg-muted">
-          {token.image ? (
+          {imageSrc ? (
             /* eslint-disable-next-line @next/next/no-img-element */
             <img
-              src={token.image}
+              src={imageSrc}
               alt={token.symbol ?? "token"}
               className="h-full w-full object-cover"
               onError={(e) => {

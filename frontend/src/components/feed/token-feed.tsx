@@ -7,6 +7,7 @@ import { useSSEFeed } from "@/hooks/use-sse";
 import { useTokens } from "@/hooks/use-tokens";
 import { useBwickPrice } from "@/hooks/use-bwick-price";
 import { DEFAULT_TOKEN_SUPPLY } from "@/lib/chain-config";
+import { getTokenImageSrc } from "@/lib/token-image";
 import { formatUsd } from "@/lib/utils";
 import type { TokenListItem } from "@/lib/api";
 
@@ -23,26 +24,19 @@ export function TokenFeed() {
     () => sortTokens(tokens, sortMode),
     [tokens, sortMode],
   );
+  const kingToken = useMemo(
+    () => getKingToken(tokens),
+    [tokens],
+  );
 
   return (
     <div className="min-h-[calc(100dvh-6rem)] w-full bg-background">
-      <div className="overflow-hidden bg-card">
+      <div className="overflow-hidden bg-background">
       <section className="relative overflow-hidden bg-background px-3 py-6 text-center sm:py-8">
         <Link href="/create" className="inline-block text-xl font-bold leading-none hover:text-primary hover:underline sm:text-2xl">
           [lay your first brick]
         </Link>
-        <div className="mx-auto mt-6 grid w-fit grid-cols-[88px_minmax(0,320px)] items-center gap-3 text-left sm:grid-cols-[96px_340px]">
-          <div className="aspect-square overflow-hidden bg-primary">
-            <div className="flex h-full items-center justify-center text-4xl font-black text-primary-foreground">B</div>
-          </div>
-          <div className="min-w-0 space-y-2">
-            <p className="inline-block bg-primary px-3 py-1 text-sm font-black uppercase text-primary-foreground sm:text-base">
-              King of the Stack
-            </p>
-            <p className="text-sm font-bold">Bwick brick (ticker: $BRICK)</p>
-            <p className="text-xs text-muted-foreground">created by dev - market cap: 0.00K - replies: 0</p>
-          </div>
-        </div>
+        {kingToken ? <KingOfTheHill token={kingToken} bwickPriceUsd={bwickPriceUsd} /> : null}
         <div className="mx-auto mt-5 flex max-w-[470px] gap-2">
           <input
             type="search"
@@ -61,18 +55,14 @@ export function TokenFeed() {
         </div>
       ) : null}
 
-      <section className="bg-card">
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 px-3 py-4 sm:px-16">
+      <section className="bg-background">
+        <div className="flex flex-col items-start gap-2 px-3 py-4 sm:px-16">
           <div className="flex h-8 items-start gap-4">
-            <button type="button" className="py-1 text-sm leading-none text-muted-foreground hover:text-foreground">
-              Following
-            </button>
             <button type="button" className="border-b-4 border-primary px-0 py-1 text-sm font-bold leading-none text-foreground">
               Terminal
             </button>
           </div>
           <div className="flex h-8 items-start gap-2">
-            <span className="py-1 text-xs leading-none text-muted-foreground">sort:</span>
             <div className="relative">
               <select
                 value={sortMode}
@@ -104,6 +94,44 @@ export function TokenFeed() {
       </section>
       </div>
     </div>
+  );
+}
+
+function KingOfTheHill({
+  token,
+  bwickPriceUsd,
+}: {
+  token: TokenListItem;
+  bwickPriceUsd: number;
+}) {
+  return (
+    <Link
+      href={`/token/${token.address}`}
+      className="group mx-auto mt-6 grid w-full max-w-[334px] grid-cols-[92px_minmax(0,1fr)] gap-3 bg-background p-3 text-left transition-transform hover:-translate-y-0.5 sm:max-w-[430px] sm:grid-cols-[104px_minmax(0,1fr)]"
+      aria-label={`King of the hill: ${token.name ?? token.symbol ?? "token"}`}
+    >
+      <div className="grid aspect-square place-items-center overflow-hidden bg-background">
+        <span className="text-4xl font-black text-muted-foreground/25">
+          {(token.symbol ?? token.name ?? "?").slice(0, 1).toUpperCase()}
+        </span>
+      </div>
+
+      <div className="min-w-0 self-center text-[11px] leading-tight text-foreground sm:text-xs">
+        <p className="truncate font-bold text-foreground">
+          Created by <span className="text-primary">{truncate(token.creator ?? token.address, 5)}</span>
+        </p>
+        <p className="truncate font-bold text-primary">
+          market cap: {formatMarketCap(token, bwickPriceUsd)}
+        </p>
+        <p className="truncate font-bold text-foreground">replies: {token.trade_count_24h ?? 0}</p>
+        <p className="mt-1 line-clamp-2 font-black text-foreground">
+          {token.name ?? token.symbol ?? "Token"} [ticker: ${token.symbol ?? "TOKEN"}]
+        </p>
+        {token.description ? (
+          <p className="mt-0.5 line-clamp-2 text-muted-foreground">{token.description}</p>
+        ) : null}
+      </div>
+    </Link>
   );
 }
 
@@ -168,8 +196,7 @@ function truncate(value: string, size: number): string {
 }
 
 function getDisplayImage(token: TokenListItem): string {
-  if (token.image) return token.image;
-  return "";
+  return getTokenImageSrc(token.image);
 }
 
 function sortTokens(tokens: TokenListItem[], mode: SortMode): TokenListItem[] {
@@ -188,6 +215,19 @@ function sortTokens(tokens: TokenListItem[], mode: SortMode): TokenListItem[] {
   return [...tokens].sort(
     (left, right) => (right.trade_count_24h ?? 0) - (left.trade_count_24h ?? 0),
   );
+}
+
+function getKingToken(tokens: TokenListItem[]): TokenListItem | null {
+  if (tokens.length === 0) return null;
+
+  return [...tokens].sort((left, right) => {
+    if (left.graduated !== right.graduated) return right.graduated ? 1 : -1;
+    return getMarketCapValue(right) - getMarketCapValue(left);
+  })[0];
+}
+
+function getMarketCapValue(token: TokenListItem): number {
+  return Number(token.current_price) * DEFAULT_TOKEN_SUPPLY;
 }
 
 function formatMarketCap(token: TokenListItem, bwickPriceUsd: number): string {
